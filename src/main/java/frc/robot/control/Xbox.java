@@ -1,7 +1,6 @@
 package frc.robot.control;
 
 import edu.wpi.first.wpilibj.Joystick;
-import java.util.HashMap;
 
 /**
  * Xbox controller class

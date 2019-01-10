@@ -4,15 +4,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
-import frc.robot.vision.VisionData;
-
-import com.esotericsoftware.jsonbeans.Json;
-
-import edu.wpi.first.wpilibj.Timer;
-
 /**
- * Class for receiving data from the Raspberry Pi
- * REMEMBER: UDP has no return address 
+ * Class for receiving data from the Raspberry Pi REMEMBER: UDP has no return
+ * address
+ * 
  * @author Mark Washington, Ben Puzycki, Darryl Wrong
  */
 public class RaspberryPiReceiver extends Thread	
@@ -20,7 +15,6 @@ public class RaspberryPiReceiver extends Thread
 	private DatagramSocket rxsocket = new DatagramSocket(Constants.PORT);
 	private DatagramPacket packet = null;
 	private String data = "{}";
-	private Json json = new Json();
 
 	private static RaspberryPiReceiver instance;
 
@@ -54,7 +48,7 @@ public class RaspberryPiReceiver extends Thread
 	 */
 	public void run()
 	{
-		while (!this.interrupted())
+		while (!this.isInterrupted())
 		{
 			try
 			{

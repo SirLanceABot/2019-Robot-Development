@@ -44,7 +44,7 @@ public class AutoSelect4237 extends Thread
 	@Override
 	public void run()
 	{
-		while (!this.interrupted())
+		while (!this.isInterrupted())
 		{
 			try
 			{
