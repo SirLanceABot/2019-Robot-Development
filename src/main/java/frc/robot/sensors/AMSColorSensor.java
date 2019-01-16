@@ -3,9 +3,9 @@ package frc.robot.sensors;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import edu.wpi.first.wpilibj.I2C;
 import frc.robot.util.Colors;
 import frc.robot.util.Id;
-import edu.wpi.first.wpilibj.I2C;
 
 public class AMSColorSensor
 {
@@ -13,7 +13,7 @@ public class AMSColorSensor
 	// Global Variables - Fields
 	private final I2C AMSColorSensorI2C;
 	private final Timer timer;
-	private final double samplePeriod;
+	// private final double samplePeriod;
 	private TimerTask m_backgroundLoop;
 	private boolean deviceAvailable; // indicate if the Lidar is seen on the I2C bus; checked only once at startup
 	//private byte[] mStatus = new byte[Register.STATUS.count]; // status from the Lidar
@@ -42,7 +42,7 @@ public class AMSColorSensor
 
 		this.timer = new Timer();
 		this.deviceAvailable = false;
-		this.samplePeriod = samplePeriod;
+		// this.samplePeriod = samplePeriod;
 
 		AMSColorSensorI2C = new I2C(port, deviceAddress.value); // define the device object on the I2C bus
 
@@ -269,8 +269,8 @@ public class AMSColorSensor
 	 */
 
 	// register length for reads - all registers are the same length (1) so don't bother putting that in the enum for each different command
-	private static final int registerAddressLength = 1;
-	private static final int commandRegisterLength = 1;
+	// private static final int registerAddressLength = 1;
+	// private static final int commandRegisterLength = 1;
 
 	enum Register
 	{
@@ -331,8 +331,8 @@ public class AMSColorSensor
 		PON(0x01),  /* Power on - Writing 1 activates the internal oscillator, 0 disables it */
 		OFF(0x00);  /* Nothing on */
 
-		public byte bitOr(Enable him) { return (byte)(this.bVal | him.bVal); }
-		public byte bitOr(byte him)   { return (byte)(this.bVal | him); }
+		// public byte bitOr(Enable him) { return (byte)(this.bVal | him.bVal); }
+		// public byte bitOr(byte him)   { return (byte)(this.bVal | him); }
 
 		public final byte bVal;
 		Enable(int i) { this.bVal = (byte) i; }

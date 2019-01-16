@@ -1,18 +1,8 @@
 package frc.robot.vision;
 
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.Timer;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import edu.wpi.cscore.VideoSink;
-
 import com.esotericsoftware.jsonbeans.Json;
 
-import frc.robot.control.Xbox.Constants;
 import frc.robot.network.RaspberryPiReceiver;
-import frc.robot.sensors.Sonar;
 
 public class Vision
 {	
