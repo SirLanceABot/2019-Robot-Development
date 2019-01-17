@@ -7,7 +7,8 @@ package frc.robot.control;
  */
 public class OperatorXbox extends Xbox
 {
-	private static OperatorXbox instance = new OperatorXbox(Constants.PORT);
+    private static OperatorXbox instance = new OperatorXbox(Constants.PORT);
+    
 	public static OperatorXbox getInstance()
 	{
 		return instance;
