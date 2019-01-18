@@ -1,12 +1,3 @@
-/**
- * This class represents the robot's drivetrain.
- * It contains all the code for properly controlling
- * and measuring the movements of the robot.
- * 
- * Author: Yash Gautam
- * Created: 1/15/19
- * Last Worked On: 1/15/19
- */
 package frc.robot.components;
 
 import frc.robot.control.Xbox;
@@ -20,11 +11,17 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import com.kauailabs.navx.frc.AHRS;
 
-
+/**
+ * This class represents the robot's drivetrain.
+ * It contains all the code for properly controlling
+ * and measuring the movements of the robot.
+ * 
+ * @author: Yash Gautam
+ * Created: 1/15/19
+ * Last Worked On: 1/17/19
+ */
 public class Drivetrain extends MecanumDrive
 {
-    private static Drivetrain instance = new Drivetrain();
-
     private DriverXbox driverXbox = DriverXbox.getInstance();
 
     private static WPI_TalonSRX frontRightMotor = new WPI_TalonSRX(Constants.FRONT_RIGHT_MOTOR_PORT);
@@ -42,6 +39,7 @@ public class Drivetrain extends MecanumDrive
     private static WPI_TalonSRX backLeftMotor = new WPI_TalonSRX(Constants.BACK_LEFT_MOTOR_PORT);
     private static WPI_TalonSRX backLeftMotorFollower = new WPI_TalonSRX(Constants.BACK_LEFT_FOLLOWER_MOTOR_PORT);
 
+    private static Drivetrain instance = new Drivetrain();
 
     private AHRS navX = new AHRS(I2C.Port.kMXP);
 
@@ -55,6 +53,7 @@ public class Drivetrain extends MecanumDrive
         backRightMotorFollower.follow(backRightMotor);
         backLeftMotorFollower.follow(backLeftMotor);
         
+        navX.reset();
     }
 
     public static Drivetrain getInstance()
@@ -68,13 +67,14 @@ public class Drivetrain extends MecanumDrive
         double leftXAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_X_AXIS);
         double leftYAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_Y_AXIS);
 
-        try
+        if(driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER))
+        {
+            this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, navX.getYaw());
+            System.out.println(navX.getAngle() + ", " + navX.getYaw());
+        }
+        else 
         {
             this.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
         }
     }
 
