@@ -6,6 +6,9 @@ import frc.robot.control.DriverXbox;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.RobotDrive;
+
+import javax.lang.model.util.ElementScanner6;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -41,6 +44,8 @@ public class Drivetrain extends MecanumDrive
 
     private static Drivetrain instance = new Drivetrain();
 
+    private RobotDrive driveRobot = new RobotDrive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
+
     private AHRS navX = new AHRS(I2C.Port.kMXP);
 
     //constructor for drivetrain class
@@ -69,7 +74,19 @@ public class Drivetrain extends MecanumDrive
 
         if(driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER))
         {
-            this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, navX.getYaw());
+            if(Math.abs(navX.getYaw()) <= 135 && Math.abs(navX.getYaw()) >= 45)
+            {
+                this.driveCartesian(-leftXAxis, -leftYAxis, rightXAxis, navX.getYaw());
+                //driveRobot.mecanumDrive_Cartesian(-leftXAxis, -leftYAxis, rightXAxis, navX.getYaw());
+
+            }
+            else
+            {
+                this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, navX.getYaw());
+            }
+            
+            //driveRobot.mecanumDrive_Cartesian(leftXAxis, leftYAxis, rightXAxis, navX.getYaw());
+
             System.out.println(navX.getAngle() + ", " + navX.getYaw());
         }
         else 
