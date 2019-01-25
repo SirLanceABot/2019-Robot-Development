@@ -15,13 +15,10 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 
 /**
- * This class represents the robot's drivetrain.
- * It contains all the code for properly controlling
- * and measuring the movements of the robot.
+ * This class represents the robot's drivetrain. It contains all the code for
+ * properly controlling and measuring the movements of the robot.
  * 
- * @author: Yash Gautam
- * Created: 1/15/19
- * Last Worked On: 1/17/19
+ * @author: Yash Gautam Created: 1/15/19 Last Worked On: 1/24/19
  */
 public class Drivetrain extends MecanumDrive
 {
@@ -30,14 +27,11 @@ public class Drivetrain extends MecanumDrive
     private static WPI_TalonSRX frontRightMotor = new WPI_TalonSRX(Constants.FRONT_RIGHT_MOTOR_PORT);
     private static WPI_TalonSRX frontRightMotorFollower = new WPI_TalonSRX(Constants.FRONT_RIGHT_FOLLOWER_MOTOR_PORT);
 
-
     private static WPI_TalonSRX frontLeftMotor = new WPI_TalonSRX(Constants.FRONT_LEFT_MOTOR_PORT);
     private static WPI_TalonSRX frontLeftMotorFollower = new WPI_TalonSRX(Constants.FRONT_LEFT_FOLLOWER_MOTOR_PORT);
 
-
     private static WPI_TalonSRX backRightMotor = new WPI_TalonSRX(Constants.BACK_RIGHT_MOTOR_PORT);
     private static WPI_TalonSRX backRightMotorFollower = new WPI_TalonSRX(Constants.BACK_RIGHT_FOLLOWER_MOTOR_PORT);
-
 
     private static WPI_TalonSRX backLeftMotor = new WPI_TalonSRX(Constants.BACK_LEFT_MOTOR_PORT);
     private static WPI_TalonSRX backLeftMotorFollower = new WPI_TalonSRX(Constants.BACK_LEFT_FOLLOWER_MOTOR_PORT);
@@ -48,7 +42,7 @@ public class Drivetrain extends MecanumDrive
 
     private AHRS navX = new AHRS(I2C.Port.kMXP);
 
-    //constructor for drivetrain class
+    // constructor for drivetrain class
     private Drivetrain()
     {
         super(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
@@ -57,7 +51,7 @@ public class Drivetrain extends MecanumDrive
         frontLeftMotorFollower.follow(frontLeftMotor);
         backRightMotorFollower.follow(backRightMotor);
         backLeftMotorFollower.follow(backLeftMotor);
-        
+
         navX.reset();
     }
 
@@ -65,31 +59,34 @@ public class Drivetrain extends MecanumDrive
     {
         return instance;
     }
-    //main loop for teleop mode
+
+    // main loop for teleop mode
     public void teleop()
     {
         double rightXAxis = driverXbox.getRawAxis(Xbox.Constants.RIGHT_STICK_X_AXIS);
         double leftXAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_X_AXIS);
         double leftYAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_Y_AXIS);
 
-        if(driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER))
+        if (driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER))
         {
-            if(Math.abs(navX.getYaw()) <= 135 && Math.abs(navX.getYaw()) >= 45)
+            if (Math.abs(navX.getYaw()) <= 135 && Math.abs(navX.getYaw()) >= 45)
             {
                 this.driveCartesian(-leftXAxis, -leftYAxis, rightXAxis, navX.getYaw());
-                //driveRobot.mecanumDrive_Cartesian(-leftXAxis, -leftYAxis, rightXAxis, navX.getYaw());
+                // driveRobot.mecanumDrive_Cartesian(-leftXAxis, -leftYAxis, rightXAxis,
+                // navX.getYaw());
 
             }
             else
             {
                 this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, navX.getYaw());
             }
-            
-            //driveRobot.mecanumDrive_Cartesian(leftXAxis, leftYAxis, rightXAxis, navX.getYaw());
+
+            // driveRobot.mecanumDrive_Cartesian(leftXAxis, leftYAxis, rightXAxis,
+            // navX.getYaw());
 
             System.out.println(navX.getAngle() + ", " + navX.getYaw());
         }
-        else 
+        else
         {
             this.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
         }
@@ -108,7 +105,6 @@ public class Drivetrain extends MecanumDrive
 
         public static final int BACK_LEFT_MOTOR_PORT = 2;
         public static final int BACK_LEFT_FOLLOWER_MOTOR_PORT = 3;
-
 
     }
 }
