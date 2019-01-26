@@ -11,8 +11,9 @@ import edu.wpi.first.wpilibj.I2C;
 // import javax.lang.model.util.ElementScanner6;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.CANEncoder;
+import com.revrobotics.CANSparkMaxLowLevel;
+// import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+// import com.revrobotics.CANEncoder;
 
 
 import com.kauailabs.navx.frc.AHRS;
@@ -21,16 +22,16 @@ import com.kauailabs.navx.frc.AHRS;
  * This class represents the robot's drivetrain. It contains all the code for
  * properly controlling and measuring the movements of the robot.
  * 
- * @author: Yash Gautam Created: 1/15/19 Last Worked On: 1/24/19
+ * @author: Yash Gautam Created: 1/15/19 Last Worked On: 1/26/19
  */
 public class Drivetrain extends MecanumDrive
 {
     private DriverXbox driverXbox = DriverXbox.getInstance();
 
-    private static CANSparkMax frontRightMotor = new CANSparkMax(Constants.FRONT_RIGHT_MOTOR_PORT, MotorType.kBrushless);
-    private static CANSparkMax frontLeftMotor = new CANSparkMax(Constants.FRONT_LEFT_MOTOR_PORT, MotorType.kBrushless);
-    private static CANSparkMax backRightMotor = new CANSparkMax(Constants.BACK_RIGHT_MOTOR_PORT, MotorType.kBrushless);
-    private static CANSparkMax backLeftMotor= new CANSparkMax(Constants.BACK_LEFT_MOTOR_PORT, MotorType.kBrushless);
+    private static CANSparkMax frontRightMotor = new CANSparkMax(Constants.FRONT_RIGHT_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private static CANSparkMax frontLeftMotor = new CANSparkMax(Constants.FRONT_LEFT_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private static CANSparkMax backRightMotor = new CANSparkMax(Constants.BACK_RIGHT_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private static CANSparkMax backLeftMotor= new CANSparkMax(Constants.BACK_LEFT_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
 
     // frontRightMotor = new CANSparkMax(Constants.FRONT_RIGHT_MOTOR_PORT, MotorType.kBrushless);
     // frontLeftMotor = new CANSparkMax(Constants.FRONT_LEFT_MOTOR_PORT, MotorType.kBrushless);
