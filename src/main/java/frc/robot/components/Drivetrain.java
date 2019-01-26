@@ -4,13 +4,16 @@ import frc.robot.control.Xbox;
 import frc.robot.control.DriverXbox;
 
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
-import edu.wpi.first.wpilibj.DriverStation;
+// import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.RobotDrive;
+// import edu.wpi.first.wpilibj.RobotDrive;
 
-import javax.lang.model.util.ElementScanner6;
+// import javax.lang.model.util.ElementScanner6;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANEncoder;
+
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -24,33 +27,47 @@ public class Drivetrain extends MecanumDrive
 {
     private DriverXbox driverXbox = DriverXbox.getInstance();
 
-    private static WPI_TalonSRX frontRightMotor = new WPI_TalonSRX(Constants.FRONT_RIGHT_MOTOR_PORT);
-    private static WPI_TalonSRX frontRightMotorFollower = new WPI_TalonSRX(Constants.FRONT_RIGHT_FOLLOWER_MOTOR_PORT);
+    private static CANSparkMax frontRightMotor = new CANSparkMax(Constants.FRONT_RIGHT_MOTOR_PORT, MotorType.kBrushless);
+    private static CANSparkMax frontLeftMotor = new CANSparkMax(Constants.FRONT_LEFT_MOTOR_PORT, MotorType.kBrushless);
+    private static CANSparkMax backRightMotor = new CANSparkMax(Constants.BACK_RIGHT_MOTOR_PORT, MotorType.kBrushless);
+    private static CANSparkMax backLeftMotor= new CANSparkMax(Constants.BACK_LEFT_MOTOR_PORT, MotorType.kBrushless);
 
-    private static WPI_TalonSRX frontLeftMotor = new WPI_TalonSRX(Constants.FRONT_LEFT_MOTOR_PORT);
-    private static WPI_TalonSRX frontLeftMotorFollower = new WPI_TalonSRX(Constants.FRONT_LEFT_FOLLOWER_MOTOR_PORT);
+    // frontRightMotor = new CANSparkMax(Constants.FRONT_RIGHT_MOTOR_PORT, MotorType.kBrushless);
+    // frontLeftMotor = new CANSparkMax(Constants.FRONT_LEFT_MOTOR_PORT, MotorType.kBrushless);
+    // backRightMotor = new CANSparkMax(Constants.BACK_RIGHT_MOTOR_PORT, MotorType.kBrushless);
+    // backLeftMotor = new CANSparkMax(Constants.BACK_LEFT_MOTOR_PORT, MotorType.kBrushless);
 
-    private static WPI_TalonSRX backRightMotor = new WPI_TalonSRX(Constants.BACK_RIGHT_MOTOR_PORT);
-    private static WPI_TalonSRX backRightMotorFollower = new WPI_TalonSRX(Constants.BACK_RIGHT_FOLLOWER_MOTOR_PORT);
-
-    private static WPI_TalonSRX backLeftMotor = new WPI_TalonSRX(Constants.BACK_LEFT_MOTOR_PORT);
-    private static WPI_TalonSRX backLeftMotorFollower = new WPI_TalonSRX(Constants.BACK_LEFT_FOLLOWER_MOTOR_PORT);
-
-    private static Drivetrain instance = new Drivetrain();
-
-    private RobotDrive driveRobot = new RobotDrive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
+    // private RobotDrive driveRobot = new RobotDrive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
 
     private AHRS navX = new AHRS(I2C.Port.kMXP);
+
+    private static Drivetrain instance = new Drivetrain();
 
     // constructor for drivetrain class
     private Drivetrain()
     {
         super(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
 
-        frontRightMotorFollower.follow(frontRightMotor);
-        frontLeftMotorFollower.follow(frontLeftMotor);
-        backRightMotorFollower.follow(backRightMotor);
-        backLeftMotorFollower.follow(backLeftMotor);
+        //frontRightMotorFollower.follow(frontRightMotor);
+        //frontLeftMotorFollower.follow(frontLeftMotor);
+        //backRightMotorFollower.follow(backRightMotor);
+        //backLeftMotorFollower.follow(backLeftMotor);
+
+        // frontRightMotor.configContinuousCurrentLimit(Constants.DRIVE_40_AMP_LIMIT, 10);
+		// frontRightMotor.configPeakCurrentLimit(Constants.DRIVE_40_AMP_TRIGGER, Constants.DRIVE_40_AMP_TIME);
+        // frontRightMotor.configOpenloopRamp(Constants.DRIVE_RAMP_TIME, Constants.DRIVE_RAMP_RATE_TIMEOUT);
+        
+        // frontLeftMotor.configContinuousCurrentLimit(Constants.DRIVE_40_AMP_LIMIT, 10);
+		// frontLeftMotor.configPeakCurrentLimit(Constants.DRIVE_40_AMP_TRIGGER, Constants.DRIVE_40_AMP_TIME);
+        // frontLeftMotor.configOpenloopRamp(Constants.DRIVE_RAMP_TIME, Constants.DRIVE_RAMP_RATE_TIMEOUT);
+
+        // backRightMotor.configContinuousCurrentLimit(Constants.DRIVE_40_AMP_LIMIT, 10);
+		// backRightMotor.configPeakCurrentLimit(Constants.DRIVE_40_AMP_TRIGGER, Constants.DRIVE_40_AMP_TIME);
+        // backRightMotor.configOpenloopRamp(Constants.DRIVE_RAMP_TIME, Constants.DRIVE_RAMP_RATE_TIMEOUT);
+
+        // backLeftMotor.configContinuousCurrentLimit(Constants.DRIVE_40_AMP_LIMIT, 10);
+		// backLeftMotor.configPeakCurrentLimit(Constants.DRIVE_40_AMP_TRIGGER, Constants.DRIVE_40_AMP_TIME);
+        // backLeftMotor.configOpenloopRamp(Constants.DRIVE_RAMP_TIME, Constants.DRIVE_RAMP_RATE_TIMEOUT);
 
         navX.reset();
     }
@@ -72,17 +89,11 @@ public class Drivetrain extends MecanumDrive
             if (Math.abs(navX.getYaw()) <= 135 && Math.abs(navX.getYaw()) >= 45)
             {
                 this.driveCartesian(-leftXAxis, -leftYAxis, rightXAxis, navX.getYaw());
-                // driveRobot.mecanumDrive_Cartesian(-leftXAxis, -leftYAxis, rightXAxis,
-                // navX.getYaw());
-
             }
             else
             {
                 this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, navX.getYaw());
             }
-
-            // driveRobot.mecanumDrive_Cartesian(leftXAxis, leftYAxis, rightXAxis,
-            // navX.getYaw());
 
             System.out.println(navX.getAngle() + ", " + navX.getYaw());
         }
@@ -94,17 +105,27 @@ public class Drivetrain extends MecanumDrive
 
     public static class Constants
     {
-        public static final int FRONT_RIGHT_MOTOR_PORT = 15;
-        public static final int FRONT_RIGHT_FOLLOWER_MOTOR_PORT = 14;
+        public static final int FRONT_RIGHT_MOTOR_PORT = 0;
 
-        public static final int FRONT_LEFT_MOTOR_PORT = 13;
-        public static final int FRONT_LEFT_FOLLOWER_MOTOR_PORT = 12;
+        public static final int FRONT_LEFT_MOTOR_PORT = 1;
 
-        public static final int BACK_RIGHT_MOTOR_PORT = 0;
-        public static final int BACK_RIGHT_FOLLOWER_MOTOR_PORT = 1;
+        public static final int BACK_RIGHT_MOTOR_PORT = 2;
 
-        public static final int BACK_LEFT_MOTOR_PORT = 2;
-        public static final int BACK_LEFT_FOLLOWER_MOTOR_PORT = 3;
+        public static final int BACK_LEFT_MOTOR_PORT = 3;
+
+        public static final int DRIVE_40_AMP_TRIGGER = 60;
+		public static final int DRIVE_40_AMP_LIMIT = 30;
+		public static final int DRIVE_40_AMP_TIME = 4000;
+
+		public static final int DRIVE_30_AMP_TRIGGER = 45;
+		public static final int DRIVE_30_AMP_LIMIT = 25;
+		public static final int DRIVE_30_AMP_TIME = 3000;
+
+		public static final int DRIVE_RAMP_RATE_TIMEOUT = 10; //ms
+
+		public static final double DRIVE_RAMP_TIME = 0.25;
+
+		public static final int SERVO_PORT = 0;
 
     }
 }

@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 public class Robot extends TimedRobot
 {
     private Drivetrain drivetrain = Drivetrain.getInstance();
-
     public Robot()
     {
 
@@ -28,7 +27,7 @@ public class Robot extends TimedRobot
     @Override
     public void teleopInit()
     {
-
+        
     }
 
     @Override
