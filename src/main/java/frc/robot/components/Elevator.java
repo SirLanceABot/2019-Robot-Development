@@ -35,7 +35,12 @@ public class Elevator
     private boolean bottomPortButton;
     private boolean centerPortButton;
     private boolean topPortButton;
-    
+
+    private double yAxis;
+
+    private boolean isMoving = false;
+    private Constants.ElevatorPosition targetPosition = Constants.ElevatorPosition.kNone;
+    private int potValue;
 
     private static Elevator instance = new Elevator();
 
@@ -51,132 +56,172 @@ public class Elevator
 
         masterElevatorMotor.configReverseSoftLimitThreshold(Constants.ElevatorPosition.kMinHeight.position, 0);
         masterElevatorMotor.configForwardSoftLimitThreshold(Constants.ElevatorPosition.kMaxHeight.position, 0);
-		
+        
+        masterElevatorMotor.configForwardSoftLimitEnable(true, 0);
+		masterElevatorMotor.configReverseSoftLimitEnable(true, 0);
     }
 
-    private void raiseElevator()
+    public void raiseElevator()
     {
         masterElevatorMotor.set(Constants.ELEVATOR_SPEED);
     }
 
-    private void lowerElevator()
+    public void lowerElevator()
     {
         masterElevatorMotor.set(-Constants.ELEVATOR_SPEED);
     }
 
-    private void stopElevator()
+    public void stopElevator()
     {
         masterElevatorMotor.set(0);
     }
 
-    public double getPosition()
+    public int getPotValue()
 	{
 		return masterElevatorMotor.getSelectedSensorPosition(0);
     }
+
+    public Constants.ElevatorPosition getTargetPosition()
+    {
+       return targetPosition;
+    }
     
-    private void moveTo()
+    public void moveTo()
     {
+        potValue = getPotValue();
 
+        if(!targetPosition.equals(Constants.ElevatorPosition.kNone))
+        {
+            if(potValue < (targetPosition.position - Constants.ElevatorPosition.kThreshold.position))
+            {
+                raiseElevator();
+                isMoving = true;
+            }
+            else if(potValue > (targetPosition.position + Constants.ElevatorPosition.kThreshold.position))
+            {
+                lowerElevator();
+                isMoving = true;
+            }
+            else
+            {
+                stopElevator();
+                targetPosition = Constants.ElevatorPosition.kNone;
+                isMoving = false;
+            }
+        }
+        /*else  // For manual override of elevator
+        {
+            masterElevatorMotor.set(yAxis);
+        }*/
     }   
-  
 
-    private void teleop()
+    public void teleop()
     {
-        floorPanelButton = operatorXbox.getRawButton(0);
-        floorCargoButton = operatorXbox.getRawButton(1);
+        floorPanelButton = operatorXbox.getRawButton(1);
+        floorCargoButton = operatorXbox.getRawButton(2);
 
-        bottomHatchButton = operatorXbox.getRawButton(2);
-        centerHatchButton = operatorXbox.getRawButton(3);
-        topHatchButton = operatorXbox.getRawButton(4);
+        bottomHatchButton = operatorXbox.getRawButton(3);
+        centerHatchButton = operatorXbox.getRawButton(4);
+        topHatchButton = operatorXbox.getRawButton(5);
 
-        bottomPortButton = operatorXbox.getRawButton(5);
-        centerPortButton = operatorXbox.getRawButton(6);
-        topPortButton = operatorXbox.getRawButton(7);
+        bottomPortButton = operatorXbox.getRawButton(6);
+        centerPortButton = operatorXbox.getRawButton(7);
+        topPortButton = operatorXbox.getRawButton(8);
+
+       // yAxis = -operatorXbox.getRawAxis(1);
+
 
         if(floorPanelButton)
         {
-
+            targetPosition = Constants.ElevatorPosition.kFloorPanel;
         }
         else if(floorCargoButton)
         {
-
+            targetPosition = Constants.ElevatorPosition.kFloorCargo;
         }
         else if(bottomHatchButton)
         {
-
+            targetPosition = Constants.ElevatorPosition.kBottomHatch;
         }
         else if(centerHatchButton)
         {
-
+            targetPosition = Constants.ElevatorPosition.kCenterHatch;
         }
         else if(topHatchButton)
         {
-
+            targetPosition = Constants.ElevatorPosition.kTopHatch;
         }
         else if(bottomPortButton)
         {
-
+            targetPosition = Constants.ElevatorPosition.kBottomPort;
         }
         else if(centerPortButton)
         {
-
+            targetPosition = Constants.ElevatorPosition.kCenterPort;
         }
         else if(topPortButton)
         {
-
+            targetPosition = Constants.ElevatorPosition.kTopPort;
         }
 
+        moveTo();
     }
 
-    private void autonomous()
+    public void autonomous()
     {
 
     }
 
-    private void test()
+    public void test()
     {
 
+    }
+
+    public String toString()
+    {
+        return String.format("Pot Value: %d    Target Position: %d    Elevator Current: %.2f", getPotValue(), targetPosition.position, masterElevatorMotor.getOutputCurrent());
     }
 
     public static class Constants
     {
-        private enum ElevatorPosition
+        public static enum ElevatorPosition
 		{
-            kMinHeight(0),
-            kMaxHeight(60),
-            kFloorHatch(5),
-            kFloorCargo(5),
-            kCargoShipPort(15),
-            kThreshold(5),
+            kMinHeight(0, "Min Height"),
+            kMaxHeight(60, "Max Height"),
+            kFloorPanel(5, "Floor Panel"),
+            kFloorCargo(5, "Floor Cargo"),
+            kCargoShipPort(15, "Cargo Ship Port"),
+            kThreshold(5, "Threshold"),
 
-            kBottomHatch(10),      // 1 ft 7 inches to center
-            kCenterHatch(30),      // 3 ft 11 inches to center
-            kTopHatch(50),         // 6 ft 3 inches to center
+            kBottomHatch(10, "Bottom Hatch"),      // 1 ft 7 inches to center
+            kCenterHatch(30, "Center Hatch"),      // 3 ft 11 inches to center
+            kTopHatch(50, "Top Hatch"),         // 6 ft 3 inches to center
 
-            kBottomPort(20),       // 2 ft 3.5 inches to center
-            KCenterPort(40),       // 4 ft 7.5 inches to center
-            KTopPort(60);          // 6 ft 11.5 inches to center
+            kBottomPort(20, "Bottom Port"),       // 2 ft 3.5 inches to center
+            kCenterPort(40, "Center Port"),       // 4 ft 7.5 inches to center
+            kTopPort(60, "Top Port"),          // 6 ft 11.5 inches to center
+            kNone(-1, "None");
 
             
-
-
             private final int position;
+            private String name;
 
-            ElevatorPosition(int value)
+            private ElevatorPosition(int value, String name)
             {
                 this.position = value;
+                this.name = name;
+            }
+
+            public String toString()
+            {
+                return name;
             }
         }
+    
 
-        
-
-        
-
-        public static final int MASTER_ELEVATOR_MOTOR_PORT = 1;
-        public static final int SLAVE_ELEVATOR_MOTOR_PORT = 2;
+        public static final int MASTER_ELEVATOR_MOTOR_PORT = 0;
+        public static final int SLAVE_ELEVATOR_MOTOR_PORT = 0;
 
         public static final double ELEVATOR_SPEED = 1.0;
-
-        //public static final int BOTTOM
     }
 }
