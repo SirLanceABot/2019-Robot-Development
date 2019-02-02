@@ -57,19 +57,19 @@ public class Drivetrain extends MecanumDrive
         super(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
 
         frontRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
-        frontRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
+        //frontRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
         frontRightMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
 
         frontLeftMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
-        frontLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
+        //frontLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
         frontLeftMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
 
         backRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
-        backRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
+        //backRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
         backRightMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
 
         backLeftMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
-        backLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
+        //backLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
         backLeftMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
 
         navX.reset();
@@ -113,6 +113,8 @@ public class Drivetrain extends MecanumDrive
         {
             this.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
         }
+
+        System.out.println(toString());
     }
 
     /**
@@ -334,7 +336,7 @@ public class Drivetrain extends MecanumDrive
 
     public String toString()
     {
-        return String.format("Enc: %d, FRC: %.2f, FLC: %.2f, BRC: %.2f, BLC: %.2f, Yaw: %.2f", 
+        return String.format("Enc: %.2f, FRC: %.2f, FLC: %.2f, BRC: %.2f, BLC: %.2f, Yaw: %.2f", 
         getEncoderDistance(), frontRightMotor.getOutputCurrent(), frontLeftMotor.getOutputCurrent(), backRightMotor.getOutputCurrent(), backLeftMotor.getOutputCurrent(), navX.getYaw());
     }
 
@@ -342,13 +344,13 @@ public class Drivetrain extends MecanumDrive
     {
         public static final int FRONT_RIGHT_MOTOR_PORT = 0;
         public static final int FRONT_LEFT_MOTOR_PORT = 1;
-        public static final int BACK_RIGHT_MOTOR_PORT = 2;
-        public static final int BACK_LEFT_MOTOR_PORT = 3;
+        public static final int BACK_RIGHT_MOTOR_PORT = 3;
+        public static final int BACK_LEFT_MOTOR_PORT = 2;
 
-        public static final int PRIMARY_MOTOR_CURRENT_LIMIT = 30;
-        public static final int SECONDARY_MOTOR_CURRENT_LIMIT = 40;
+        public static final int PRIMARY_MOTOR_CURRENT_LIMIT = 35;
+        public static final int SECONDARY_MOTOR_CURRENT_LIMIT = 45;
 
-		public static final double DRIVE_RAMP_TIME = 0.25;
+		public static final double DRIVE_RAMP_TIME = 0.10;
 
 		public static final int SERVO_PORT = 0;
 
