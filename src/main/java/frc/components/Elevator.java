@@ -7,6 +7,7 @@
 
 package frc.components;
 
+import frc.components.Elevator.Constants.ElevatorPosition;
 import frc.control.DriverXbox;
 import frc.control.OperatorXbox;
 import frc.control.Xbox;
@@ -81,7 +82,12 @@ public class Elevator
 		return masterElevatorMotor.getSelectedSensorPosition(0);
     }
 
-    public Constants.ElevatorPosition getTargetPosition()
+    public void setTargetPosition(ElevatorPosition targetPosition)
+    {
+        this.targetPosition = targetPosition;
+    }
+
+    public ElevatorPosition getTargetPosition()
     {
        return targetPosition;
     }
@@ -90,14 +96,14 @@ public class Elevator
     {
         potValue = getPotValue();
 
-        if(!targetPosition.equals(Constants.ElevatorPosition.kNone))
+        if(!targetPosition.equals(ElevatorPosition.kNone))
         {
-            if(potValue < (targetPosition.position - Constants.ElevatorPosition.kThreshold.position))
+            if(potValue < (targetPosition.position - ElevatorPosition.kThreshold.position))
             {
                 raiseElevator();
                 isMoving = true;
             }
-            else if(potValue > (targetPosition.position + Constants.ElevatorPosition.kThreshold.position))
+            else if(potValue > (targetPosition.position + ElevatorPosition.kThreshold.position))
             {
                 lowerElevator();
                 isMoving = true;
@@ -105,7 +111,7 @@ public class Elevator
             else
             {
                 stopElevator();
-                targetPosition = Constants.ElevatorPosition.kNone;
+                targetPosition = ElevatorPosition.kNone;
                 isMoving = false;
             }
         }
@@ -133,35 +139,35 @@ public class Elevator
 
         if(floorPanelButton)
         {
-            targetPosition = Constants.ElevatorPosition.kFloorPanel;
+            targetPosition = ElevatorPosition.kFloorPanel;
         }
         else if(floorCargoButton)
         {
-            targetPosition = Constants.ElevatorPosition.kFloorCargo;
+            targetPosition = ElevatorPosition.kFloorCargo;
         }
         else if(bottomHatchButton)
         {
-            targetPosition = Constants.ElevatorPosition.kBottomHatch;
+            targetPosition = ElevatorPosition.kBottomHatch;
         }
         else if(centerHatchButton)
         {
-            targetPosition = Constants.ElevatorPosition.kCenterHatch;
+            targetPosition = ElevatorPosition.kCenterHatch;
         }
         else if(topHatchButton)
         {
-            targetPosition = Constants.ElevatorPosition.kTopHatch;
+            targetPosition = ElevatorPosition.kTopHatch;
         }
         else if(bottomPortButton)
         {
-            targetPosition = Constants.ElevatorPosition.kBottomPort;
+            targetPosition = ElevatorPosition.kBottomPort;
         }
         else if(centerPortButton)
         {
-            targetPosition = Constants.ElevatorPosition.kCenterPort;
+            targetPosition = ElevatorPosition.kCenterPort;
         }
         else if(topPortButton)
         {
-            targetPosition = Constants.ElevatorPosition.kTopPort;
+            targetPosition = ElevatorPosition.kTopPort;
         }
 
         moveTo();

@@ -41,12 +41,12 @@ public class Arm {
 
     }
 
-    private static Arm getInstance()
+    public static Arm getInstance()
     {
         return(instance);
     }
 
-    private boolean getHatchPanelPosition()
+    public boolean getHatchPanelPosition()
     {
         return(hatchPanelPosition);
     }
