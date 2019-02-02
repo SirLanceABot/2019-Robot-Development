@@ -1,6 +1,6 @@
 package frc.robot;
 
-import frc.robot.components.Drivetrain;
+import frc.components.Drivetrain;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 

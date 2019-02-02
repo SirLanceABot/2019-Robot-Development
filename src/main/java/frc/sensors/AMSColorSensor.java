@@ -1,11 +1,11 @@
-package frc.robot.sensors;
+package frc.sensors;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 import edu.wpi.first.wpilibj.I2C;
-import frc.robot.util.Colors;
-import frc.robot.util.Id;
+import frc.util.Colors;
+import frc.util.Id;
 
 public class AMSColorSensor
 {

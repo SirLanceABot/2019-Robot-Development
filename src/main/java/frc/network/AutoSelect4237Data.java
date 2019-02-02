@@ -1,4 +1,4 @@
-package frc.robot.network;
+package frc.network;
 
 public class AutoSelect4237Data
 {

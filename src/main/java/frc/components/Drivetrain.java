@@ -1,7 +1,7 @@
-package frc.robot.components;
+package frc.components;
 
-import frc.robot.control.Xbox;
-import frc.robot.control.DriverXbox;
+import frc.control.Xbox;
+import frc.control.DriverXbox;
 
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 // import edu.wpi.first.wpilibj.DriverStation;

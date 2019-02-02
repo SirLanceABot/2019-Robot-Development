@@ -1,4 +1,4 @@
-package frc.robot.control;
+package frc.control;
 
 /**
  * Xbox class for the operator

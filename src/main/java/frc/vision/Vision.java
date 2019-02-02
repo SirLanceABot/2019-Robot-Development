@@ -1,8 +1,8 @@
-package frc.robot.vision;
+package frc.vision;
 
 import com.esotericsoftware.jsonbeans.Json;
 
-import frc.robot.network.RaspberryPiReceiver;
+import frc.network.RaspberryPiReceiver;
 
 public class Vision
 {	

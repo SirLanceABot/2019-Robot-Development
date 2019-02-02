@@ -1,4 +1,4 @@
-package frc.robot.network;
+package frc.network;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

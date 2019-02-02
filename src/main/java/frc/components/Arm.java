@@ -5,13 +5,13 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.components;
+package frc.components;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import frc.robot.control.DriverXbox;
-import frc.robot.control.OperatorXbox;
-import frc.robot.control.Xbox;
+import frc.control.DriverXbox;
+import frc.control.OperatorXbox;
+import frc.control.Xbox;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 

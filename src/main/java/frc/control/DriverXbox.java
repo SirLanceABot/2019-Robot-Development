@@ -1,4 +1,4 @@
-package frc.robot.control;
+package frc.control;
 
 public class DriverXbox extends Xbox
 {

@@ -1,4 +1,4 @@
-package frc.robot.vision;
+package frc.vision;
 
 import java.util.HashMap;
 
