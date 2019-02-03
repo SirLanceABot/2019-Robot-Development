@@ -29,15 +29,15 @@ public class ButtonBoard extends Joystick
     public static class Constants
     {        
         public static final int FLOOR_BUTTON = 1;
-        public static final int CARGO_SHIP_PORT_BUTTON = 2;
+        public static final int CARGO_SHIP_CARGO_BUTTON = 2;
 
         public static final int BOTTOM_HATCH_BUTTON = 3;
         public static final int CENTER_HATCH_BUTTON = 4;
         public static final int TOP_HATCH_BUTTON = 5;
 
-        public static final int BOTTOM_PORT_BUTTON = 6;
-        public static final int CENTER_PORT_BUTTON = 7;
-        public static final int TOP_PORT_BUTTON = 8;
+        public static final int BOTTOM_CARGO_BUTTON = 6;
+        public static final int CENTER_CARGO_BUTTON = 7;
+        public static final int TOP_CARGO_BUTTON = 8;
         
         public static final int SLOW_SPEED_BUTTON = 9;
         public static final int FAST_SPEED_BUTTON = 10;

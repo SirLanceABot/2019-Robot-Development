@@ -9,21 +9,22 @@ package frc.robot;
 
 import frc.components.Arm;
 import frc.components.Elevator;
-import frc.control.OperatorXbox;
+import frc.control.DriverXbox;
 import frc.control.ButtonBoard;
 
 /**
  * Add your docs here.
  */
 public class Teleop 
-{
-    
-    private static Arm arm = Arm.getInstance();
-    private static Elevator elevator = Elevator.getInstance();
+{    
+    private Arm arm = Arm.getInstance();
+    private Elevator elevator = Elevator.getInstance();
+
+    private DriverXbox driverXbox = DriverXbox.getInstance();
+    private ButtonBoard buttonBoard = ButtonBoard.getInstance();
 
     private static Teleop instance = new Teleop();
-    OperatorXbox operatorXbox = OperatorXbox.getInstance();
-    ButtonBoard buttonBoard = ButtonBoard.getInstance();
+    
 
     private Teleop()
     {
@@ -37,69 +38,69 @@ public class Teleop
 
     public void teleop()
     {     
-        boolean cargoInButton = operatorXbox.getRawButton(9);
-        boolean cargoOutButton = operatorXbox.getRawButton(10);
+        boolean cargoInButton = driverXbox.getRawButton(9);
+        boolean cargoOutButton = driverXbox.getRawButton(10);
 
-        boolean floorButton = buttonBoard.getRawButton(ButtonBoard.Constants.FLOOR_BUTTON);
-        boolean cargoShipPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.CARGO_SHIP_PORT_BUTTON);
+        boolean floorButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.FLOOR_BUTTON);
+        boolean cargoShipPortButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CARGO_SHIP_CARGO_BUTTON);
 
-        boolean bottomHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.BOTTOM_HATCH_BUTTON);
-        boolean centerHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.CENTER_HATCH_BUTTON);
-        boolean topHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.TOP_HATCH_BUTTON);
+        boolean bottomHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.BOTTOM_HATCH_BUTTON);
+        boolean centerHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_HATCH_BUTTON);
+        boolean topHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_HATCH_BUTTON);
 
-        boolean bottomPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.BOTTOM_PORT_BUTTON);
-        boolean centerPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.CENTER_PORT_BUTTON);
-        boolean topPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.TOP_PORT_BUTTON);
+        boolean bottomCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.BOTTOM_CARGO_BUTTON);
+        boolean centerCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_CARGO_BUTTON);
+        boolean topCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_CARGO_BUTTON);
         
         
         if(floorButton)
         {
-            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kFloorPanel);
+            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kFloor);
             arm.moveWristDown();
             arm.moveArmDown();
         }
 
         else if(cargoShipPortButton)
         {
-            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kFloorCargo);
-            arm.moveWristUp();
+            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kCargoShipCargo);
+            arm.moveWristDown();
             arm.moveArmDown();
         }
         else if(bottomHatchButton)
         {
             elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kBottomHatch);
-            arm.moveWristDown();
+            arm.moveWristUp();
             arm.moveArmDown();
         }
         else if(centerHatchButton)
         {
             elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kCenterHatch);
-            arm.moveWristDown();
+            arm.moveWristUp();
             arm.moveArmDown();
         }
         else if(topHatchButton)
         {
             elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kTopHatch);
+            arm.moveWristUp();
+            arm.moveArmDown();
+        }
+        else if(bottomCargoButton)
+        {
+            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kBottomCargo);
             arm.moveWristDown();
-            arm.moveArmUp();
-        }
-        else if(bottomPortButton)
-        {
-            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kBottomPort);
-            arm.moveWristUp();
             arm.moveArmDown();
         }
-        else if(centerPortButton)
+        else if(centerCargoButton)
         {
-            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kBottomPort);
-            arm.moveWristUp();
+            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kCenterCargo);
+            arm.moveWristDown();
             arm.moveArmDown();
         }
-        else if(topPortButton)
+        else if(topCargoButton)
         {
-            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kTopPort);
-            arm.moveWristUp();
-            arm.moveArmUp();
+            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kTopCargo);
+            arm.moveWristDown();
+            arm.moveArmDown();
         }
 
         elevator.moveTo();

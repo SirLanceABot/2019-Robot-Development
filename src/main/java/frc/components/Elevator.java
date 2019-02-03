@@ -8,9 +8,6 @@
 package frc.components;
 
 import frc.components.Elevator.Constants.ElevatorPosition;
-import frc.control.DriverXbox;
-import frc.control.OperatorXbox;
-import frc.control.Xbox;
 import frc.control.ButtonBoard;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
@@ -24,21 +21,7 @@ public class Elevator
     private WPI_TalonSRX masterElevatorMotor = new WPI_TalonSRX(Constants.MASTER_ELEVATOR_MOTOR_PORT);
     private VictorSPX slaveElevatorMotor = new WPI_VictorSPX(Constants.SLAVE_ELEVATOR_MOTOR_PORT);
 
-    private OperatorXbox operatorXbox = OperatorXbox.getInstance();
     private ButtonBoard buttonBoard = ButtonBoard.getInstance();
-    
-    private boolean floorPanelButton;
-    private boolean cargoShipPort;
-
-    private boolean bottomHatchButton;
-    private boolean centerHatchButton;
-    private boolean topHatchButton;
-
-    private boolean bottomPortButton;
-    private boolean centerPortButton;
-    private boolean topPortButton;
-
-    private double yAxis;
 
     private boolean isMoving = false;
     private Constants.ElevatorPosition targetPosition = Constants.ElevatorPosition.kNone;
@@ -54,13 +37,20 @@ public class Elevator
     private Elevator()
 	{
         masterElevatorMotor.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.Analog, 0, 0);
-        slaveElevatorMotor.follow(masterElevatorMotor);
 
         masterElevatorMotor.configReverseSoftLimitThreshold(Constants.ElevatorPosition.kMinHeight.position, 0);
         masterElevatorMotor.configForwardSoftLimitThreshold(Constants.ElevatorPosition.kMaxHeight.position, 0);
         
         masterElevatorMotor.configForwardSoftLimitEnable(true, 0);
-		masterElevatorMotor.configReverseSoftLimitEnable(true, 0);
+        masterElevatorMotor.configReverseSoftLimitEnable(true, 0);
+
+        masterElevatorMotor.configPeakCurrentLimit(Constants.PEAK_CURRENT_LIMIT);
+        masterElevatorMotor.configPeakCurrentDuration(Constants.PEAK_CURRENT_DURATION);
+        masterElevatorMotor.configContinuousCurrentLimit(Constants.CONTINOUS_CURRENT_LIMIT);
+        masterElevatorMotor.configOpenloopRamp(Constants.OPEN_LOOP_RAMP);
+        masterElevatorMotor.enableCurrentLimit(true);
+        
+        slaveElevatorMotor.follow(masterElevatorMotor);
     }
 
     public void raiseElevator()
@@ -83,6 +73,10 @@ public class Elevator
 		return masterElevatorMotor.getSelectedSensorPosition(0);
     }
 
+    public boolean isMoving()
+    {
+        return isMoving;
+    }
     public void setTargetPosition(ElevatorPosition targetPosition)
     {
         this.targetPosition = targetPosition;
@@ -125,26 +119,26 @@ public class Elevator
     public void teleop()
     {
         boolean floorButton = buttonBoard.getRawButton(ButtonBoard.Constants.FLOOR_BUTTON);
-        boolean cargoShipPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.CARGO_SHIP_PORT_BUTTON);
+        boolean cargoShipCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.CARGO_SHIP_CARGO_BUTTON);
 
         boolean bottomHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.BOTTOM_HATCH_BUTTON);
         boolean centerHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.CENTER_HATCH_BUTTON);
         boolean topHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.TOP_HATCH_BUTTON);
 
-        boolean bottomPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.BOTTOM_PORT_BUTTON);
-        boolean centerPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.CENTER_PORT_BUTTON);
-        boolean topPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.TOP_PORT_BUTTON);
+        boolean bottomCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.BOTTOM_CARGO_BUTTON);
+        boolean centerCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.CENTER_CARGO_BUTTON);
+        boolean topCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.TOP_CARGO_BUTTON);
 
        // yAxis = -operatorXbox.getRawAxis(1);
 
 
         if(floorButton)
         {
-            targetPosition = ElevatorPosition.kFloorPanel;
+            targetPosition = ElevatorPosition.kFloor;
         }
-        else if(cargoShipPortButton)
+        else if(cargoShipCargoButton)
         {
-            targetPosition = ElevatorPosition.kFloorCargo;
+            targetPosition = ElevatorPosition.kCargoShipCargo;
         }
         else if(bottomHatchButton)
         {
@@ -158,17 +152,17 @@ public class Elevator
         {
             targetPosition = ElevatorPosition.kTopHatch;
         }
-        else if(bottomPortButton)
+        else if(bottomCargoButton)
         {
-            targetPosition = ElevatorPosition.kBottomPort;
+            targetPosition = ElevatorPosition.kBottomCargo;
         }
-        else if(centerPortButton)
+        else if(centerCargoButton)
         {
-            targetPosition = ElevatorPosition.kCenterPort;
+            targetPosition = ElevatorPosition.kCenterCargo;
         }
-        else if(topPortButton)
+        else if(topCargoButton)
         {
-            targetPosition = ElevatorPosition.kTopPort;
+            targetPosition = ElevatorPosition.kTopCargo;
         }
 
         moveTo();
@@ -196,23 +190,22 @@ public class Elevator
 		{
             kMinHeight(0, "Min Height"),
             kMaxHeight(60, "Max Height"),
-            kFloorPanel(5, "Floor Panel"),
-            kFloorCargo(5, "Floor Cargo"),
-            kCargoShipPort(15, "Cargo Ship Port"),
+            kFloor(5, "Floor"),
+            kCargoShipCargo(15, "Cargo Ship Cargo"),
             kThreshold(5, "Threshold"),
 
             kBottomHatch(10, "Bottom Hatch"),      // 1 ft 7 inches to center
             kCenterHatch(30, "Center Hatch"),      // 3 ft 11 inches to center
             kTopHatch(50, "Top Hatch"),         // 6 ft 3 inches to center
 
-            kBottomPort(20, "Bottom Port"),       // 2 ft 3.5 inches to center
-            kCenterPort(40, "Center Port"),       // 4 ft 7.5 inches to center
-            kTopPort(60, "Top Port"),          // 6 ft 11.5 inches to center
+            kBottomCargo(20, "Bottom Cargo"),       // 2 ft 3.5 inches to center
+            kCenterCargo(40, "Center Cargo"),       // 4 ft 7.5 inches to center
+            kTopCargo(60, "Top Cargo"),          // 6 ft 11.5 inches to center
             kNone(-1, "None");
 
             
             private final int position;
-            private String name;
+            private final String name;
 
             private ElevatorPosition(int value, String name)
             {
@@ -220,6 +213,7 @@ public class Elevator
                 this.name = name;
             }
 
+            @Override
             public String toString()
             {
                 return name;
@@ -230,6 +224,11 @@ public class Elevator
         public static final int MASTER_ELEVATOR_MOTOR_PORT = 0;
         public static final int SLAVE_ELEVATOR_MOTOR_PORT = 0;
 
-        public static final double ELEVATOR_SPEED = 1.0;
+        public static final double ELEVATOR_SPEED = 0.25;
+
+        public static final int PEAK_CURRENT_LIMIT = 20;        // In Amps
+        public static final int PEAK_CURRENT_DURATION = 250;    // In milliseconds
+        public static final int CONTINOUS_CURRENT_LIMIT = 20;   // In Amps
+        public static final double OPEN_LOOP_RAMP = 0.05;       // IN seconds
     }
 }

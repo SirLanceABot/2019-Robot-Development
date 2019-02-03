@@ -10,8 +10,8 @@ package frc.components;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import frc.control.DriverXbox;
-import frc.control.OperatorXbox;
 import frc.control.Xbox;
+import frc.control.ButtonBoard;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
@@ -27,19 +27,20 @@ public class Arm
     private DoubleSolenoid grabberSolenoid = new DoubleSolenoid(Constants.GRABBER_SOLENOID_PORT_1,
             Constants.GRABBER_SOLENOID_PORT_2);
 
-    private WPI_TalonSRX horizontalRoller = new WPI_TalonSRX(Constants.ROLLER_TALON_ID);
-    private WPI_VictorSPX horizontalRollerSlave = new WPI_VictorSPX(Constants.ROLLER_VICTOR_ID);
+    private WPI_TalonSRX masterIntakeRoller = new WPI_TalonSRX(Constants.ROLLER_TALON_ID);
+    private WPI_VictorSPX slaveIntakeRoller = new WPI_VictorSPX(Constants.ROLLER_VICTOR_ID);
     private boolean armPosition; // true is up false is down
     private boolean wristPosition; // true is up false is down
     private boolean hatchPanelPosition; // true for expanded false for contracted
 
-    private static OperatorXbox operatorXbox = OperatorXbox.getInstance();
+    private static DriverXbox driverXbox = DriverXbox.getInstance();
+    private static ButtonBoard buttonBoard = ButtonBoard.getInstance();
 
     private static Arm instance = new Arm();
 
     private Arm()
     {
-        horizontalRollerSlave.follow(horizontalRoller);
+        slaveIntakeRoller.follow(masterIntakeRoller);
 
     }
 
@@ -90,27 +91,27 @@ public class Arm
     public void intakeCargo(double speed)
     {
         speed = Math.abs(speed);
-        horizontalRoller.set(speed);
+        masterIntakeRoller.set(speed);
     }
 
     public void ejectCargo(double speed)
     {
         speed = -Math.abs(speed);
-        horizontalRoller.set(speed);
+        masterIntakeRoller.set(speed);
     }
 
     public void stopCargo()
     {
-        horizontalRoller.set(0);
+        masterIntakeRoller.set(0);
     }
 
-    public void expandHatchPanelPlug()
+    public void grabHatchPanel()
     {
         grabberSolenoid.set(Value.kForward);
         hatchPanelPosition = true;
     }
 
-    public void contractHatchPanelPlug()
+    public void releaseHatchPanel()
     {
         grabberSolenoid.set(Value.kReverse);
         hatchPanelPosition = false;
@@ -118,58 +119,85 @@ public class Arm
 
     public void teleop()
     {
-        boolean armButton = operatorXbox.getRawButton(Constants.ARM_BUTTON_ID);
-        boolean wristButton = operatorXbox.getRawButton(Constants.WRIST_BUTTON_ID);
-        boolean cargoInButton = operatorXbox.getRawButton(Constants.CARGO_BUTTON_IN_ID);
-        boolean cargoOutButton = operatorXbox.getRawButton(Constants.CARGO_BUTTON_OUT_ID);
-        boolean hatchPanelButton = operatorXbox.getRawButton(Constants.WRIST_BUTTON_ID);
+        boolean floorButton = buttonBoard.getRawButton(ButtonBoard.Constants.FLOOR_BUTTON);
+        boolean cargoShipCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.CARGO_SHIP_CARGO_BUTTON);
 
-        if (armButton)
+        boolean bottomHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.BOTTOM_HATCH_BUTTON);
+        boolean centerHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.CENTER_HATCH_BUTTON);
+        boolean topHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.TOP_HATCH_BUTTON);
+
+        boolean bottomCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.BOTTOM_CARGO_BUTTON);
+        boolean centerCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.CENTER_CARGO_BUTTON);
+        boolean topCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.TOP_CARGO_BUTTON);
+
+        boolean hatchPanelButton = driverXbox.getRawButton(Xbox.Constants.A_BUTTON);
+        boolean cargoInButton = driverXbox.getRawButton(Xbox.Constants.LEFT_BUMPER);
+        boolean cargoOutButton = driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER);
+
+        if(floorButton)
         {
-            if (getArmPosition() == true)
-            {
-                moveArmDown();
-            }
-            else
-            {
-                moveArmUp();
-            }
+            moveWristDown();
+            moveArmDown();
         }
 
-        if (wristButton)
+        else if(cargoShipCargoButton)
         {
-            if (getWristPosition() == true)
-            {
-                moveWristDown();
-            }
-            else
-            {
-                moveWristUp();
-            }
+            moveWristUp();
+            moveArmDown();
         }
+        else if(bottomHatchButton)
+        {
+            moveWristDown();
+            moveArmDown();
+        }
+        else if(centerHatchButton)
+        {
+            moveWristDown();
+            moveArmDown();
+        }
+        else if(topHatchButton)
+        {
+            moveWristDown();
+            moveArmUp();
+        }
+        else if(bottomCargoButton)
+        {
+            moveWristUp();
+            moveArmDown();
+        }
+        else if(centerCargoButton)
+        {
+            moveWristUp();
+            moveArmDown();
+        }
+        else if(topCargoButton)
+        {
+            moveWristUp();
+            moveArmUp();
+        }
+
 
         if (hatchPanelButton)
         {
             if (getHatchPanelPosition() == true)
             {
-                contractHatchPanelPlug();
+                releaseHatchPanel();
             }
             else
             {
-                expandHatchPanelPlug();
+                grabHatchPanel();
             }
         }
+
 
         if (cargoInButton)
         {
             ejectCargo(0.5);
         }
-
         else if (cargoOutButton)
         {
             intakeCargo(0.5);
         }
-
         else
         {
             stopCargo();
@@ -186,6 +214,46 @@ public class Arm
 
     public static class Constants
     {
+        public static enum ArmPosition
+        {
+
+        }
+        public static enum WristPosition
+        {
+
+        }
+        public static enum Position
+		{
+            kFloorPanel(Value.kReverse, Value.kReverse, "Floor Panel"),
+            kFloorCargo(Value.kForward, Value.kReverse, "Floor Cargo"),
+            kCargoShipCargo(Value.kReverse, Value.kReverse, "Cargo Ship Cargo"),
+
+            kBottomHatch(Value.kReverse, Value.kReverse, "Bottom Hatch"),      // 1 ft 7 inches to center
+            kCenterHatch(Value.kReverse, Value.kReverse, "Center Hatch"),      // 3 ft 11 inches to center
+            kTopHatch(Value.kReverse, Value.kForward, "Top Hatch"),         // 6 ft 3 inches to center
+
+            kBottomCargo(Value.kForward, Value.kForward, "Bottom Cargo"),       // 2 ft 3.5 inches to center
+            kCenterCargo(Value.kForward, Value.kForward, "Center Cargo"),       // 4 ft 7.5 inches to center
+            kTopCargo(Value.kForward, Value.kForward, "Top Cargo");          // 6 ft 11.5 inches to center
+
+            private final DoubleSolenoid.Value armValue;
+            private final DoubleSolenoid.Value wristValue;
+            private final String name;
+
+            private Position(DoubleSolenoid.Value wristValue, DoubleSolenoid.Value armValue, String name)
+            {
+                this.wristValue = wristValue;
+                this.armValue = armValue;
+                this.name = name;
+            }
+
+            @Override
+            public String toString()
+            {
+                return name;
+            }
+        }
+
         public static final int ARM_SOLENOID_PORT_1 = 0;
         public static final int ARM_SOLENOID_PORT_2 = 1;
         public static final int WRIST_SOLENOID_PORT_1 = 2;
@@ -194,11 +262,6 @@ public class Arm
         public static final int GRABBER_SOLENOID_PORT_2 = 5;
         public static final int ROLLER_TALON_ID = 10;
         public static final int ROLLER_VICTOR_ID = 11;
-        public static final int ARM_BUTTON_ID = 0;
-        public static final int WRIST_BUTTON_ID = 0;
-        public static final int CARGO_BUTTON_IN_ID = 0;
-        public static final int CARGO_BUTTON_OUT_ID = 0;
-        public static final int HATCH_PANEL_BUTTON_ID = 0;
     }
 
 }
