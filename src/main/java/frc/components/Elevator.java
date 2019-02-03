@@ -183,6 +183,7 @@ public class Elevator
 
     }
 
+    @Override
     public String toString()
     {
         return String.format("Pot Value: %d    Target Position: %d    Elevator Current: %.2f", getPotValue(), targetPosition.position, masterElevatorMotor.getOutputCurrent());

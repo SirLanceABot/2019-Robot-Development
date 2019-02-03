@@ -16,7 +16,6 @@ import com.revrobotics.CANSparkMaxLowLevel;
 // import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 // import com.revrobotics.CANEncoder;
 
-
 import com.kauailabs.navx.frc.AHRS;
 
 /**
@@ -27,21 +26,25 @@ import com.kauailabs.navx.frc.AHRS;
  */
 public class Drivetrain extends MecanumDrive
 {
-    private DriverXbox driverXbox = DriverXbox.getInstance();
+	private DriverXbox driverXbox = DriverXbox.getInstance();
 
-    private double previousNavXValue = 999.999;
+	private double previousNavXValue = 999.999;
 	private boolean abortAutonomous = false;
 
-    private static CANSparkMax frontRightMotor = new CANSparkMax(Constants.FRONT_RIGHT_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
-    private static CANSparkMax frontLeftMotor = new CANSparkMax(Constants.FRONT_LEFT_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
-    private static CANSparkMax backRightMotor = new CANSparkMax(Constants.BACK_RIGHT_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
-    private static CANSparkMax backLeftMotor = new CANSparkMax(Constants.BACK_LEFT_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
+	private static CANSparkMax frontRightMotor = new CANSparkMax(Constants.FRONT_RIGHT_MOTOR_PORT,
+			CANSparkMaxLowLevel.MotorType.kBrushless);
+	private static CANSparkMax frontLeftMotor = new CANSparkMax(Constants.FRONT_LEFT_MOTOR_PORT,
+			CANSparkMaxLowLevel.MotorType.kBrushless);
+	private static CANSparkMax backRightMotor = new CANSparkMax(Constants.BACK_RIGHT_MOTOR_PORT,
+			CANSparkMaxLowLevel.MotorType.kBrushless);
+	private static CANSparkMax backLeftMotor = new CANSparkMax(Constants.BACK_LEFT_MOTOR_PORT,
+			CANSparkMaxLowLevel.MotorType.kBrushless);
 
-    private AHRS navX = new AHRS(I2C.Port.kMXP);
+	private AHRS navX = new AHRS(I2C.Port.kMXP);
 
-    private Encoder omniWheelEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
+	private Encoder omniWheelEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
 
-    private Timer startUpTimer = new Timer();
+	private Timer startUpTimer = new Timer();
 	private Timer t = new Timer();
 	private Timer timer = new Timer();
 
@@ -49,123 +52,126 @@ public class Drivetrain extends MecanumDrive
 	private boolean doResetTimer = true;
 	private boolean isTimerDone = false;
 
-    private static Drivetrain instance = new Drivetrain();
+	private static Drivetrain instance = new Drivetrain();
 
-    // constructor for drivetrain class
-    private Drivetrain()
-    {
-        super(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
-
-        frontRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
-        //frontRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
-        frontRightMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
-
-        frontLeftMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
-        //frontLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
-        frontLeftMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
-
-        backRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
-        //backRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
-        backRightMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
-
-        backLeftMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
-        //backLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
-        backLeftMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
-
-        navX.reset();
-    }
-
-    public static Drivetrain getInstance()
-    {
-        return instance;
-    }
-
-    /**
-     * Gets the distance the robot has driven converted to inches.
-     * @return Distance traveled.
-     */
-	public double getEncoderDistance()
+	// constructor for drivetrain class
+	private Drivetrain()
 	{
-        return omniWheelEncoder.getRaw() / 135.0;
+		super(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
+
+		frontRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
+		// frontRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
+		frontRightMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
+
+		frontLeftMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
+		// frontLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
+		frontLeftMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
+
+		backRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
+		// backRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
+		backRightMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
+
+		backLeftMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
+		// backLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
+		backLeftMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
+
+		navX.reset();
 	}
 
-    // main loop for teleop mode
-    public void teleop()
-    {
-        double rightXAxis = driverXbox.getRawAxis(Xbox.Constants.RIGHT_STICK_X_AXIS);
-        double leftXAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_X_AXIS);
-        double leftYAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_Y_AXIS);
+	public static Drivetrain getInstance()
+	{
+		return instance;
+	}
 
-        if (driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER))
-        {
-            if (Math.abs(navX.getYaw()) <= 135 && Math.abs(navX.getYaw()) >= 45)
-            {
-                this.driveCartesian(-leftXAxis, -leftYAxis, rightXAxis, navX.getYaw());
-            }
-            else
-            {
-                this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, navX.getYaw());
-            }
+	/**
+	 * Gets the distance the robot has driven converted to inches.
+	 * 
+	 * @return Distance traveled.
+	 */
+	public double getEncoderDistance()
+	{
+		return omniWheelEncoder.getRaw() / 135.0;
+	}
 
-            System.out.println(navX.getAngle() + ", " + navX.getYaw());
-        }
-        else
-        {
-            this.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
-        }
+	// main loop for teleop mode
+	public void teleop()
+	{
+		double rightXAxis = driverXbox.getRawAxis(Xbox.Constants.RIGHT_STICK_X_AXIS);
+		double leftXAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_X_AXIS);
+		double leftYAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_Y_AXIS);
 
-        System.out.println(toString());
-    }
+		if (driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER))
+		{
+			if (Math.abs(navX.getYaw()) <= 135 && Math.abs(navX.getYaw()) >= 45)
+			{
+				this.driveCartesian(-leftXAxis, -leftYAxis, rightXAxis, navX.getYaw());
+			}
+			else
+			{
+				this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, navX.getYaw());
+			}
 
-    /**
+			System.out.println(navX.getAngle() + ", " + navX.getYaw());
+		}
+		else
+		{
+			this.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
+		}
+
+		System.out.println(toString());
+	}
+
+	/**
 	 * Drive the distance passed into the method.
+	 * 
 	 * @return If the robot has completed the drive.
 	 */
 	public boolean driveDistance(int inches, double maxSpeed, int heading, int stoppingDistance)
 	{
-        boolean isDoneDriving = false;
-        double distanceTravelled = Math.abs(getEncoderDistance());
-        double startingSpeed = 0.3;
+		boolean isDoneDriving = false;
+		double distanceTravelled = Math.abs(getEncoderDistance());
+		double startingSpeed = 0.3;
 		double stoppingSpeed = 0.175;
 		int startingDistance = 12;
-        int direction = 1;
-        double rotate = (navX.getYaw() - heading) / 50;
+		int direction = 1;
+		double rotate = (navX.getYaw() - heading) / 50;
 
-        if(maxSpeed < 0)
+		if (maxSpeed < 0)
 		{
 			direction = -1;
-        }
-        
-        if(distanceTravelled <= inches)
-        {
-            if(distanceTravelled <= startingDistance) 
-            {
-            driveCartesian(0, ((maxSpeed - (startingSpeed * direction)) / startingDistance) * distanceTravelled + (startingSpeed * direction), -rotate);
-            }
-            else if(distanceTravelled >= startingDistance && distanceTravelled <= inches - stoppingDistance)
-            {
-                driveCartesian(0, maxSpeed, -rotate);
-            }
-            else
-            {
-                driveCartesian(0, stoppingSpeed * direction, -rotate);
-            }
-        }
-        else
-        {
-            driveCartesian(0, 0, 0);
+		}
+
+		if (distanceTravelled <= inches)
+		{
+			if (distanceTravelled <= startingDistance)
+			{
+				driveCartesian(0, ((maxSpeed - (startingSpeed * direction)) / startingDistance) * distanceTravelled
+						+ (startingSpeed * direction), -rotate);
+			}
+			else if (distanceTravelled >= startingDistance && distanceTravelled <= inches - stoppingDistance)
+			{
+				driveCartesian(0, maxSpeed, -rotate);
+			}
+			else
+			{
+				driveCartesian(0, stoppingSpeed * direction, -rotate);
+			}
+		}
+		else
+		{
+			driveCartesian(0, 0, 0);
 			isDoneDriving = true;
-        }
+		}
 
-        return isDoneDriving;
-    }
+		return isDoneDriving;
+	}
 
-    public boolean driveSeconds(double speed, double time, int heading)
+	public boolean driveSeconds(double speed, double time, int heading)
 	{
 		isTimerDone = false;
 		double rotate = (navX.getYaw() - heading) / 50;
 
-		if(doResetTimer)
+		if (doResetTimer)
 		{
 			t.stop();
 			t.reset();
@@ -173,7 +179,7 @@ public class Drivetrain extends MecanumDrive
 			doResetTimer = false;
 		}
 
-		if(t.get() <= time)
+		if (t.get() <= time)
 		{
 			driveCartesian(0, speed, -rotate);
 		}
@@ -184,10 +190,11 @@ public class Drivetrain extends MecanumDrive
 			doResetTimer = true;
 		}
 		return isTimerDone;
-    }
-    
-    /**
+	}
+
+	/**
 	 * Strafe perpendicular to robot. 0 degrees is North.
+	 * 
 	 * @return If the robot has completed the strafe.
 	 */
 	public boolean strafeSeconds(double time, double strafeSpeed, double heading)
@@ -195,18 +202,18 @@ public class Drivetrain extends MecanumDrive
 		boolean isTimerDone = false;
 		double rotate = (navX.getYaw() - heading) / 50;
 
-		if(doResetTimer)
+		if (doResetTimer)
 		{
 			t.stop();
 			t.reset();
 			t.start();
 		}
 
-		if(strafeSpeed > 0 && t.get() < time)
+		if (strafeSpeed > 0 && t.get() < time)
 		{
 			driveCartesian(strafeSpeed, 0, rotate);
 		}
-		else if(strafeSpeed < 0 && t.get() < time)
+		else if (strafeSpeed < 0 && t.get() < time)
 		{
 			driveCartesian(-strafeSpeed, 0, rotate);
 		}
@@ -222,6 +229,7 @@ public class Drivetrain extends MecanumDrive
 
 	/**
 	 * Strafe at a specific angle. 0 degrees is North
+	 * 
 	 * @return If the robot has completed the strafe.
 	 */
 	public boolean strafeDistanceAtAngle(int inches, double angle, double speed, int heading)
@@ -232,17 +240,17 @@ public class Drivetrain extends MecanumDrive
 		double strafeSpeed = Math.sin(Math.abs(angle)) * speed;
 		double forwardSpeed = Math.cos(Math.abs(angle)) * speed;
 
-		if(angle < 0)
+		if (angle < 0)
 		{
 			strafeSpeed *= -1;
 		}
 
-		if(speed < 0)
+		if (speed < 0)
 		{
 			forwardSpeed *= -1;
 		}
 
-		if(x < inches)
+		if (x < inches)
 		{
 			driveCartesian(strafeSpeed, forwardSpeed, rotate);
 		}
@@ -255,18 +263,19 @@ public class Drivetrain extends MecanumDrive
 		return isDoneDriving;
 	}
 
-     /**
-     * Method to return whether the robot should abort autonomous.
-     * @return Whether to abort autonomous or not.
-     */
+	/**
+	 * Method to return whether the robot should abort autonomous.
+	 * 
+	 * @return Whether to abort autonomous or not.
+	 */
 	public boolean abortAutonomous()
 	{
 		return abortAutonomous;
 	}
 
-    /**
-     * Restart the timer.
-     */
+	/**
+	 * Restart the timer.
+	 */
 	public void restartTimer()
 	{
 		timer.stop();
@@ -274,85 +283,86 @@ public class Drivetrain extends MecanumDrive
 		timer.start();
 	}
 
-    public boolean spinToBearing(int bearing, double speed)
+	public boolean spinToBearing(int bearing, double speed)
 	{
-        boolean doneSpinning = false;
-        boolean spin = true;
+		boolean doneSpinning = false;
+		boolean spin = true;
 
-        double heading = navX.getYaw();
-			
-			if(doRestartSpinTimer)
+		double heading = navX.getYaw();
+
+		if (doRestartSpinTimer)
+		{
+			restartTimer();
+			doRestartSpinTimer = false;
+		}
+
+		if (timer.get() >= 0.2)
+		{
+			if (previousNavXValue == heading)
+			{
+				spin = false;
+			}
+			else
 			{
 				restartTimer();
-				doRestartSpinTimer = false;
+				previousNavXValue = heading;
 			}
-			
-			if(timer.get() >= 0.2)
+		}
+		else
+		{
+			spin = true;
+		}
+
+		if (spin)
+		{
+
+			int threshold = 20;
+			if (bearing - heading > 0)
 			{
-				if(previousNavXValue == heading)
-				{
-					spin = false;
-				}
-				else
-				{
-					restartTimer();
-					previousNavXValue = heading;
-				}
+				speed *= -1;
+			}
+
+			if (Math.abs(bearing - heading) >= threshold)
+			{
+				driveCartesian(0, 0, -speed);
 			}
 			else
 			{
-				spin = true;
-			}
-
-			if(spin)
-			{
-
-				int threshold = 20;
-				if(bearing - heading > 0)
-				{
-					speed *= -1;
-				}
-
-				if(Math.abs(bearing - heading) >= threshold)
-				{
-					driveCartesian(0, 0, -speed);
-				}
-				else
-				{
-					driveCartesian(0, 0, 0);
-					doneSpinning = true;
-				}
-			}
-			else
-			{
-				abortAutonomous = true;
-				System.out.println("\nNAVX REPEATED VALUES.\n");
 				driveCartesian(0, 0, 0);
+				doneSpinning = true;
 			}
+		}
+		else
+		{
+			abortAutonomous = true;
+			System.out.println("\nNAVX REPEATED VALUES.\n");
+			driveCartesian(0, 0, 0);
+		}
 
+		return doneSpinning;
+	}
 
-        return doneSpinning;
-    }
+	@Override
+	public String toString()
+	{
+		return String.format("Enc: %.2f, FRC: %.2f, FLC: %.2f, BRC: %.2f, BLC: %.2f, Yaw: %.2f", getEncoderDistance(),
+				frontRightMotor.getOutputCurrent(), frontLeftMotor.getOutputCurrent(),
+				backRightMotor.getOutputCurrent(), backLeftMotor.getOutputCurrent(), navX.getYaw());
+	}
 
-    public String toString()
-    {
-        return String.format("Enc: %.2f, FRC: %.2f, FLC: %.2f, BRC: %.2f, BLC: %.2f, Yaw: %.2f", 
-        getEncoderDistance(), frontRightMotor.getOutputCurrent(), frontLeftMotor.getOutputCurrent(), backRightMotor.getOutputCurrent(), backLeftMotor.getOutputCurrent(), navX.getYaw());
-    }
+	public static class Constants
+	{
+		public static final int FRONT_RIGHT_MOTOR_PORT = 0;
+		public static final int FRONT_LEFT_MOTOR_PORT = 1;
+		public static final int BACK_RIGHT_MOTOR_PORT = 3;
+		public static final int BACK_LEFT_MOTOR_PORT = 2;
 
-    public static class Constants
-    {
-        public static final int FRONT_RIGHT_MOTOR_PORT = 0;
-        public static final int FRONT_LEFT_MOTOR_PORT = 1;
-        public static final int BACK_RIGHT_MOTOR_PORT = 3;
-        public static final int BACK_LEFT_MOTOR_PORT = 2;
-
-        public static final int PRIMARY_MOTOR_CURRENT_LIMIT = 35;
-        public static final int SECONDARY_MOTOR_CURRENT_LIMIT = 45;
+		public static final int PRIMARY_MOTOR_CURRENT_LIMIT = 35;
+		public static final int SECONDARY_MOTOR_CURRENT_LIMIT = 45;
 
 		public static final double DRIVE_RAMP_TIME = 0.10;
 
 		public static final int SERVO_PORT = 0;
 
-    }
+	}
 }

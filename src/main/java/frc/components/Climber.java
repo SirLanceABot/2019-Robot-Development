@@ -89,7 +89,11 @@ public class Climber
     }
 
 
-    
+    @Override
+    public String toString()
+    {
+        return String.format("Write this toString");
+    }
 
 
     public static class Constants

@@ -15,23 +15,25 @@ import frc.control.Xbox;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
-
-
 /**
  * Add your docs here.
  */
-public class Arm {
-    private DoubleSolenoid armSolenoid = new DoubleSolenoid(Constants.ARM_SOLENOID_PORT_1, Constants.ARM_SOLENOID_PORT_2);
-    private DoubleSolenoid wristSolenoid = new DoubleSolenoid(Constants.WRIST_SOLENOID_PORT_1,Constants.WRIST_SOLENOID_PORT_2);
-    private DoubleSolenoid grabberSolenoid = new DoubleSolenoid(Constants.GRABBER_SOLENOID_PORT_1, Constants.GRABBER_SOLENOID_PORT_2);
-    
-    private WPI_TalonSRX horizontalRoller = new WPI_TalonSRX(Constants.ROLLER_TALON_ID); 
-    private WPI_VictorSPX horizontalRollerSlave = new WPI_VictorSPX(Constants.ROLLER_VICTOR_ID); 
-    private boolean armPosition; //true is up false is down
-    private boolean wristPosition; //true is up false is down
-    private boolean hatchPanelPosition; //true for expanded false for contracted
+public class Arm
+{
+    private DoubleSolenoid armSolenoid = new DoubleSolenoid(Constants.ARM_SOLENOID_PORT_1,
+            Constants.ARM_SOLENOID_PORT_2);
+    private DoubleSolenoid wristSolenoid = new DoubleSolenoid(Constants.WRIST_SOLENOID_PORT_1,
+            Constants.WRIST_SOLENOID_PORT_2);
+    private DoubleSolenoid grabberSolenoid = new DoubleSolenoid(Constants.GRABBER_SOLENOID_PORT_1,
+            Constants.GRABBER_SOLENOID_PORT_2);
 
-    private static DriverXbox controller = DriverXbox.getInstance();
+    private WPI_TalonSRX horizontalRoller = new WPI_TalonSRX(Constants.ROLLER_TALON_ID);
+    private WPI_VictorSPX horizontalRollerSlave = new WPI_VictorSPX(Constants.ROLLER_VICTOR_ID);
+    private boolean armPosition; // true is up false is down
+    private boolean wristPosition; // true is up false is down
+    private boolean hatchPanelPosition; // true for expanded false for contracted
+
+    private static OperatorXbox operatorXbox = OperatorXbox.getInstance();
 
     private static Arm instance = new Arm();
 
@@ -43,21 +45,22 @@ public class Arm {
 
     public static Arm getInstance()
     {
-        return(instance);
+        return (instance);
     }
 
     public boolean getHatchPanelPosition()
     {
-        return(hatchPanelPosition);
+        return (hatchPanelPosition);
     }
+
     public boolean getArmPosition()
     {
-        return(armPosition);
+        return (armPosition);
     }
 
     public boolean getWristPosition()
     {
-        return(wristPosition);
+        return (wristPosition);
     }
 
     public void moveArmUp()
@@ -81,7 +84,7 @@ public class Arm {
     public void moveWristDown()
     {
         wristSolenoid.set(Value.kReverse);
-        wristPosition = false; 
+        wristPosition = false;
     }
 
     public void intakeCargo(double speed)
@@ -100,30 +103,30 @@ public class Arm {
     {
         horizontalRoller.set(0);
     }
+
     public void expandHatchPanelPlug()
     {
         grabberSolenoid.set(Value.kForward);
         hatchPanelPosition = true;
     }
-    
+
     public void contractHatchPanelPlug()
     {
         grabberSolenoid.set(Value.kReverse);
         hatchPanelPosition = false;
     }
 
-    
     public void teleop()
     {
-        boolean armButton = controller.getRawButton(Constants.ARM_BUTTON_ID);
-        boolean wristButton = controller.getRawButton(Constants.WRIST_BUTTON_ID);
-        boolean cargoInButton = controller.getRawButton(Constants.CARGO_BUTTON_IN_ID);
-        boolean cargoOutButton = controller.getRawButton(Constants.CARGO_BUTTON_OUT_ID);
-        boolean hatchPanelButton = controller.getRawButton(Constants.WRIST_BUTTON_ID);
+        boolean armButton = operatorXbox.getRawButton(Constants.ARM_BUTTON_ID);
+        boolean wristButton = operatorXbox.getRawButton(Constants.WRIST_BUTTON_ID);
+        boolean cargoInButton = operatorXbox.getRawButton(Constants.CARGO_BUTTON_IN_ID);
+        boolean cargoOutButton = operatorXbox.getRawButton(Constants.CARGO_BUTTON_OUT_ID);
+        boolean hatchPanelButton = operatorXbox.getRawButton(Constants.WRIST_BUTTON_ID);
 
-        if(armButton)
+        if (armButton)
         {
-            if(getArmPosition() == true)
+            if (getArmPosition() == true)
             {
                 moveArmDown();
             }
@@ -133,9 +136,9 @@ public class Arm {
             }
         }
 
-        if(wristButton)
+        if (wristButton)
         {
-            if(getWristPosition() == true)
+            if (getWristPosition() == true)
             {
                 moveWristDown();
             }
@@ -145,9 +148,9 @@ public class Arm {
             }
         }
 
-        if(hatchPanelButton)
+        if (hatchPanelButton)
         {
-            if(getHatchPanelPosition() == true)
+            if (getHatchPanelPosition() == true)
             {
                 contractHatchPanelPlug();
             }
@@ -157,12 +160,12 @@ public class Arm {
             }
         }
 
-        if(cargoInButton)
+        if (cargoInButton)
         {
             ejectCargo(0.5);
         }
 
-        else if(cargoOutButton)
+        else if (cargoOutButton)
         {
             intakeCargo(0.5);
         }
@@ -172,14 +175,14 @@ public class Arm {
             stopCargo();
         }
     }
-    
 
+    @Override
     public String toString()
     {
-        return String.format("ArmPosition: %s, HPP: %s, WristPosition: %s, (true is up/expanded false is down/contracted",
-        getArmPosition(), getHatchPanelPosition(), getWristPosition());
+        return String.format(
+                "ArmPosition: %s, HPP: %s, WristPosition: %s, (true is up/expanded false is down/contracted",
+                getArmPosition(), getHatchPanelPosition(), getWristPosition());
     }
-
 
     public static class Constants
     {
@@ -190,7 +193,7 @@ public class Arm {
         public static final int GRABBER_SOLENOID_PORT_1 = 4;
         public static final int GRABBER_SOLENOID_PORT_2 = 5;
         public static final int ROLLER_TALON_ID = 10;
-        public static final int ROLLER_VICTOR_ID =  11;
+        public static final int ROLLER_VICTOR_ID = 11;
         public static final int ARM_BUTTON_ID = 0;
         public static final int WRIST_BUTTON_ID = 0;
         public static final int CARGO_BUTTON_IN_ID = 0;
@@ -199,4 +202,3 @@ public class Arm {
     }
 
 }
-
