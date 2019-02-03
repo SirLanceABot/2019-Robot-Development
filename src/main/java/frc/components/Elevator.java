@@ -11,6 +11,7 @@ import frc.components.Elevator.Constants.ElevatorPosition;
 import frc.control.DriverXbox;
 import frc.control.OperatorXbox;
 import frc.control.Xbox;
+import frc.control.ButtonBoard;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
@@ -24,10 +25,10 @@ public class Elevator
     private VictorSPX slaveElevatorMotor = new WPI_VictorSPX(Constants.SLAVE_ELEVATOR_MOTOR_PORT);
 
     private OperatorXbox operatorXbox = OperatorXbox.getInstance();
-    private DriverXbox driverXbox = DriverXbox.getInstance();
+    private ButtonBoard buttonBoard = ButtonBoard.getInstance();
     
     private boolean floorPanelButton;
-    private boolean floorCargoButton;
+    private boolean cargoShipPort;
 
     private boolean bottomHatchButton;
     private boolean centerHatchButton;
@@ -123,25 +124,25 @@ public class Elevator
 
     public void teleop()
     {
-        floorPanelButton = operatorXbox.getRawButton(1);
-        floorCargoButton = operatorXbox.getRawButton(2);
+        boolean floorButton = buttonBoard.getRawButton(ButtonBoard.Constants.FLOOR_BUTTON);
+        boolean cargoShipPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.CARGO_SHIP_PORT_BUTTON);
 
-        bottomHatchButton = operatorXbox.getRawButton(3);
-        centerHatchButton = operatorXbox.getRawButton(4);
-        topHatchButton = operatorXbox.getRawButton(5);
+        boolean bottomHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.BOTTOM_HATCH_BUTTON);
+        boolean centerHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.CENTER_HATCH_BUTTON);
+        boolean topHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.TOP_HATCH_BUTTON);
 
-        bottomPortButton = operatorXbox.getRawButton(6);
-        centerPortButton = operatorXbox.getRawButton(7);
-        topPortButton = operatorXbox.getRawButton(8);
+        boolean bottomPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.BOTTOM_PORT_BUTTON);
+        boolean centerPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.CENTER_PORT_BUTTON);
+        boolean topPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.TOP_PORT_BUTTON);
 
        // yAxis = -operatorXbox.getRawAxis(1);
 
 
-        if(floorPanelButton)
+        if(floorButton)
         {
             targetPosition = ElevatorPosition.kFloorPanel;
         }
-        else if(floorCargoButton)
+        else if(cargoShipPortButton)
         {
             targetPosition = ElevatorPosition.kFloorCargo;
         }

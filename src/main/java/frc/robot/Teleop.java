@@ -10,6 +10,7 @@ package frc.robot;
 import frc.components.Arm;
 import frc.components.Elevator;
 import frc.control.OperatorXbox;
+import frc.control.ButtonBoard;
 
 /**
  * Add your docs here.
@@ -22,6 +23,8 @@ public class Teleop
 
     private static Teleop instance = new Teleop();
     OperatorXbox operatorXbox = OperatorXbox.getInstance();
+    ButtonBoard buttonBoard = ButtonBoard.getInstance();
+
     private Teleop()
     {
 
@@ -37,26 +40,26 @@ public class Teleop
         boolean cargoInButton = operatorXbox.getRawButton(9);
         boolean cargoOutButton = operatorXbox.getRawButton(10);
 
-        boolean floorPanelButton = operatorXbox.getRawButton(1);
-        boolean floorCargoButton = operatorXbox.getRawButton(2);
+        boolean floorButton = buttonBoard.getRawButton(ButtonBoard.Constants.FLOOR_BUTTON);
+        boolean cargoShipPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.CARGO_SHIP_PORT_BUTTON);
 
-        boolean bottomHatchButton = operatorXbox.getRawButton(3);
-        boolean centerHatchButton = operatorXbox.getRawButton(4);
-        boolean topHatchButton = operatorXbox.getRawButton(5);
+        boolean bottomHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.BOTTOM_HATCH_BUTTON);
+        boolean centerHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.CENTER_HATCH_BUTTON);
+        boolean topHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.TOP_HATCH_BUTTON);
 
-        boolean bottomPortButton = operatorXbox.getRawButton(6);
-        boolean centerPortButton = operatorXbox.getRawButton(7);
-        boolean topPortButton = operatorXbox.getRawButton(8);
+        boolean bottomPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.BOTTOM_PORT_BUTTON);
+        boolean centerPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.CENTER_PORT_BUTTON);
+        boolean topPortButton = buttonBoard.getRawButton(ButtonBoard.Constants.TOP_PORT_BUTTON);
         
         
-        if(floorPanelButton)
+        if(floorButton)
         {
             elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kFloorPanel);
             arm.moveWristDown();
             arm.moveArmDown();
         }
 
-        else if(floorCargoButton)
+        else if(cargoShipPortButton)
         {
             elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kFloorCargo);
             arm.moveWristUp();
