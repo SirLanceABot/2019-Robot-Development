@@ -40,7 +40,7 @@ public class Drivetrain extends MecanumDrive
 	private static CANSparkMax backLeftMotor = new CANSparkMax(Constants.BACK_LEFT_MOTOR_PORT,
 			CANSparkMaxLowLevel.MotorType.kBrushless);
 
-	private AHRS navX = new AHRS(I2C.Port.kMXP);
+	private AHRS navX = new AHRS(I2C.Port.kOnboard);
 
 	private Encoder omniWheelEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
 
@@ -57,7 +57,9 @@ public class Drivetrain extends MecanumDrive
 	// constructor for drivetrain class
 	private Drivetrain()
 	{
-		super(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
+        super(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
+        
+        setSafetyEnabled(false);
 
 		frontRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
 		// frontRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
@@ -102,14 +104,16 @@ public class Drivetrain extends MecanumDrive
 
 		if (driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER))
 		{
-			if (Math.abs(navX.getYaw()) <= 135 && Math.abs(navX.getYaw()) >= 45)
-			{
-				this.driveCartesian(-leftXAxis, -leftYAxis, rightXAxis, navX.getYaw());
-			}
-			else
-			{
-				this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, navX.getYaw());
-			}
+			// if (Math.abs(navX.getYaw()) <= 135 && Math.abs(navX.getYaw()) >= 45)
+			// {
+			// 	this.driveCartesian(-leftXAxis, -leftYAxis, rightXAxis, navX.getYaw());
+			// }
+			// else
+			// {
+			// 	this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, navX.getYaw());
+			// }
+
+            this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, getYawInRadians());
 
 			System.out.println(navX.getAngle() + ", " + navX.getYaw());
 		}
@@ -119,7 +123,17 @@ public class Drivetrain extends MecanumDrive
 		}
 
 		System.out.println(toString());
-	}
+    }
+
+    public double getYawInRadians()
+    {
+        return navX.getYaw() * Math.PI / 180.0;
+    }
+
+    public double getYawInDegrees()
+    {
+        return navX.getYaw();
+    }
 
 	/**
 	 * Drive the distance passed into the method.
@@ -134,7 +148,7 @@ public class Drivetrain extends MecanumDrive
 		double stoppingSpeed = 0.175;
 		int startingDistance = 12;
 		int direction = 1;
-		double rotate = (navX.getYaw() - heading) / 50;
+		double rotate = getYawInRadians();
 
 		if (maxSpeed < 0)
 		{
