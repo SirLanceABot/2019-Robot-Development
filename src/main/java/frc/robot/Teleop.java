@@ -56,54 +56,46 @@ public class Teleop
         if(floorButton)
         {
             elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kFloor);
-            arm.moveWristDown();
-            arm.moveArmDown();
+            arm.setTargetPosition(Arm.Constants.Position.kFloor);
         }
-
         else if(cargoShipPortButton)
         {
             elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kCargoShipCargo);
-            arm.moveWristDown();
-            arm.moveArmDown();
+            arm.setTargetPosition(Arm.Constants.Position.kCargoShipCargo);
         }
         else if(bottomHatchButton)
         {
             elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kBottomHatch);
-            arm.moveWristUp();
-            arm.moveArmDown();
+            arm.setTargetPosition(Arm.Constants.Position.kBottomHatch);
         }
         else if(centerHatchButton)
         {
             elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kCenterHatch);
-            arm.moveWristUp();
-            arm.moveArmDown();
+            arm.setTargetPosition(Arm.Constants.Position.kCenterHatch);
         }
         else if(topHatchButton)
         {
             elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kTopHatch);
-            arm.moveWristUp();
-            arm.moveArmDown();
+            arm.setTargetPosition(Arm.Constants.Position.kTopHatch);
         }
         else if(bottomCargoButton)
         {
             elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kBottomCargo);
-            arm.moveWristDown();
-            arm.moveArmDown();
+            arm.setTargetPosition(Arm.Constants.Position.kBottomCargo);
         }
         else if(centerCargoButton)
         {
             elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kCenterCargo);
-            arm.moveWristDown();
-            arm.moveArmDown();
+            arm.setTargetPosition(Arm.Constants.Position.kCenterCargo);
         }
         else if(topCargoButton)
         {
             elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kTopCargo);
-            arm.moveWristDown();
-            arm.moveArmDown();
+            arm.setTargetPosition(Arm.Constants.Position.kTopCargo);
         }
 
         elevator.moveTo();
+        arm.moveTo();
         
         if(cargoInButton)
         {

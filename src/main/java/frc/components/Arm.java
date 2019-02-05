@@ -7,11 +7,18 @@
 
 package frc.components;
 
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import frc.control.DriverXbox;
 import frc.control.Xbox;
+import frc.components.Arm.Constants.Position;
 import frc.control.ButtonBoard;
+
+import javax.lang.model.util.ElementScanner6;
+
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
@@ -27,12 +34,21 @@ public class Arm
     private DoubleSolenoid grabberSolenoid = new DoubleSolenoid(Constants.GRABBER_SOLENOID_PORT_1,
             Constants.GRABBER_SOLENOID_PORT_2);
 
+    private WPI_TalonSRX armMotor = new WPI_TalonSRX(Constants.ARM_MOTOR_ID);
+
+    private DigitalInput wristUpLimitSwitch = new DigitalInput(0);
+    private DigitalInput wristDownLimitSwitch = new DigitalInput(1);
+
+    private Constants.Position targetPosition =  Constants.Position.kNone;
+
     private WPI_TalonSRX masterIntakeRoller = new WPI_TalonSRX(Constants.ROLLER_TALON_ID);
     private WPI_VictorSPX slaveIntakeRoller = new WPI_VictorSPX(Constants.ROLLER_VICTOR_ID);
     private boolean armPosition; // true is up false is down
     private boolean wristPosition; // true is up false is down
     private boolean hatchPanelPosition; // true for expanded false for contracted
-
+    private boolean isWristMoving;
+    private boolean isArmMoving;
+    private int potValue = 0;
     private static DriverXbox driverXbox = DriverXbox.getInstance();
     private static ButtonBoard buttonBoard = ButtonBoard.getInstance();
 
@@ -41,167 +57,196 @@ public class Arm
     private Arm()
     {
         slaveIntakeRoller.follow(masterIntakeRoller);
-
+        armMotor.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.Analog, 0, 0);
     }
 
+    /**
+     * This function returns the instance of the Arm to be used
+     * @return instance of the arm that is going to be used
+     */
     public static Arm getInstance()
     {
         return (instance);
     }
 
-    public boolean getHatchPanelPosition()
-    {
-        return (hatchPanelPosition);
-    }
-
-    public boolean getArmPosition()
-    {
-        return (armPosition);
-    }
-
-    public boolean getWristPosition()
-    {
-        return (wristPosition);
-    }
-
+    /**
+     * this function moves the arm up at a speed of .5
+     */
     public void moveArmUp()
     {
-        armSolenoid.set(Value.kForward);
-        armPosition = true;
+        armMotor.set(.5);
     }
 
+    /**
+     * this function moves the arm down at a speed of -.5
+     */
     public void moveArmDown()
     {
-        armSolenoid.set(Value.kReverse);
-        armPosition = false;
+        armMotor.set(-.5);
     }
 
+    /**
+     * this function will stop the movement of the arm
+     */
+    public void stopArm()
+    {
+        armMotor.set(0);
+    }
+
+    /**
+     * this will set the solenoid controlling wrist movement
+     * to move forward, which moves the wrist Up
+     */
     public void moveWristUp()
     {
         wristSolenoid.set(Value.kForward);
         wristPosition = true;
     }
 
+    /**
+     * this function sets the solenoid contrlling the wrist movemet
+     * to move backwards, which will move the wrist down
+     */
     public void moveWristDown()
     {
         wristSolenoid.set(Value.kReverse);
         wristPosition = false;
     }
 
+    /**
+     * this function will sets the motors that
+     * control cargo intake/ejection to intake
+     * cargo at a set speed
+     * @param speed
+     */
     public void intakeCargo(double speed)
     {
         speed = Math.abs(speed);
         masterIntakeRoller.set(speed);
     }
 
+    /**
+     * this function will set the motors that
+     * control cargo intake/ejectin to a eject that
+     * cargo at a set speed.
+     * @param speed
+     */
     public void ejectCargo(double speed)
     {
         speed = -Math.abs(speed);
         masterIntakeRoller.set(speed);
     }
 
+    /**
+     * this function sets the motors that control the cargo
+     * intake/ejection to 0 so they stop rotating.
+     */
     public void stopCargo()
     {
         masterIntakeRoller.set(0);
     }
 
+    /**
+     * this function sets the solenoid that
+     * expands the HPP
+     */
     public void grabHatchPanel()
     {
         grabberSolenoid.set(Value.kForward);
         hatchPanelPosition = true;
     }
 
+    /**
+     * this function sets the solenoid that 
+     * contracts the HPP 
+     */
     public void releaseHatchPanel()
     {
         grabberSolenoid.set(Value.kReverse);
         hatchPanelPosition = false;
     }
 
-    public void teleop()
+
+    /**
+     * this function gets the potentiometer value that
+     * moniters the arms position
+     * @return returns the potentiometer value for the arm
+     */
+    public int getPotValue()
     {
-        boolean floorButton = buttonBoard.getRawButton(ButtonBoard.Constants.FLOOR_BUTTON);
-        boolean cargoShipCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.CARGO_SHIP_CARGO_BUTTON);
+        return armMotor.getSelectedSensorPosition(0);
+    }
 
-        boolean bottomHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.BOTTOM_HATCH_BUTTON);
-        boolean centerHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.CENTER_HATCH_BUTTON);
-        boolean topHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.TOP_HATCH_BUTTON);
+    /**
+     * this function sets the target position to be used later
+     * in the program
+     * @param have to send the target position
+     */
+    public void setTargetPosition(Constants.Position targetPosition)
+    {
+        this.targetPosition = targetPosition;
+    }
 
-        boolean bottomCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.BOTTOM_CARGO_BUTTON);
-        boolean centerCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.CENTER_CARGO_BUTTON);
-        boolean topCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.TOP_CARGO_BUTTON);
+    /**
+     * this function will move to the position that has been specified 
+     * by the variabe targetPosition
+     */
+    public void moveTo()
+    {
+        potValue = getPotValue();
 
-        boolean hatchPanelButton = driverXbox.getRawButton(Xbox.Constants.A_BUTTON);
-        boolean cargoInButton = driverXbox.getRawButton(Xbox.Constants.LEFT_BUMPER);
-        boolean cargoOutButton = driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER);
-
-        if(floorButton)
+        if(!targetPosition.equals(Constants.Position.kNone))
         {
-            moveWristDown();
-            moveArmDown();
-        }
-
-        else if(cargoShipCargoButton)
-        {
-            moveWristUp();
-            moveArmDown();
-        }
-        else if(bottomHatchButton)
-        {
-            moveWristDown();
-            moveArmDown();
-        }
-        else if(centerHatchButton)
-        {
-            moveWristDown();
-            moveArmDown();
-        }
-        else if(topHatchButton)
-        {
-            moveWristDown();
-            moveArmUp();
-        }
-        else if(bottomCargoButton)
-        {
-            moveWristUp();
-            moveArmDown();
-        }
-        else if(centerCargoButton)
-        {
-            moveWristUp();
-            moveArmDown();
-        }
-        else if(topCargoButton)
-        {
-            moveWristUp();
-            moveArmUp();
-        }
-
-
-        if (hatchPanelButton)
-        {
-            if (getHatchPanelPosition() == true)
+            if(potValue < targetPosition.armPosition.armPosition - Constants.ARM_THRESHOLD)
             {
-                releaseHatchPanel();
+                moveArmUp();
+                isArmMoving = true;
             }
+
+            else if(potValue > targetPosition.armPosition.armPosition - Constants.ARM_THRESHOLD)
+            {
+                moveArmDown();
+                isArmMoving = true;
+            }
+
             else
             {
-                grabHatchPanel();
+                stopArm();
+                isArmMoving = false;
+            }
+
+            if(targetPosition.wristPosition.wristPosition == Value.kReverse)
+            {
+                moveWristDown();
+                isWristMoving = true;
+
+                if(wristDownLimitSwitch.get() == true)
+                {
+                    isWristMoving = false;
+                }
+            }
+
+            else if(targetPosition.wristPosition.wristPosition == Value.kForward)
+            {
+                moveWristUp();
+                isWristMoving = true;
+
+                if(wristUpLimitSwitch.get() == true)
+                {
+                    isWristMoving = false;
+                }
+            }
+
+            if((isWristMoving == false) && (isArmMoving == false))
+            {
+                targetPosition = Position.kNone;
             }
         }
+    }
 
-
-        if (cargoInButton)
-        {
-            ejectCargo(0.5);
-        }
-        else if (cargoOutButton)
-        {
-            intakeCargo(0.5);
-        }
-        else
-        {
-            stopCargo();
-        }
+    public void teleop()
+    {
+       
     }
 
     @Override
@@ -209,41 +254,78 @@ public class Arm
     {
         return String.format(
                 "ArmPosition: %s, HPP: %s, WristPosition: %s, (true is up/expanded false is down/contracted",
-                getArmPosition(), getHatchPanelPosition(), getWristPosition());
+                isArmMoving, hatchPanelPosition , isWristMoving);
     }
 
     public static class Constants
     {
         public static enum ArmPosition
         {
+            kBottomArmPosition(0, "Bottom Arm Position"),  
+            kMiddleArmPosition(50,"Middle Arm Position"),
+            kTopArmPosition(100, "Top Arm Position"),
 
+            kArmNone(-1, "Arm to None");
+
+
+            private final int armPosition;
+            private final String name;
+            private ArmPosition(int armPosition, String name)
+            {
+                this.armPosition = armPosition;
+                this.name = name;
+            }  
+
+            @Override
+            public String toString()
+            {
+                return(name);
+            }
         }
         public static enum WristPosition
         {
+            kWristDown(DoubleSolenoid.Value.kReverse, "Wrist Down"),
+            kWristUp(DoubleSolenoid.Value.kForward, "Wrist Up"),
+            kWristNone(DoubleSolenoid.Value.kOff, "Wrist None");
 
+            private final DoubleSolenoid.Value wristPosition;
+            private final String name;
+            private WristPosition(DoubleSolenoid.Value wristPosition, String name)
+            {
+                this.wristPosition = wristPosition;
+                this.name = name;
+            }
+
+            @Override
+            public String toString()
+            {
+                return(name);
+            }
         }
         public static enum Position
 		{
-            kFloorPanel(Value.kReverse, Value.kReverse, "Floor Panel"),
-            kFloorCargo(Value.kForward, Value.kReverse, "Floor Cargo"),
-            kCargoShipCargo(Value.kReverse, Value.kReverse, "Cargo Ship Cargo"),
+            kFloor(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Floor"),
+            //kFloorPanel(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Floor Panel"),
+            //kFloorCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Floor Cargo"),
+            kCargoShipCargo(Constants.WristPosition.kWristUp, Constants.ArmPosition.kBottomArmPosition, "Cargo Ship Cargo"),
 
-            kBottomHatch(Value.kReverse, Value.kReverse, "Bottom Hatch"),      // 1 ft 7 inches to center
-            kCenterHatch(Value.kReverse, Value.kReverse, "Center Hatch"),      // 3 ft 11 inches to center
-            kTopHatch(Value.kReverse, Value.kForward, "Top Hatch"),         // 6 ft 3 inches to center
+            kBottomHatch(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Bottom Hatch"),      // 1 ft 7 inches to center
+            kCenterHatch(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Center Hatch"),      // 3 ft 11 inches to center
+            kTopHatch(Constants.WristPosition.kWristDown, Constants.ArmPosition.kMiddleArmPosition, "Top Hatch"),         // 6 ft 3 inches to center
 
-            kBottomCargo(Value.kForward, Value.kForward, "Bottom Cargo"),       // 2 ft 3.5 inches to center
-            kCenterCargo(Value.kForward, Value.kForward, "Center Cargo"),       // 4 ft 7.5 inches to center
-            kTopCargo(Value.kForward, Value.kForward, "Top Cargo");          // 6 ft 11.5 inches to center
+            kBottomCargo(Constants.WristPosition.kWristUp, Constants.ArmPosition.kBottomArmPosition, "Bottom Cargo"),       // 2 ft 3.5 inches to center
+            kCenterCargo(Constants.WristPosition.kWristUp, Constants.ArmPosition.kBottomArmPosition, "Center Cargo"),       // 4 ft 7.5 inches to center
+            kTopCargo(Constants.WristPosition.kWristUp,Constants.ArmPosition.kMiddleArmPosition, "Top Cargo"),          // 6 ft 11.5 inches to center
 
-            private final DoubleSolenoid.Value armValue;
-            private final DoubleSolenoid.Value wristValue;
+            kNone(Constants.WristPosition.kWristNone, Constants.ArmPosition.kArmNone, "No Target");
+            private final Constants.ArmPosition armPosition;
+            private final Constants.WristPosition wristPosition;
             private final String name;
 
-            private Position(DoubleSolenoid.Value wristValue, DoubleSolenoid.Value armValue, String name)
+            private Position(Constants.WristPosition wristPosition, Constants.ArmPosition armPosition, String name)
             {
-                this.wristValue = wristValue;
-                this.armValue = armValue;
+                this.wristPosition = wristPosition;
+                this.armPosition = armPosition;
                 this.name = name;
             }
 
@@ -262,6 +344,9 @@ public class Arm
         public static final int GRABBER_SOLENOID_PORT_2 = 5;
         public static final int ROLLER_TALON_ID = 10;
         public static final int ROLLER_VICTOR_ID = 11;
+        public static final int ARM_MOTOR_ID = 0;
+
+        public static final int ARM_THRESHOLD = 0;
     }
 
 }
