@@ -53,40 +53,77 @@ public class Elevator
         slaveElevatorMotor.follow(masterElevatorMotor);
     }
 
+    /**
+     * Raises the Elevator at a constant speed
+     */
     public void raiseElevator()
     {
         masterElevatorMotor.set(Constants.ELEVATOR_SPEED);
     }
 
+    /**
+     * Lowers the Elevator at a constant speed
+     */
     public void lowerElevator()
     {
         masterElevatorMotor.set(-Constants.ELEVATOR_SPEED);
     }
 
+    /**
+     * Stops the Elevator motor
+     */
     public void stopElevator()
     {
         masterElevatorMotor.set(0);
     }
 
+    /**
+     * Returns the value of the potentiometer
+     * 
+     * @return Value of Potentiometer
+     */
     public int getPotValue()
 	{
 		return masterElevatorMotor.getSelectedSensorPosition(0);
     }
 
+    /**
+     * Returns a boolean that says whether or not the elevator is moving
+     * 
+     * @return whether the elevator is moving or not
+     */
     public boolean isMoving()
     {
         return isMoving;
     }
+
+    /**
+     * Sets the target position for the elevator
+     * 
+     * @param targetPosition the location the elevator is attempting to move to
+     */
     public void setTargetPosition(ElevatorPosition targetPosition)
     {
         this.targetPosition = targetPosition;
     }
 
+    /**
+     * Returns the current target position of the elevator
+     * 
+     * @return the target position the elevator is attempting to move to
+     */
     public ElevatorPosition getTargetPosition()
     {
        return targetPosition;
     }
     
+    /**
+     * Moves the elevator to the current set target position. 
+     * Checks to see if the target position is above or below the current elevator position.
+     * Raises elevator if above and lowers elevator if below.
+     * 
+     * Also updates the integer potValue to equal the current value of the potentiometer.
+     */
     public void moveTo()
     {
         potValue = getPotValue();
