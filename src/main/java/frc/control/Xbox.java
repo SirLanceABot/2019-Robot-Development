@@ -23,12 +23,14 @@ public abstract class Xbox extends Joystick
     @Override
     public double getRawAxis(int axis)
     {
-        double value = Math.pow(super.getRawAxis(axis), 3);
+        double value = super.getRawAxis(axis);
 
         if (Math.abs(value) <= Constants.AXIS_DEADZONE)
         {
             value = 0.0;
         }
+
+        value = Math.pow(value, 3);
 
         if (axis == Constants.LEFT_STICK_Y_AXIS || axis == Constants.RIGHT_STICK_Y_AXIS)
         {

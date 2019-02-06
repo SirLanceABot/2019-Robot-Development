@@ -59,7 +59,7 @@ public class Drivetrain extends MecanumDrive
 	{
         super(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
         
-        setSafetyEnabled(false);
+        // setSafetyEnabled(false);
 
 		frontRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
 		// frontRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
@@ -113,9 +113,9 @@ public class Drivetrain extends MecanumDrive
 			// 	this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, navX.getYaw());
 			// }
 
-            this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, getYawInRadians());
+            this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, -getYawInDegrees());
 
-			System.out.println(navX.getAngle() + ", " + navX.getYaw());
+            System.out.println(getYawInDegrees() + ", " + getYawInRadians());
 		}
 		else
 		{
