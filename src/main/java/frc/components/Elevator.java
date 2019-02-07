@@ -11,7 +11,6 @@ import frc.components.Elevator.Constants.ElevatorPosition;
 import frc.control.ButtonBoard;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 /**
  * Add your docs here.
@@ -19,7 +18,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 public class Elevator
 {
     private WPI_TalonSRX masterElevatorMotor = new WPI_TalonSRX(Constants.MASTER_ELEVATOR_MOTOR_PORT);
-    private VictorSPX slaveElevatorMotor = new WPI_VictorSPX(Constants.SLAVE_ELEVATOR_MOTOR_PORT);
+    private WPI_VictorSPX slaveElevatorMotor = new WPI_VictorSPX(Constants.SLAVE_ELEVATOR_MOTOR_PORT);
 
     private ButtonBoard buttonBoard = ButtonBoard.getInstance();
 

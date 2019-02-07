@@ -203,7 +203,7 @@ public class Arm
                 isArmMoving = true;
             }
 
-            else if(potValue > targetPosition.armPosition.armPosition - Constants.ARM_THRESHOLD)
+            else if(potValue > targetPosition.armPosition.armPosition + Constants.ARM_THRESHOLD)
             {
                 moveArmDown();
                 isArmMoving = true;
@@ -220,7 +220,7 @@ public class Arm
                 moveWristDown();
                 isWristMoving = true;
 
-                if(wristDownLimitSwitch.get() == true)
+                if(wristDownLimitSwitch.get() == false)
                 {
                     isWristMoving = false;
                 }
@@ -231,7 +231,7 @@ public class Arm
                 moveWristUp();
                 isWristMoving = true;
 
-                if(wristUpLimitSwitch.get() == true)
+                if(wristUpLimitSwitch.get() == false)
                 {
                     isWristMoving = false;
                 }
@@ -255,6 +255,7 @@ public class Arm
         return String.format(
                 "ArmPosition: %s, HPP: %s, WristPosition: %s, (true is up/expanded false is down/contracted",
                 isArmMoving, hatchPanelPosition , isWristMoving);
+        // return String.format("Arm Pot Value: " + getPotValue() + "   Arm Target Position:   " + targetPosition.armPosition.armPosition + "  Wrist Moving:  " + isWristMoving);
     }
 
     public static class Constants
@@ -307,15 +308,15 @@ public class Arm
             kFloor(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Floor"),
             //kFloorPanel(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Floor Panel"),
             //kFloorCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Floor Cargo"),
-            kCargoShipCargo(Constants.WristPosition.kWristUp, Constants.ArmPosition.kBottomArmPosition, "Cargo Ship Cargo"),
+            kCargoShipCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Cargo Ship Cargo"),
 
-            kBottomHatch(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Bottom Hatch"),      // 1 ft 7 inches to center
-            kCenterHatch(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Center Hatch"),      // 3 ft 11 inches to center
-            kTopHatch(Constants.WristPosition.kWristDown, Constants.ArmPosition.kMiddleArmPosition, "Top Hatch"),         // 6 ft 3 inches to center
+            kBottomHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kBottomArmPosition, "Bottom Hatch"),      // 1 ft 7 inches to center
+            kCenterHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kBottomArmPosition, "Center Hatch"),      // 3 ft 11 inches to center
+            kTopHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kMiddleArmPosition, "Top Hatch"),         // 6 ft 3 inches to center
 
-            kBottomCargo(Constants.WristPosition.kWristUp, Constants.ArmPosition.kBottomArmPosition, "Bottom Cargo"),       // 2 ft 3.5 inches to center
-            kCenterCargo(Constants.WristPosition.kWristUp, Constants.ArmPosition.kBottomArmPosition, "Center Cargo"),       // 4 ft 7.5 inches to center
-            kTopCargo(Constants.WristPosition.kWristUp,Constants.ArmPosition.kMiddleArmPosition, "Top Cargo"),          // 6 ft 11.5 inches to center
+            kBottomCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Bottom Cargo"),       // 2 ft 3.5 inches to center
+            kCenterCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Center Cargo"),       // 4 ft 7.5 inches to center
+            kTopCargo(Constants.WristPosition.kWristDown,Constants.ArmPosition.kMiddleArmPosition, "Top Cargo"),          // 6 ft 11.5 inches to center
 
             kNone(Constants.WristPosition.kWristNone, Constants.ArmPosition.kArmNone, "No Target");
             private final Constants.ArmPosition armPosition;
@@ -336,17 +337,17 @@ public class Arm
             }
         }
 
-        public static final int ARM_SOLENOID_PORT_1 = 0;
-        public static final int ARM_SOLENOID_PORT_2 = 1;
-        public static final int WRIST_SOLENOID_PORT_1 = 2;
-        public static final int WRIST_SOLENOID_PORT_2 = 3;
-        public static final int GRABBER_SOLENOID_PORT_1 = 4;
-        public static final int GRABBER_SOLENOID_PORT_2 = 5;
-        public static final int ROLLER_TALON_ID = 10;
-        public static final int ROLLER_VICTOR_ID = 11;
-        public static final int ARM_MOTOR_ID = 0;
+        public static final int ARM_SOLENOID_PORT_1 = 4;
+        public static final int ARM_SOLENOID_PORT_2 = 5;
+        public static final int WRIST_SOLENOID_PORT_1 = 0;
+        public static final int WRIST_SOLENOID_PORT_2 = 1;
+        public static final int GRABBER_SOLENOID_PORT_1 = 2;
+        public static final int GRABBER_SOLENOID_PORT_2 = 3;
+        public static final int ROLLER_TALON_ID = 1;
+        public static final int ROLLER_VICTOR_ID = 1;
+        public static final int ARM_MOTOR_ID = 2;
 
-        public static final int ARM_THRESHOLD = 0;
+        public static final int ARM_THRESHOLD = 5;
     }
 
 }
