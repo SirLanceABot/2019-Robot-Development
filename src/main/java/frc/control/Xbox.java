@@ -25,6 +25,27 @@ public abstract class Xbox extends Joystick
     {
         double value = super.getRawAxis(axis);
 
+        double xAxis = super.getRawAxis(Constants.LEFT_STICK_X_AXIS);
+        double newXAxis = xAxis;
+        double yAxis = super.getRawAxis(Constants.LEFT_STICK_Y_AXIS);
+        double newYAxis = yAxis;
+        double magnitude = Math.sqrt(Math.pow(xAxis, 2) + Math.pow(yAxis, 2));
+
+        if((xAxis != 0) && (yAxis != 0))
+        {
+            newXAxis = (Math.min((Math.abs(xAxis)/Math.abs(yAxis)), 1.0) * magnitude);
+            newYAxis = (Math.min((Math.abs(yAxis)/Math.abs(xAxis)), 1.0) * magnitude);
+        }
+
+        if(Constants.LEFT_STICK_X_AXIS == axis)
+        {
+            value = newXAxis;
+        }
+        else if(Constants.LEFT_STICK_Y_AXIS == axis)
+        {
+            value = newYAxis;
+        }
+
         if (Math.abs(value) <= Constants.AXIS_DEADZONE)
         {
             value = 0.0;

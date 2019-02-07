@@ -42,15 +42,12 @@ public class Drivetrain extends MecanumDrive
 
 	private AHRS navX = new AHRS(I2C.Port.kOnboard);
 
-	private Encoder omniWheelEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
-
-	private Timer startUpTimer = new Timer();
-	private Timer t = new Timer();
+    private Encoder omniWheelEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
+    
 	private Timer timer = new Timer();
 
 	private boolean doRestartSpinTimer = true;
-	private boolean doResetTimer = true;
-	private boolean isTimerDone = false;
+
 
 	private static Drivetrain instance = new Drivetrain();
 
@@ -77,7 +74,11 @@ public class Drivetrain extends MecanumDrive
 		// backLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
 		backLeftMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
 
-		navX.reset();
+        while(navX.isCalibrating())
+        {
+        }
+
+        navX.reset();
 	}
 
 	public static Drivetrain getInstance()
@@ -90,7 +91,7 @@ public class Drivetrain extends MecanumDrive
 	 * 
 	 * @return Distance traveled.
 	 */
-	public double getEncoderDistance()
+	public double getDistanceInInches()
 	{
 		return omniWheelEncoder.getRaw() / 135.0;
 	}
@@ -100,22 +101,21 @@ public class Drivetrain extends MecanumDrive
 	{
 		double rightXAxis = driverXbox.getRawAxis(Xbox.Constants.RIGHT_STICK_X_AXIS);
 		double leftXAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_X_AXIS);
-		double leftYAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_Y_AXIS);
+        double leftYAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_Y_AXIS);
 
-		if (driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER))
+        System.out.println("X Axis:" + leftXAxis);
+        System.out.println("Y Axis:" + -leftYAxis);
+        
+        boolean driveInFieldOriented = true;
+
+        if(driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER))
+        {
+            driveInFieldOriented = !driveInFieldOriented;
+        }
+
+		if (driveInFieldOriented)
 		{
-			// if (Math.abs(navX.getYaw()) <= 135 && Math.abs(navX.getYaw()) >= 45)
-			// {
-			// 	this.driveCartesian(-leftXAxis, -leftYAxis, rightXAxis, navX.getYaw());
-			// }
-			// else
-			// {
-			// 	this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, navX.getYaw());
-			// }
-
-            this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, -getYawInDegrees());
-
-            System.out.println(getYawInDegrees() + ", " + getYawInRadians());
+            this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, getHeadingInDegrees());
 		}
 		else
 		{
@@ -125,14 +125,14 @@ public class Drivetrain extends MecanumDrive
 		System.out.println(toString());
     }
 
-    public double getYawInRadians()
+    public double getHeadingInDegrees()
     {
-        return navX.getYaw() * Math.PI / 180.0;
+        return -navX.getYaw();
     }
 
-    public double getYawInDegrees()
+    public void resetNavX()
     {
-        return navX.getYaw();
+        navX.reset();
     }
 
 	/**
@@ -140,15 +140,15 @@ public class Drivetrain extends MecanumDrive
 	 * 
 	 * @return If the robot has completed the drive.
 	 */
-	public boolean driveDistance(int inches, double maxSpeed, int heading, int stoppingDistance)
+	public boolean driveDistanceInInches(int inches, double maxSpeed, int heading, int stoppingDistance)
 	{
 		boolean isDoneDriving = false;
-		double distanceTravelled = Math.abs(getEncoderDistance());
+		double distanceTravelled = Math.abs(getDistanceInInches());
 		double startingSpeed = 0.3;
 		double stoppingSpeed = 0.175;
 		int startingDistance = 12;
 		int direction = 1;
-		double rotate = getYawInRadians();
+		double rotate = getHeadingInDegrees();
 
 		if (maxSpeed < 0)
 		{
@@ -180,77 +180,16 @@ public class Drivetrain extends MecanumDrive
 		return isDoneDriving;
 	}
 
-	public boolean driveSeconds(double speed, double time, int heading)
-	{
-		isTimerDone = false;
-		double rotate = (navX.getYaw() - heading) / 50;
-
-		if (doResetTimer)
-		{
-			t.stop();
-			t.reset();
-			t.start();
-			doResetTimer = false;
-		}
-
-		if (t.get() <= time)
-		{
-			driveCartesian(0, speed, -rotate);
-		}
-		else
-		{
-			driveCartesian(0, 0, 0);
-			isTimerDone = true;
-			doResetTimer = true;
-		}
-		return isTimerDone;
-	}
-
-	/**
-	 * Strafe perpendicular to robot. 0 degrees is North.
-	 * 
-	 * @return If the robot has completed the strafe.
-	 */
-	public boolean strafeSeconds(double time, double strafeSpeed, double heading)
-	{
-		boolean isTimerDone = false;
-		double rotate = (navX.getYaw() - heading) / 50;
-
-		if (doResetTimer)
-		{
-			t.stop();
-			t.reset();
-			t.start();
-		}
-
-		if (strafeSpeed > 0 && t.get() < time)
-		{
-			driveCartesian(strafeSpeed, 0, rotate);
-		}
-		else if (strafeSpeed < 0 && t.get() < time)
-		{
-			driveCartesian(-strafeSpeed, 0, rotate);
-		}
-		else
-		{
-			driveCartesian(0, 0, 0);
-			isTimerDone = true;
-			doResetTimer = true;
-		}
-
-		return isTimerDone;
-	}
-
 	/**
 	 * Strafe at a specific angle. 0 degrees is North
 	 * 
 	 * @return If the robot has completed the strafe.
 	 */
-	public boolean strafeDistanceAtAngle(int inches, double angle, double speed, int heading)
+	public boolean strafeDistanceInInches(int inches, double angle, double speed, int heading)
 	{
 		boolean isDoneDriving = false;
-		double x = Math.abs(getEncoderDistance());
-		double rotate = (navX.getYaw() - heading) / 50;
+		double x = Math.abs(getDistanceInInches());
+		double rotate = getHeadingInDegrees();
 		double strafeSpeed = Math.sin(Math.abs(angle)) * speed;
 		double forwardSpeed = Math.cos(Math.abs(angle)) * speed;
 
@@ -287,28 +226,12 @@ public class Drivetrain extends MecanumDrive
 		return abortAutonomous;
 	}
 
-	/**
-	 * Restart the timer.
-	 */
-	public void restartTimer()
-	{
-		timer.stop();
-		timer.reset();
-		timer.start();
-	}
-
 	public boolean spinToBearing(int bearing, double speed)
 	{
 		boolean doneSpinning = false;
 		boolean spin = true;
 
 		double heading = navX.getYaw();
-
-		if (doRestartSpinTimer)
-		{
-			restartTimer();
-			doRestartSpinTimer = false;
-		}
 
 		if (timer.get() >= 0.2)
 		{
@@ -318,7 +241,6 @@ public class Drivetrain extends MecanumDrive
 			}
 			else
 			{
-				restartTimer();
 				previousNavXValue = heading;
 			}
 		}
@@ -359,9 +281,9 @@ public class Drivetrain extends MecanumDrive
 	@Override
 	public String toString()
 	{
-		return String.format("Enc: %.2f, FRC: %.2f, FLC: %.2f, BRC: %.2f, BLC: %.2f, Yaw: %.2f", getEncoderDistance(),
+		return String.format("Enc: %.2f, FRC: %.2f, FLC: %.2f, BRC: %.2f, BLC: %.2f, Yaw: %.2f", getDistanceInInches(),
 				frontRightMotor.getOutputCurrent(), frontLeftMotor.getOutputCurrent(),
-				backRightMotor.getOutputCurrent(), backLeftMotor.getOutputCurrent(), navX.getYaw());
+				backRightMotor.getOutputCurrent(), backLeftMotor.getOutputCurrent(), getHeadingInDegrees());
 	}
 
 	public static class Constants
