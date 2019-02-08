@@ -10,6 +10,10 @@ import edu.wpi.first.wpilibj.Joystick;
  */
 public abstract class Xbox extends Joystick
 {
+    public double maximumAxisValue = 1.0;
+    public double axisDeadzone = 0.2;
+
+
     /**
      * Xbox constructor
      * 
@@ -51,7 +55,7 @@ public abstract class Xbox extends Joystick
             value = 0.0;
         }
 
-        value = Math.pow(value, 3);
+        //value = Math.pow(value, 3);
 
         if (axis == Constants.LEFT_STICK_Y_AXIS || axis == Constants.RIGHT_STICK_Y_AXIS)
         {
@@ -59,6 +63,86 @@ public abstract class Xbox extends Joystick
         }
 
         return value;
+    }
+
+    public double getLinearAxis(int axis)
+    {
+        double input = super.getRawAxis(axis);
+        double newInput;
+
+        if (axis == Constants.LEFT_STICK_Y_AXIS || axis == Constants.RIGHT_STICK_Y_AXIS)
+        {
+            input = -input;
+        }
+
+        if(Math.abs(input) <= axisDeadzone)
+        {
+            newInput = 0.0;
+        }
+        else
+        {
+            newInput = (maximumAxisValue / (1.0 - axisDeadzone)) * (input - axisDeadzone * (Math.abs(input) / input));
+        }
+        
+        return newInput;
+    }
+
+    public double getQuadraticAxis(int axis)
+    {
+        double input = super.getRawAxis(axis);
+        double newInput;
+
+        if (axis == Constants.LEFT_STICK_Y_AXIS || axis == Constants.RIGHT_STICK_Y_AXIS)
+        {
+            input = -input;
+        }
+
+        if(Math.abs(input) <= axisDeadzone)
+        {
+            newInput = 0.0;
+        }
+        else
+        {
+            newInput = (maximumAxisValue / Math.pow( (1.0 - axisDeadzone), 2)) * (((Math.abs(input) / input) * Math.pow(input - (axisDeadzone * (Math.abs(input) / input)), 2)));
+        }
+
+        return newInput;
+    }
+
+    public double getCubicAxis(int axis)
+    {
+        double input = super.getRawAxis(axis);
+        double newInput;
+
+        if (axis == Constants.LEFT_STICK_Y_AXIS || axis == Constants.RIGHT_STICK_Y_AXIS)
+        {
+            input = -input;
+        }
+
+        if(Math.abs(input) <= axisDeadzone)
+        {
+            newInput = 0.0;
+        }
+        else
+        {
+            newInput = (maximumAxisValue / Math.pow( (1.0 - axisDeadzone), 3)) * ((Math.pow(input - (axisDeadzone * (Math.abs(input) / input)), 3)));
+        }
+
+        return newInput;
+    }
+
+    public double[] getNewAxis(double xAxis, double yAxis)
+    {
+        double newAxes[] = {xAxis , yAxis};
+        double magnitude = Math.sqrt(Math.pow(xAxis, 2) + Math.pow(yAxis, 2));
+
+        if((xAxis != 0) && (yAxis != 0))
+        {
+            newAxes[0] = (Math.min((Math.abs(xAxis)/Math.abs(yAxis)), 1.0) * magnitude);
+            newAxes[1] = (Math.min((Math.abs(yAxis)/Math.abs(xAxis)), 1.0) * magnitude);
+        }
+
+        return newAxes;
     }
 
     /**

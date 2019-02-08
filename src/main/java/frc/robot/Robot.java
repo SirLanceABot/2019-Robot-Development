@@ -34,5 +34,6 @@ public class Robot extends TimedRobot
     public void teleopPeriodic()
     {
         drivetrain.teleop();
+        System.out.println(drivetrain);
     }
 }

@@ -38,7 +38,9 @@ public class Drivetrain extends MecanumDrive
 	private static CANSparkMax backRightMotor = new CANSparkMax(Constants.BACK_RIGHT_MOTOR_PORT,
 			CANSparkMaxLowLevel.MotorType.kBrushless);
 	private static CANSparkMax backLeftMotor = new CANSparkMax(Constants.BACK_LEFT_MOTOR_PORT,
-			CANSparkMaxLowLevel.MotorType.kBrushless);
+            CANSparkMaxLowLevel.MotorType.kBrushless);
+            
+    boolean driveInFieldOriented = true;
 
 	private AHRS navX = new AHRS(I2C.Port.kOnboard);
 
@@ -105,22 +107,20 @@ public class Drivetrain extends MecanumDrive
 
         System.out.println("X Axis:" + leftXAxis);
         System.out.println("Y Axis:" + -leftYAxis);
-        
-        boolean driveInFieldOriented = true;
 
-        if(driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER))
+        if(driverXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER))
         {
             driveInFieldOriented = !driveInFieldOriented;
         }
 
-		if (driveInFieldOriented)
-		{
-            this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, getHeadingInDegrees());
-		}
-		else
-		{
-			this.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
-		}
+		// if (driveInFieldOriented)
+		// {
+        //     this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, getHeadingInDegrees());
+		// }
+		// else
+		// {
+		// 	this.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
+		// }
 
 		System.out.println(toString());
     }
