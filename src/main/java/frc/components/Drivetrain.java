@@ -113,14 +113,14 @@ public class Drivetrain extends MecanumDrive
             driveInFieldOriented = !driveInFieldOriented;
         }
 
-		// if (driveInFieldOriented)
-		// {
-        //     this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, getHeadingInDegrees());
-		// }
-		// else
-		// {
-		// 	this.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
-		// }
+		if (driveInFieldOriented)
+		{
+            this.driveCartesian(leftXAxis, leftYAxis, rightXAxis, getHeadingInDegrees());
+		}
+		else
+		{
+			this.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
+		}
 
 		System.out.println(toString());
     }
