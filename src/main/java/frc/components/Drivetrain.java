@@ -57,7 +57,8 @@ public class Drivetrain extends MecanumDrive
 	private Drivetrain()
 	{
         super(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
-        
+
+		
         // setSafetyEnabled(false);
 
 		frontRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
@@ -105,10 +106,10 @@ public class Drivetrain extends MecanumDrive
 		//double leftXAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_X_AXIS);
         //double leftYAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_Y_AXIS);
 
-        double[] rightAxes = driverXbox.getScaledAxes(Xbox.Constants.RIGHT_STICK_AXES);
+        double[] rightAxes = driverXbox.getScaledAxes(Xbox.Constants.RIGHT_STICK_AXES, Xbox.Constants.PolynomialDrive.kCubicDrive);
         double rightXAxis = rightAxes[0];
 
-        double[] leftAxes = driverXbox.getScaledAxes(Xbox.Constants.LEFT_STICK_AXES);
+        double[] leftAxes = driverXbox.getScaledAxes(Xbox.Constants.LEFT_STICK_AXES, Xbox.Constants.PolynomialDrive.kCubicDrive);
         double leftXAxis = leftAxes[0];
         double leftYAxis = leftAxes[1];
 

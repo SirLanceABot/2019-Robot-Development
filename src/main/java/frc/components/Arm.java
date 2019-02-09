@@ -16,11 +16,10 @@ import frc.control.Xbox;
 import frc.components.Arm.Constants.Position;
 import frc.control.ButtonBoard;
 
-import javax.lang.model.util.ElementScanner6;
-
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 /**
  * Add your docs here.
@@ -56,6 +55,14 @@ public class Arm
 
     private Arm()
     {
+        masterIntakeRoller.configFactoryDefault();
+        slaveIntakeRoller.configFactoryDefault();
+        armMotor.configFactoryDefault();
+
+        armMotor.setNeutralMode(NeutralMode.Brake);
+        masterIntakeRoller.setNeutralMode(NeutralMode.Brake);
+        slaveIntakeRoller.setNeutralMode(NeutralMode.Brake);
+
         slaveIntakeRoller.follow(masterIntakeRoller);
         armMotor.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.Analog, 0, 0);
     }

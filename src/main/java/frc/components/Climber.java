@@ -7,17 +7,15 @@
 
 package frc.components;
 
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.XboxController;
-import frc.control.DriverXbox;
-import frc.control.OperatorXbox;
-import frc.control.Xbox;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 
 /**
@@ -25,19 +23,31 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
  */
 public class Climber 
 {
-    private Solenoid pinSolenoid = new Solenoid(Constants.FOOT_SOLENOID_PORT);
-    private WPI_TalonSRX masterDrive =  new WPI_TalonSRX(Constants.CLIMBER_TALON_PORT);
-    private WPI_VictorSPX followerDrive = new WPI_VictorSPX(Constants.CLIMBER_VICTOR_PORT);
+    private DoubleSolenoid pinSolenoid = new DoubleSolenoid(Constants.SOLENOID_PORT_1, Constants.SOLENOID_PORT_2);
+    private WPI_TalonSRX masterLegMotor =  new WPI_TalonSRX(Constants.CLIMBER_TALON_PORT);
+    private WPI_VictorSPX slaveLegMotor = new WPI_VictorSPX(Constants.CLIMBER_VICTOR_PORT);
 
     private static Climber instance = new Climber();
 
-    OperatorXbox operatorXbox = OperatorXbox.getInstance();
     private Climber()
     {
-        pinSolenoid.set(false);
-        masterDrive.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyOpen);
-        masterDrive.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
-        followerDrive.follow(masterDrive);
+        masterLegMotor.configFactoryDefault();
+        slaveLegMotor.configFactoryDefault();
+
+        masterLegMotor.setNeutralMode(NeutralMode.Brake);
+        slaveLegMotor.setNeutralMode(NeutralMode.Brake);
+
+        
+
+        masterLegMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyOpen);
+        masterLegMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+        masterLegMotor.configForwardSoftLimitEnable(true);
+        masterLegMotor.configReverseSoftLimitEnable(true);
+        masterLegMotor.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.QuadEncoder, 0, 0);
+
+        masterLegMotor.configClearPositionOnLimitR(true, 0);
+
+        slaveLegMotor.follow(masterLegMotor);
     }
 
     public static Climber getInstance()
@@ -45,65 +55,63 @@ public class Climber
         return(instance);
     }
 
-    private void ejectPin()
+    public void ejectPin()
     {
-        pinSolenoid.set(true);
+        pinSolenoid.set(Value.kForward);
     }
 
-    private void extendLegs(double speed)
+    public void resetPin()
+    {
+        pinSolenoid.set(Value.kReverse);
+    }
+
+    public void extendLegs(double speed)
     {
         speed = Math.abs(speed);
-        masterDrive.set(speed);
+        masterLegMotor.set(speed);
     }
 
-    private void retractLegs(double speed) 
+    public void retractLegs(double speed) 
     {
         speed = -Math.abs(speed);
-        masterDrive.set(speed);
+        masterLegMotor.set(speed);
+    }
+
+    public void stopLegs()
+    {
+        masterLegMotor.set(0);
+    }
+
+    public int getEncoder()
+    {
+        return masterLegMotor.getSelectedSensorPosition();
+    }
+
+    public void resetEncoderPosition()
+    {
+        masterLegMotor.setSelectedSensorPosition(0);
     }
 
     public void teleop()
     {
-        boolean legsExtendButton = operatorXbox.getRawButton(Constants.EXTEND_LEGS_BUTTON);
-        boolean legsRetractButton = operatorXbox.getRawButton(Constants.RETRACT_LEGS_BUTTON);
-        boolean pushPin = operatorXbox.getRawButtonPressed(Constants.PUSH_PIN_BUTTON);
-        boolean climbVerification = operatorXbox.getRawButton(Constants.CLIMB_VERIFICATION);
-
-        if(climbVerification)
-        {
-            if(legsExtendButton)
-            {
-                extendLegs(0.5);
-            }
-
-            if(legsRetractButton)
-            {
-                retractLegs(0.5);
-            }
-
-            if(pushPin)
-            {
-                ejectPin();
-            }
-          }
     }
 
 
     @Override
     public String toString()
     {
-        return String.format("Write this toString");
+        return String.format("Encoder: %d  Motor Current: %.2f", getEncoder(), masterLegMotor.getOutputCurrent());
     }
 
 
     public static class Constants
     {
-        private static final int FOOT_SOLENOID_PORT = 0;
-        private static final int CLIMBER_TALON_PORT = 0;
-        private static final int CLIMBER_VICTOR_PORT = 0;
-        private static final int EXTEND_LEGS_BUTTON = 0;
-        private static final int RETRACT_LEGS_BUTTON = 0;
-        private static final int PUSH_PIN_BUTTON = 0;
-        private static final int CLIMB_VERIFICATION = 0;
+        public static final int SOLENOID_PORT_1 = 0;
+        public static final int SOLENOID_PORT_2 = 1;
+        public static final int CLIMBER_TALON_PORT = 0;
+        public static final int CLIMBER_VICTOR_PORT = 0;
+
+        public static final int MAX_CLIMBER_HEIGHT = 500;
+        public static final int MIN_CLIMBER_HEIGHT = 0;
     }
 }

@@ -9,6 +9,8 @@ package frc.robot;
 
 import frc.components.Arm;
 import frc.components.Elevator;
+import frc.components.Climber;
+import frc.control.Xbox;
 import frc.control.DriverXbox;
 import frc.control.ButtonBoard;
 
@@ -22,6 +24,7 @@ public class Teleop
 
     private DriverXbox driverXbox = DriverXbox.getInstance();
     private ButtonBoard buttonBoard = ButtonBoard.getInstance();
+    private Climber climber = Climber.getInstance();
 
     private static Teleop instance = new Teleop();
     
@@ -38,8 +41,8 @@ public class Teleop
 
     public void teleop()
     {     
-        boolean cargoInButton = driverXbox.getRawButton(9);
-        boolean cargoOutButton = driverXbox.getRawButton(10);
+        boolean cargoInButton = buttonBoard.getRawButton(ButtonBoard.Constants.SLOW_SPEED_BUTTON);
+        boolean cargoOutButton = buttonBoard.getRawButton(ButtonBoard.Constants.FAST_SPEED_BUTTON);
 
         boolean floorButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.FLOOR_BUTTON);
         boolean cargoShipPortButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CARGO_SHIP_CARGO_BUTTON);
@@ -51,6 +54,11 @@ public class Teleop
         boolean bottomCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.BOTTOM_CARGO_BUTTON);
         boolean centerCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_CARGO_BUTTON);
         boolean topCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_CARGO_BUTTON);
+
+        boolean aButton = driverXbox.getRawButton(Xbox.Constants.A_BUTTON);
+        boolean bButton = driverXbox.getRawButton(Xbox.Constants.B_BUTTON);
+        boolean xButton = driverXbox.getRawButtonPressed(Xbox.Constants.X_BUTTON);
+        boolean leftBumper = driverXbox.getRawButton(Xbox.Constants.LEFT_BUMPER);
         
         
         if(floorButton)
@@ -112,6 +120,26 @@ public class Teleop
             arm.stopCargo();
         }
         
+        if(leftBumper)
+        {
+            if(aButton && climber.getEncoder() < Climber.Constants.MAX_CLIMBER_HEIGHT)
+            {
+                climber.extendLegs(0.5);
+            }
+            else if(bButton && climber.getEncoder() > Climber.Constants.MIN_CLIMBER_HEIGHT)
+            {
+                climber.retractLegs(0.5);
+            }
+            else
+            {
+                climber.stopLegs();
+            }
+
+            if(xButton)
+            {
+                climber.ejectPin();
+            }
+        }
     
 
     }

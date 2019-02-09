@@ -8,9 +8,9 @@
 package frc.components;
 
 import frc.components.Elevator.Constants.ElevatorPosition;
-import frc.control.ButtonBoard;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 /**
  * Add your docs here.
@@ -20,7 +20,6 @@ public class Elevator
     private WPI_TalonSRX masterElevatorMotor = new WPI_TalonSRX(Constants.MASTER_ELEVATOR_MOTOR_PORT);
     private WPI_VictorSPX slaveElevatorMotor = new WPI_VictorSPX(Constants.SLAVE_ELEVATOR_MOTOR_PORT);
 
-    private ButtonBoard buttonBoard = ButtonBoard.getInstance();
 
     private boolean isMoving = false;
     private Constants.ElevatorPosition targetPosition = Constants.ElevatorPosition.kNone;
@@ -35,6 +34,12 @@ public class Elevator
     
     private Elevator()
 	{
+        masterElevatorMotor.configFactoryDefault();
+        slaveElevatorMotor.configFactoryDefault();
+
+        masterElevatorMotor.setNeutralMode(NeutralMode.Brake);
+        slaveElevatorMotor.setNeutralMode(NeutralMode.Brake);
+
         masterElevatorMotor.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.Analog, 0, 0);
 
         masterElevatorMotor.configReverseSoftLimitThreshold(Constants.ElevatorPosition.kMinHeight.position, 0);
@@ -154,54 +159,7 @@ public class Elevator
 
     public void teleop()
     {
-        boolean floorButton = buttonBoard.getRawButton(ButtonBoard.Constants.FLOOR_BUTTON);
-        boolean cargoShipCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.CARGO_SHIP_CARGO_BUTTON);
 
-        boolean bottomHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.BOTTOM_HATCH_BUTTON);
-        boolean centerHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.CENTER_HATCH_BUTTON);
-        boolean topHatchButton = buttonBoard.getRawButton(ButtonBoard.Constants.TOP_HATCH_BUTTON);
-
-        boolean bottomCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.BOTTOM_CARGO_BUTTON);
-        boolean centerCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.CENTER_CARGO_BUTTON);
-        boolean topCargoButton = buttonBoard.getRawButton(ButtonBoard.Constants.TOP_CARGO_BUTTON);
-
-       // yAxis = -operatorXbox.getRawAxis(1);
-
-
-        if(floorButton)
-        {
-            targetPosition = ElevatorPosition.kFloor;
-        }
-        else if(cargoShipCargoButton)
-        {
-            targetPosition = ElevatorPosition.kCargoShipCargo;
-        }
-        else if(bottomHatchButton)
-        {
-            targetPosition = ElevatorPosition.kBottomHatch;
-        }
-        else if(centerHatchButton)
-        {
-            targetPosition = ElevatorPosition.kCenterHatch;
-        }
-        else if(topHatchButton)
-        {
-            targetPosition = ElevatorPosition.kTopHatch;
-        }
-        else if(bottomCargoButton)
-        {
-            targetPosition = ElevatorPosition.kBottomCargo;
-        }
-        else if(centerCargoButton)
-        {
-            targetPosition = ElevatorPosition.kCenterCargo;
-        }
-        else if(topCargoButton)
-        {
-            targetPosition = ElevatorPosition.kTopCargo;
-        }
-
-        moveTo();
     }
 
     public void autonomous()

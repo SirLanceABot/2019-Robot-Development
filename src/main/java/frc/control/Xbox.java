@@ -1,6 +1,5 @@
 package frc.control;
 
-import javax.lang.model.util.ElementScanner6;
 
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -48,73 +47,27 @@ public abstract class Xbox extends Joystick
         return value;
     }
 
-    public double getLinearAxis(int axis)
+    private double getSign(double input)
     {
-        double input = super.getRawAxis(axis);
-        double newInput;
-
-        if (axis == Constants.LEFT_STICK_Y_AXIS || axis == Constants.RIGHT_STICK_Y_AXIS)
-        {
-            input = -input;
-        }
-
-        if(Math.abs(input) <= axisDeadzone)
-        {
-            newInput = 0.0;
-        }
-        else
-        {
-            newInput = (maximumAxisValue / (1.0 - axisDeadzone)) * (input - axisDeadzone * (Math.abs(input) / input));
-        }
-        
-        return newInput;
+        return input == 0.0 ? 0.0 : Math.abs(input) / input;
     }
 
-    public double getQuadraticAxis(int axis)
+    private double getLinearAxis(double input)
     {
-        double input = super.getRawAxis(axis);
-        double newInput;
-
-        if (axis == Constants.LEFT_STICK_Y_AXIS || axis == Constants.RIGHT_STICK_Y_AXIS)
-        {
-            input = -input;
-        }
-
-        if(Math.abs(input) <= axisDeadzone)
-        {
-            newInput = 0.0;
-        }
-        else
-        {
-            newInput = (maximumAxisValue / Math.pow( (1.0 - axisDeadzone), 2)) * (((Math.abs(input) / input) * Math.pow(input - (axisDeadzone * (Math.abs(input) / input)), 2)));
-        }
-
-        return newInput;
+        return maximumAxisValue / (1.0 - axisDeadzone) * (input - axisDeadzone * getSign(input));
     }
 
-    public double getCubicAxis(int axis)
+    private double getQuadraticAxis(double input)
     {
-        double input = super.getRawAxis(axis);
-        double newInput;
-
-        if (axis == Constants.LEFT_STICK_Y_AXIS || axis == Constants.RIGHT_STICK_Y_AXIS)
-        {
-            input = -input;
-        }
-
-        if(Math.abs(input) <= axisDeadzone)
-        {
-            newInput = 0.0;
-        }
-        else
-        {
-            newInput = (maximumAxisValue / Math.pow( (1.0 - axisDeadzone), 3)) * ((Math.pow(input - (axisDeadzone * (Math.abs(input) / input)), 3)));
-        }
-
-        return newInput;
+        return maximumAxisValue / Math.pow(1.0 - axisDeadzone, 2) * getSign(input) * Math.pow(input - axisDeadzone * getSign(input), 2);
     }
 
-    public double[] getScaledAxes(int axes)
+    private double getCubicAxis(double input)
+    {
+        return maximumAxisValue / Math.pow(1.0 - axisDeadzone, 3) * Math.pow(input - axisDeadzone * getSign(input), 3);
+    }
+
+    public double[] getScaledAxes(int axes, Constants.PolynomialDrive driveMode)
     {   
 
         double xAxis = super.getRawAxis(axes);
@@ -130,14 +83,14 @@ public abstract class Xbox extends Joystick
 
         if(Math.abs(xAxis) > Math.abs(yAxis))
         {
-            scalarRatio = Math.abs(yAxis) / Math.abs(xAxis);
+            scalarRatio = Math.abs(yAxis / xAxis);
             xAxis = xSign * magnitude;
             yAxis = ySign * magnitude * scalarRatio;
         }
 
         else if(Math.abs(xAxis) < Math.abs(yAxis))
         {
-            scalarRatio = Math.abs(xAxis) / Math.abs(yAxis);
+            scalarRatio = Math.abs(xAxis / yAxis);
             yAxis = ySign * magnitude;
             xAxis = xSign * magnitude * scalarRatio;
         }
@@ -147,12 +100,37 @@ public abstract class Xbox extends Joystick
             yAxis = ySign * magnitude;
             xAxis = xSign * magnitude;
         }
-        xAxis = maximumAxisValue / Math.pow( 1.0 - axisDeadzone, 3) * Math.pow(xAxis - axisDeadzone * xSign, 3);
-        yAxis = maximumAxisValue / Math.pow( 1.0 - axisDeadzone, 3) * Math.pow(yAxis - axisDeadzone * ySign, 3);
+
+        if(driveMode == Constants.PolynomialDrive.kLinearDrive)
+        {
+            xAxis = getLinearAxis(xAxis);
+            yAxis = getLinearAxis(yAxis);
+        }
+        else if(driveMode == Constants.PolynomialDrive.kQuadraticDrive)
+        {
+            xAxis = getQuadraticAxis(xAxis);
+            yAxis = getQuadraticAxis(yAxis);
+        }
+        else if(driveMode == Constants.PolynomialDrive.kCubicDrive)
+        {
+            xAxis = getCubicAxis(xAxis);
+            yAxis = getCubicAxis(yAxis);
+        }
+
         double[] scaledAxes = {xAxis, yAxis};
 
         
         return scaledAxes;
+    }
+
+    public void configMaximumAxisValue(double value)
+    {
+        maximumAxisValue = value;
+    }
+
+    public void configAxisDeadzone(double value)
+    {
+        axisDeadzone = value;
     }
 
     /**
@@ -163,6 +141,29 @@ public abstract class Xbox extends Joystick
      */
     public static class Constants
     {
+        public static enum PolynomialDrive
+		{
+
+            kLinearDrive(1, "Linear"),
+            kQuadraticDrive(2, "Quadratic"),
+            kCubicDrive(3, "Cubic");
+
+            int power;
+            String name;
+
+            private PolynomialDrive(int power, String name)
+            {
+                this.power = power;
+                this.name = name;
+            }
+
+            @Override
+            public String toString()
+            {
+                return name;
+            }
+        }
+
         public static final int A_BUTTON = 1;
         public static final int B_BUTTON = 2;
         public static final int X_BUTTON = 3;
