@@ -6,32 +6,43 @@ import edu.wpi.first.wpilibj.DigitalOutput;
  * Class to represent a Light Ring on the robot.
  * Used for illuminating either the floor or a vision target.
  */
-public class LightRing extends DigitalOutput
+public class Lights extends DigitalOutput
 {
 
-    DigitalOutput light1 = new DigitalOutput(Constants.LIGHT1PORT);
+    private static Lights instance = new Lights(Constants.LIGHT_PORT);
 
 	/**
 	 * Constructor for the LightRing class
 	 * @param port The port in which the light ring is connected.
 	 */
-	public LightRing(int port)
+	private Lights(int port)
 	{
 		super(port);
     }
+
+    public static Lights getInstance()
+    {
+        return instance;
+    }
     
+    /**
+     * Turn the light bar and light rings on.
+     */
     public void turnLightsOn()
     {
-        light1.set(true);
+        set(true);
     }
 
+    /**
+     * Turn the light bar and light rings off.
+     */
     public void turnLightsOff()
     {
-        light1.set(false);
+        set(false);
     }
 
     public static class Constants
     {
-        public static final int LIGHT1PORT = 0;
+        public static final int LIGHT_PORT = 0;
     }
 }

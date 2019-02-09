@@ -1,5 +1,7 @@
 package frc.control;
 
+import javax.lang.model.util.ElementScanner6;
+
 import edu.wpi.first.wpilibj.Joystick;
 
 /**
@@ -10,8 +12,8 @@ import edu.wpi.first.wpilibj.Joystick;
  */
 public abstract class Xbox extends Joystick
 {
-    public double maximumAxisValue = 1.0;
-    public double axisDeadzone = 0.2;
+    private double maximumAxisValue = 1.0;
+    private double axisDeadzone = 0.2;
 
 
     /**
@@ -19,7 +21,7 @@ public abstract class Xbox extends Joystick
      * 
      * @param port
      */
-    Xbox(int port)
+    public Xbox(int port)
     {
         super(port);
     }
@@ -29,26 +31,7 @@ public abstract class Xbox extends Joystick
     {
         double value = super.getRawAxis(axis);
 
-        double xAxis = super.getRawAxis(Constants.LEFT_STICK_X_AXIS);
-        double newXAxis = xAxis;
-        double yAxis = super.getRawAxis(Constants.LEFT_STICK_Y_AXIS);
-        double newYAxis = yAxis;
-        double magnitude = Math.sqrt(Math.pow(xAxis, 2) + Math.pow(yAxis, 2));
 
-        if((xAxis != 0) && (yAxis != 0))
-        {
-            newXAxis = (Math.min((Math.abs(xAxis)/Math.abs(yAxis)), 1.0) * magnitude);
-            newYAxis = (Math.min((Math.abs(yAxis)/Math.abs(xAxis)), 1.0) * magnitude);
-        }
-
-        if(Constants.LEFT_STICK_X_AXIS == axis)
-        {
-            value = newXAxis;
-        }
-        else if(Constants.LEFT_STICK_Y_AXIS == axis)
-        {
-            value = newYAxis;
-        }
 
         if (Math.abs(value) <= Constants.AXIS_DEADZONE)
         {
@@ -131,18 +114,45 @@ public abstract class Xbox extends Joystick
         return newInput;
     }
 
-    public double[] getNewAxis(double xAxis, double yAxis)
-    {
-        double newAxes[] = {xAxis , yAxis};
-        double magnitude = Math.sqrt(Math.pow(xAxis, 2) + Math.pow(yAxis, 2));
+    public double[] getScaledAxes(int axes)
+    {   
 
-        if((xAxis != 0) && (yAxis != 0))
+        double xAxis = super.getRawAxis(axes);
+        double yAxis = -super.getRawAxis(axes + 1);
+
+        double magnitude = Math.min(Math.sqrt(Math.pow(xAxis, 2) + Math.pow(yAxis, 2)), 1.0);
+        double scalarRatio;
+        xAxis = (Math.abs(xAxis) <= axisDeadzone ? 0.0 : xAxis);
+        yAxis = (Math.abs(yAxis) <= axisDeadzone ? 0.0 : yAxis);
+
+        double xSign = (xAxis == 0.0 ? 0.0 : Math.abs(xAxis) / xAxis);
+        double ySign = (yAxis == 0.0 ? 0.0 : Math.abs(yAxis) / yAxis);
+
+        if(Math.abs(xAxis) > Math.abs(yAxis))
         {
-            newAxes[0] = (Math.min((Math.abs(xAxis)/Math.abs(yAxis)), 1.0) * magnitude);
-            newAxes[1] = (Math.min((Math.abs(yAxis)/Math.abs(xAxis)), 1.0) * magnitude);
+            scalarRatio = Math.abs(yAxis) / Math.abs(xAxis);
+            xAxis = xSign * magnitude;
+            yAxis = ySign * magnitude * scalarRatio;
         }
 
-        return newAxes;
+        else if(Math.abs(xAxis) < Math.abs(yAxis))
+        {
+            scalarRatio = Math.abs(xAxis) / Math.abs(yAxis);
+            yAxis = ySign * magnitude;
+            xAxis = xSign * magnitude * scalarRatio;
+        }
+        
+        else  
+        {
+            yAxis = ySign * magnitude;
+            xAxis = xSign * magnitude;
+        }
+        xAxis = maximumAxisValue / Math.pow( 1.0 - axisDeadzone, 3) * Math.pow(xAxis - axisDeadzone * xSign, 3);
+        yAxis = maximumAxisValue / Math.pow( 1.0 - axisDeadzone, 3) * Math.pow(yAxis - axisDeadzone * ySign, 3);
+        double[] scaledAxes = {xAxis, yAxis};
+
+        
+        return scaledAxes;
     }
 
     /**
@@ -170,7 +180,10 @@ public abstract class Xbox extends Joystick
         public static final int RIGHT_TRIGGER_AXIS = 3;
         public static final int RIGHT_STICK_X_AXIS = 4;
         public static final int RIGHT_STICK_Y_AXIS = 5;
+        public static final int LEFT_STICK_AXES = 0;
+        public static final int RIGHT_STICK_AXES = 4;
 
         public static final double AXIS_DEADZONE = 0.2;
+        
     }
 }

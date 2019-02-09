@@ -10,14 +10,15 @@ public class OperatorXbox extends Xbox
 {
     private static OperatorXbox instance = new OperatorXbox(Constants.PORT);
 
-    public static OperatorXbox getInstance()
-    {
-        return instance;
-    }
 
     private OperatorXbox(int port)
     {
         super(port);
+    }
+
+    public static OperatorXbox getInstance()
+    {
+        return instance;
     }
 
     public static class Constants

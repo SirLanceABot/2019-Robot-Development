@@ -101,9 +101,16 @@ public class Drivetrain extends MecanumDrive
 	// main loop for teleop mode
 	public void teleop()
 	{
-		double rightXAxis = driverXbox.getRawAxis(Xbox.Constants.RIGHT_STICK_X_AXIS);
-		double leftXAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_X_AXIS);
-        double leftYAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_Y_AXIS);
+		// double rightXAxis = driverXbox.getRawAxis(Xbox.Constants.RIGHT_STICK_X_AXIS);
+		//double leftXAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_X_AXIS);
+        //double leftYAxis = driverXbox.getRawAxis(Xbox.Constants.LEFT_STICK_Y_AXIS);
+
+        double[] rightAxes = driverXbox.getScaledAxes(Xbox.Constants.RIGHT_STICK_AXES);
+        double rightXAxis = rightAxes[0];
+
+        double[] leftAxes = driverXbox.getScaledAxes(Xbox.Constants.LEFT_STICK_AXES);
+        double leftXAxis = leftAxes[0];
+        double leftYAxis = leftAxes[1];
 
         System.out.println("X Axis:" + leftXAxis);
         System.out.println("Y Axis:" + -leftYAxis);
