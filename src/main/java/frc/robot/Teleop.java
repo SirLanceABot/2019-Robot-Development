@@ -55,10 +55,11 @@ public class Teleop
         boolean centerCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_CARGO_BUTTON);
         boolean topCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_CARGO_BUTTON);
 
-        boolean aButton = driverXbox.getRawButton(Xbox.Constants.A_BUTTON);
-        boolean bButton = driverXbox.getRawButton(Xbox.Constants.B_BUTTON);
-        boolean xButton = driverXbox.getRawButtonPressed(Xbox.Constants.X_BUTTON);
-        boolean leftBumper = driverXbox.getRawButton(Xbox.Constants.LEFT_BUMPER);
+        boolean aButton = driverXbox.getRawButton(Xbox.Constants.A_BUTTON);                 // Extend climber elevator
+        boolean bButton = driverXbox.getRawButton(Xbox.Constants.B_BUTTON);                 // Retract climber elevator
+        boolean xButton = driverXbox.getRawButtonPressed(Xbox.Constants.X_BUTTON);          // Release pin solenoid
+        boolean yButton = driverXbox.getRawButtonPressed(Xbox.Constants.Y_BUTTON);          // Retract pin solenoid
+        boolean leftBumper = driverXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);    // Hold button in order to access climbing
         
         
         if(floorButton)
@@ -139,11 +140,12 @@ public class Teleop
             {
                 climber.ejectPin();
             }
+            else if(yButton)
+            {
+                climber.resetPin();
+            }
         }
-    
-
     }
-    
 
     public static class Constants
     {

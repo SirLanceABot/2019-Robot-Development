@@ -37,12 +37,8 @@ public class Climber
         masterLegMotor.setNeutralMode(NeutralMode.Brake);
         slaveLegMotor.setNeutralMode(NeutralMode.Brake);
 
-        
-
         masterLegMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyOpen);
         masterLegMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
-        masterLegMotor.configForwardSoftLimitEnable(true);
-        masterLegMotor.configReverseSoftLimitEnable(true);
         masterLegMotor.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.QuadEncoder, 0, 0);
 
         masterLegMotor.configClearPositionOnLimitR(true, 0);
@@ -112,6 +108,6 @@ public class Climber
         public static final int CLIMBER_VICTOR_PORT = 0;
 
         public static final int MAX_CLIMBER_HEIGHT = 500;
-        public static final int MIN_CLIMBER_HEIGHT = 0;
+        public static final int MIN_CLIMBER_HEIGHT = -5;
     }
 }
