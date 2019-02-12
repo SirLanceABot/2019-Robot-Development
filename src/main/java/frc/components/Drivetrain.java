@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Servo;
 
 // import javax.lang.model.util.ElementScanner6;
 
@@ -26,12 +27,9 @@ import com.kauailabs.navx.frc.AHRS;
  */
 public class Drivetrain extends MecanumDrive
 {
-	private DriverXbox driverXbox = DriverXbox.getInstance();
-
-	private double previousNavXValue = 999.999;
-	private boolean abortAutonomous = false;
-
-	private static CANSparkMax frontRightMotor = new CANSparkMax(Constants.FRONT_RIGHT_MOTOR_PORT,
+    private DriverXbox driverXbox = DriverXbox.getInstance();
+    
+    private static CANSparkMax frontRightMotor = new CANSparkMax(Constants.FRONT_RIGHT_MOTOR_PORT,
 			CANSparkMaxLowLevel.MotorType.kBrushless);
 	private static CANSparkMax frontLeftMotor = new CANSparkMax(Constants.FRONT_LEFT_MOTOR_PORT,
 			CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -39,17 +37,22 @@ public class Drivetrain extends MecanumDrive
 			CANSparkMaxLowLevel.MotorType.kBrushless);
 	private static CANSparkMax backLeftMotor = new CANSparkMax(Constants.BACK_LEFT_MOTOR_PORT,
             CANSparkMaxLowLevel.MotorType.kBrushless);
-            
-    boolean driveInFieldOriented = true;
 
-	private AHRS navX = new AHRS(I2C.Port.kOnboard);
+    private static Servo leftServo = new Servo(Constants.LEFT_SERVO_PORT);
+    private static Servo rightServo = new Servo(Constants.RIGHT_SERVO_PORT);
+    private double servoPosition = 0.5;
+    private boolean omniWheelUp = true;
 
-    private Encoder omniWheelEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
+    //TODO: find actual values for encoders chanel A and B
+    private Encoder leftEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
+    private Encoder rightEncoder = new Encoder(2, 3, false, Encoder.EncodingType.k4X);
+
+    private AHRS navX = new AHRS(I2C.Port.kOnboard);
+    private double previousNavXValue = 999.999;
+    private boolean abortAutonomous = false;
+    private boolean driveInFieldOriented = true;
     
 	private Timer timer = new Timer();
-
-	private boolean doRestartSpinTimer = true;
-
 
 	private static Drivetrain instance = new Drivetrain();
 
@@ -58,7 +61,7 @@ public class Drivetrain extends MecanumDrive
 	{
         super(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
 
-		
+		//TODO: bring this back in
         // setSafetyEnabled(false);
 
 		frontRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
@@ -94,9 +97,45 @@ public class Drivetrain extends MecanumDrive
 	 * 
 	 * @return Distance traveled.
 	 */
-	public double getDistanceInInches()
+	public double getLeftDistanceInInches()
 	{
-		return omniWheelEncoder.getRaw() / 135.0;
+		return leftEncoder.getRaw() / 141.1;
+    }
+    
+    public double getRightDistanceInInches()
+	{
+        //141.1 = (CPR 360 * 4) / (diameter * PI)
+		return rightEncoder.getRaw() / 141.1;
+    }
+    
+    public void moveOmniEncoders()
+    {
+        if(omniWheelUp)
+        {
+            servoPosition = 1.5;
+            leftServo.set(servoPosition);
+            rightServo.set(servoPosition);
+
+            omniWheelUp = false;
+        }
+        else
+        {
+            servoPosition = 1.5 + (1.0 / 8.5) * 1.5;
+            leftServo.set(servoPosition);
+            rightServo.set(servoPosition);
+
+            omniWheelUp = true;
+        }
+    }
+
+    public double getLeftServo()
+	{
+		return leftServo.get();
+    }
+    
+    public double getRightServo()
+	{
+		return rightServo.get();
 	}
 
 	// main loop for teleop mode
@@ -113,6 +152,8 @@ public class Drivetrain extends MecanumDrive
         double leftXAxis = leftAxes[0];
         double leftYAxis = leftAxes[1];
 
+        boolean xBoxAButton = driverXbox.getRawButtonPressed(Xbox.Constants.A_BUTTON);
+
         System.out.println("X Axis:" + leftXAxis);
         System.out.println("Y Axis:" + -leftYAxis);
 
@@ -128,7 +169,14 @@ public class Drivetrain extends MecanumDrive
 		else
 		{
 			this.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
-		}
+        }
+
+        if(xBoxAButton)
+        {
+            moveOmniEncoders();
+        }
+        
+
 
 		System.out.println(toString());
     }
@@ -148,10 +196,55 @@ public class Drivetrain extends MecanumDrive
 	 * 
 	 * @return If the robot has completed the drive.
 	 */
-	public boolean driveDistanceInInches(int inches, double maxSpeed, int heading, int stoppingDistance)
+	public boolean driveDistanceInInchesRightSide(int inches, double maxSpeed, int heading, int stoppingDistance)
 	{
 		boolean isDoneDriving = false;
-		double distanceTravelled = Math.abs(getDistanceInInches());
+		double distanceTravelled = Math.abs(getRightDistanceInInches());
+		double startingSpeed = 0.3;
+		double stoppingSpeed = 0.175;
+		int startingDistance = 12;
+		int direction = 1;
+		double rotate = getHeadingInDegrees();
+
+		if (maxSpeed < 0)
+		{
+			direction = -1;
+		}
+
+		if (distanceTravelled <= inches)
+		{
+			if (distanceTravelled <= startingDistance)
+			{
+				driveCartesian(0, ((maxSpeed - (startingSpeed * direction)) / startingDistance) * distanceTravelled
+						+ (startingSpeed * direction), -rotate);
+			}
+			else if (distanceTravelled >= startingDistance && distanceTravelled <= inches - stoppingDistance)
+			{
+				driveCartesian(0, maxSpeed, -rotate);
+			}
+			else
+			{
+				driveCartesian(0, stoppingSpeed * direction, -rotate);
+			}
+		}
+		else
+		{
+			driveCartesian(0, 0, 0);
+			isDoneDriving = true;
+		}
+
+		return isDoneDriving;
+    }
+    
+    /**
+	 * Drive the distance passed into the method.
+	 * 
+	 * @return If the robot has completed the drive.
+	 */
+	public boolean driveDistanceInInchesLeftSide(int inches, double maxSpeed, int heading, int stoppingDistance)
+	{
+		boolean isDoneDriving = false;
+		double distanceTravelled = Math.abs(getLeftDistanceInInches());
 		double startingSpeed = 0.3;
 		double stoppingSpeed = 0.175;
 		int startingDistance = 12;
@@ -196,7 +289,7 @@ public class Drivetrain extends MecanumDrive
 	public boolean strafeDistanceInInches(int inches, double angle, double speed, int heading)
 	{
 		boolean isDoneDriving = false;
-		double x = Math.abs(getDistanceInInches());
+		double x = Math.abs(getRightDistanceInInches());
 		double rotate = getHeadingInDegrees();
 		double strafeSpeed = Math.sin(Math.abs(angle)) * speed;
 		double forwardSpeed = Math.cos(Math.abs(angle)) * speed;
@@ -237,7 +330,9 @@ public class Drivetrain extends MecanumDrive
 	public boolean spinToBearing(int bearing, double speed)
 	{
 		boolean doneSpinning = false;
-		boolean spin = true;
+        boolean spin = true;
+        
+        //TODO: reset timer
 
 		double heading = navX.getYaw();
 
@@ -289,7 +384,7 @@ public class Drivetrain extends MecanumDrive
 	@Override
 	public String toString()
 	{
-		return String.format("Enc: %.2f, FRC: %.2f, FLC: %.2f, BRC: %.2f, BLC: %.2f, Yaw: %.2f", getDistanceInInches(),
+		return String.format("Enc: %.2f, FRC: %.2f, FLC: %.2f, BRC: %.2f, BLC: %.2f, Yaw: %.2f", getRightDistanceInInches(),
 				frontRightMotor.getOutputCurrent(), frontLeftMotor.getOutputCurrent(),
 				backRightMotor.getOutputCurrent(), backLeftMotor.getOutputCurrent(), getHeadingInDegrees());
 	}
@@ -306,7 +401,8 @@ public class Drivetrain extends MecanumDrive
 
 		public static final double DRIVE_RAMP_TIME = 0.10;
 
-		public static final int SERVO_PORT = 0;
+        public static final int LEFT_SERVO_PORT = 0;
+        public static final int RIGHT_SERVO_PORT = 1;
 
 	}
 }
