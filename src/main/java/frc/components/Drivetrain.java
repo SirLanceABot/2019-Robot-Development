@@ -43,7 +43,7 @@ public class Drivetrain extends MecanumDrive
     private double servoPosition = 0.5;
     private boolean omniWheelUp = true;
 
-    //TODO: find actual values for encoders chanel A and B
+    //TODO: find actual values for encoders channel A and B
     private Encoder leftEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
     private Encoder rightEncoder = new Encoder(2, 3, false, Encoder.EncodingType.k4X);
 
@@ -104,7 +104,7 @@ public class Drivetrain extends MecanumDrive
     
     public double getRightDistanceInInches()
 	{
-        //141.1 = (CPR 360 * 4) / (diameter * PI)
+        //141.1 = (CPR 360 * 4) / (3.25 inch diameter omni wheel * PI)
 		return rightEncoder.getRaw() / 141.1;
     }
     
@@ -138,6 +138,16 @@ public class Drivetrain extends MecanumDrive
 		return rightServo.get();
 	}
 
+	public void resetLeftServo()
+	{
+		leftServo.set(0.00);
+	}
+
+	public void resetRightServo()
+	{
+		rightServo.set(0.00);
+	}
+	
 	// main loop for teleop mode
 	public void teleop()
 	{
