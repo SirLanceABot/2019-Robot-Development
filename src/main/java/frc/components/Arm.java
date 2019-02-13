@@ -51,6 +51,9 @@ public class Arm
     private static DriverXbox driverXbox = DriverXbox.getInstance();
     private static ButtonBoard buttonBoard = ButtonBoard.getInstance();
 
+    private static int horizontalArmPosition = 0;
+    private static int armRaisedPosition = 0;
+
     private static Arm instance = new Arm();
 
     private Arm()
@@ -187,11 +190,30 @@ public class Arm
     /**
      * this function sets the target position to be used later
      * in the program
-     * @param have to send the target position
+     * @param targetPosition have to send the target position
      */
     public void setTargetPosition(Constants.Position targetPosition)
     {
         this.targetPosition = targetPosition;
+    }
+
+    public static void setRobotType(boolean isCompetitionBot)
+    {
+        if(isCompetitionBot)
+        {
+            horizontalArmPosition = Constants.COMPETITION_HORIZONTAL_ARM_POSITION;
+            armRaisedPosition = Constants.COMPETITION_ARM_RAISED_POSITION;
+        }
+        else
+        {
+            horizontalArmPosition = Constants.PRACTICE_HORIZONTAL_ARM_POSITION;
+            armRaisedPosition = Constants.PRACTICE_ARM_RAISED_POSITION;
+        }
+    }
+
+    public int getArmRaisedPosition()
+    {
+        return armRaisedPosition;
     }
 
     /**
@@ -269,9 +291,10 @@ public class Arm
     {
         public static enum ArmPosition
         {
-            kBottomArmPosition(0, "Bottom Arm Position"),  
-            kMiddleArmPosition(50,"Middle Arm Position"),
-            kTopArmPosition(100, "Top Arm Position"),
+            kFloorArmPosition(horizontalArmPosition - 50, "Floor Arm Position"),
+            kHorizontalArmPosition(horizontalArmPosition, "Horizontal Arm Position"),  
+            kMiddleArmPosition(horizontalArmPosition + 50,"Middle Arm Position"),
+            kTopArmPosition(horizontalArmPosition + 100, "Top Arm Position"),
 
             kArmNone(-1, "Arm to None");
 
@@ -312,19 +335,18 @@ public class Arm
         }
         public static enum Position
 		{
-            kFloor(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Floor"),
-            //kFloorPanel(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Floor Panel"),
-            //kFloorCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Floor Cargo"),
-            kCargoShipCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Cargo Ship Cargo"),
+            kFloor(Constants.WristPosition.kWristDown, Constants.ArmPosition.kFloorArmPosition, "Floor"),
+            kCargoShipCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kHorizontalArmPosition, "Cargo Ship Cargo"),
 
-            kBottomHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kBottomArmPosition, "Bottom Hatch"),      // 1 ft 7 inches to center
-            kCenterHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kBottomArmPosition, "Center Hatch"),      // 3 ft 11 inches to center
+            kBottomHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kHorizontalArmPosition, "Bottom Hatch"),      // 1 ft 7 inches to center
+            kCenterHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kHorizontalArmPosition, "Center Hatch"),      // 3 ft 11 inches to center
             kTopHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kMiddleArmPosition, "Top Hatch"),         // 6 ft 3 inches to center
 
-            kBottomCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Bottom Cargo"),       // 2 ft 3.5 inches to center
-            kCenterCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kBottomArmPosition, "Center Cargo"),       // 4 ft 7.5 inches to center
+            kBottomCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kHorizontalArmPosition, "Bottom Cargo"),       // 2 ft 3.5 inches to center
+            kCenterCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kHorizontalArmPosition, "Center Cargo"),       // 4 ft 7.5 inches to center
             kTopCargo(Constants.WristPosition.kWristDown,Constants.ArmPosition.kMiddleArmPosition, "Top Cargo"),          // 6 ft 11.5 inches to center
 
+            kDrive(Constants.WristPosition.kWristUp, Constants.ArmPosition.kMiddleArmPosition, "Driving"),
             kNone(Constants.WristPosition.kWristNone, Constants.ArmPosition.kArmNone, "No Target");
             private final Constants.ArmPosition armPosition;
             private final Constants.WristPosition wristPosition;
@@ -355,6 +377,12 @@ public class Arm
         public static final int ARM_MOTOR_ID = 2;
 
         public static final int ARM_THRESHOLD = 5;
+
+        public static final int COMPETITION_HORIZONTAL_ARM_POSITION = 0;
+        public static final int PRACTICE_HORIZONTAL_ARM_POSITION = 0;
+
+        public static final int COMPETITION_ARM_RAISED_POSITION = 200;
+        public static final int PRACTICE_ARM_RAISED_POSITION = 200;
     }
 
 }

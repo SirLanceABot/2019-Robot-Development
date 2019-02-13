@@ -26,6 +26,7 @@ public class Elevator
     private int potValue;
 
     private static Elevator instance = new Elevator();
+    private Arm arm = Arm.getInstance();
 
     public static Elevator getInstance()
 	{
@@ -132,9 +133,14 @@ public class Elevator
     {
         potValue = getPotValue();
 
-        if(!targetPosition.equals(ElevatorPosition.kNone))
+        if(targetPosition != ElevatorPosition.kNone)
         {
-            if(potValue < (targetPosition.position - ElevatorPosition.kThreshold.position))
+            if( arm.getPotValue() < arm.getArmRaisedPosition())
+            {
+                stopElevator();
+                isMoving = true;
+            }
+            else if(potValue < (targetPosition.position - ElevatorPosition.kThreshold.position))
             {
                 raiseElevator();
                 isMoving = true;
@@ -151,26 +157,7 @@ public class Elevator
                 isMoving = false;
             }
         }
-        /*else  // For manual override of elevator
-        {
-            masterElevatorMotor.set(yAxis);
-        }*/
     }   
-
-    public void teleop()
-    {
-
-    }
-
-    public void autonomous()
-    {
-
-    }
-
-    public void test()
-    {
-
-    }
 
     @Override
     public String toString()

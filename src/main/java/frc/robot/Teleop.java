@@ -34,9 +34,14 @@ public class Teleop
 
     }
 
-    public Teleop getInstance()
+    public static Teleop getInstance()
     {
         return(instance);
+    }
+
+    public void teleopInit(boolean competitionBot)
+    {
+        arm.setRobotType(competitionBot);
     }
 
     public void teleop()
