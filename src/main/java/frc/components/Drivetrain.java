@@ -97,10 +97,10 @@ public class Drivetrain extends MecanumDrive
 	 * 
 	 * @return Distance traveled.
 	 */
-	public double getLeftDistanceInInches()
-	{
-		return leftEncoder.getRaw() / 141.1;
-    }
+        public double getLeftDistanceInInches()
+        {
+            return leftEncoder.getRaw() / 141.1;
+        }
     
     public double getRightDistanceInInches()
 	{
@@ -206,6 +206,8 @@ public class Drivetrain extends MecanumDrive
 	 * 
 	 * @return If the robot has completed the drive.
 	 */
+
+     //TODO: change starting and stopping speed to constants, make starting distance proportional to maxSpeed
 	public boolean driveDistanceInInchesRightSide(int inches, double maxSpeed, int heading, int stoppingDistance)
 	{
 		boolean isDoneDriving = false;
