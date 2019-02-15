@@ -10,6 +10,11 @@ package frc.components;
 import frc.components.Elevator.Constants.ElevatorPosition;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+
+import javax.naming.InitialContext;
+import frc.robot.SlabShuffleboard;
+import frc.components.Arm;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 /**
@@ -24,6 +29,7 @@ public class Elevator
     private boolean isMoving = false;
     private Constants.ElevatorPosition targetPosition = Constants.ElevatorPosition.kNone;
     private int potValue;
+    private static int initialElevatorPosition = 100;
 
     private static Elevator instance = new Elevator();
     private Arm arm = Arm.getInstance();
@@ -121,6 +127,23 @@ public class Elevator
     {
        return targetPosition;
     }
+
+    public void setRobotType(SlabShuffleboard.RobotType robotType)
+    {
+        if(robotType == SlabShuffleboard.RobotType.kCompetition)
+        {
+            initialElevatorPosition = Constants.COMPETITION_INITIAL_ELEVATOR_POSITION;
+        }
+        else
+        {
+            initialElevatorPosition = Constants.PRACTICE_INITIAL_ELEVATOR_POSITION;
+        }
+    }
+
+    public int getInitialElevatorPosition()
+    {
+        return initialElevatorPosition;
+    }
     
     /**
      * Moves the elevator to the current set target position. 
@@ -135,7 +158,7 @@ public class Elevator
 
         if(targetPosition != ElevatorPosition.kNone)
         {
-            if( arm.getPotValue() < arm.getArmRaisedPosition())
+            if( arm.getPotValue() < initialElevatorPosition + 200)
             {
                 stopElevator();
                 isMoving = true;
@@ -147,8 +170,15 @@ public class Elevator
             }
             else if(potValue > (targetPosition.position + ElevatorPosition.kThreshold.position))
             {
-                lowerElevator();
                 isMoving = true;
+                if((arm.getWristTargetPosition() == Arm.Constants.WristPosition.kWristDown && arm.getWristDownLimitSwitch()) && potValue < initialElevatorPosition + 100 && arm.getPotValue() < arm.getHorizontalArmPosition())
+                {
+                    stopElevator();
+                }
+                else
+                {       
+                    lowerElevator();
+                }
             }
             else
             {
@@ -169,19 +199,20 @@ public class Elevator
     {
         public static enum ElevatorPosition
 		{
-            kMinHeight(0, "Min Height"),
-            kMaxHeight(60, "Max Height"),
-            kFloor(5, "Floor"),
-            kCargoShipCargo(15, "Cargo Ship Cargo"),
+            kInitialHeight(initialElevatorPosition, "Initial Height"),
+            kMinHeight(initialElevatorPosition - 50, "Min Height"),
+            kMaxHeight(initialElevatorPosition + 600, "Max Height"),
+            kFloor(initialElevatorPosition - 35, "Floor"),
+            kCargoShipCargo(initialElevatorPosition + 150, "Cargo Ship Cargo"),
             kThreshold(5, "Threshold"),
 
-            kBottomHatch(10, "Bottom Hatch"),      // 1 ft 7 inches to center
-            kCenterHatch(30, "Center Hatch"),      // 3 ft 11 inches to center
-            kTopHatch(50, "Top Hatch"),         // 6 ft 3 inches to center
+            kBottomHatch(initialElevatorPosition + 100, "Bottom Hatch"),      // 1 ft 7 inches to center
+            kCenterHatch(initialElevatorPosition + 300, "Center Hatch"),      // 3 ft 11 inches to center
+            kTopHatch(initialElevatorPosition + 500, "Top Hatch"),         // 6 ft 3 inches to center
 
-            kBottomCargo(20, "Bottom Cargo"),       // 2 ft 3.5 inches to center
-            kCenterCargo(40, "Center Cargo"),       // 4 ft 7.5 inches to center
-            kTopCargo(60, "Top Cargo"),          // 6 ft 11.5 inches to center
+            kBottomCargo(initialElevatorPosition + 200, "Bottom Cargo"),       // 2 ft 3.5 inches to center
+            kCenterCargo(initialElevatorPosition + 400, "Center Cargo"),       // 4 ft 7.5 inches to center
+            kTopCargo(initialElevatorPosition + 600, "Top Cargo"),          // 6 ft 11.5 inches to center
             kNone(-1, "None");
 
             
@@ -210,6 +241,9 @@ public class Elevator
         public static final int PEAK_CURRENT_LIMIT = 20;        // In Amps
         public static final int PEAK_CURRENT_DURATION = 250;    // In milliseconds
         public static final int CONTINOUS_CURRENT_LIMIT = 20;   // In Amps
-        public static final double OPEN_LOOP_RAMP = 0.05;       // IN seconds
+        public static final double OPEN_LOOP_RAMP = 0.05;       // In seconds
+
+        public static final int COMPETITION_INITIAL_ELEVATOR_POSITION = 200;
+        public static final int PRACTICE_INITIAL_ELEVATOR_POSITION = 200;
     }
 }

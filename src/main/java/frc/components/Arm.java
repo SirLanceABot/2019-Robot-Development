@@ -14,7 +14,9 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import frc.control.DriverXbox;
 import frc.control.Xbox;
 import frc.components.Arm.Constants.Position;
+import frc.components.Arm.Constants.WristPosition;
 import frc.control.ButtonBoard;
+import frc.robot.SlabShuffleboard;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -38,7 +40,7 @@ public class Arm
     private DigitalInput wristUpLimitSwitch = new DigitalInput(0);
     private DigitalInput wristDownLimitSwitch = new DigitalInput(1);
 
-    private Constants.Position targetPosition =  Constants.Position.kNone;
+    private Constants.Position targetPosition = Constants.Position.kNone;
 
     private WPI_TalonSRX masterIntakeRoller = new WPI_TalonSRX(Constants.ROLLER_TALON_ID);
     private WPI_VictorSPX slaveIntakeRoller = new WPI_VictorSPX(Constants.ROLLER_VICTOR_ID);
@@ -49,10 +51,9 @@ public class Arm
     private boolean isArmMoving;
     private int potValue = 0;
     private static DriverXbox driverXbox = DriverXbox.getInstance();
-    private static ButtonBoard buttonBoard = ButtonBoard.getInstance();
+    private static Elevator elevator = Elevator.getInstance();
 
     private static int horizontalArmPosition = 0;
-    private static int armRaisedPosition = 0;
 
     private static Arm instance = new Arm();
 
@@ -72,6 +73,7 @@ public class Arm
 
     /**
      * This function returns the instance of the Arm to be used
+     * 
      * @return instance of the arm that is going to be used
      */
     public static Arm getInstance()
@@ -104,8 +106,8 @@ public class Arm
     }
 
     /**
-     * this will set the solenoid controlling wrist movement
-     * to move forward, which moves the wrist Up
+     * this will set the solenoid controlling wrist movement to move forward, which
+     * moves the wrist Up
      */
     public void moveWristUp()
     {
@@ -114,8 +116,8 @@ public class Arm
     }
 
     /**
-     * this function sets the solenoid contrlling the wrist movemet
-     * to move backwards, which will move the wrist down
+     * this function sets the solenoid contrlling the wrist movemet to move
+     * backwards, which will move the wrist down
      */
     public void moveWristDown()
     {
@@ -124,9 +126,9 @@ public class Arm
     }
 
     /**
-     * this function will sets the motors that
-     * control cargo intake/ejection to intake
-     * cargo at a set speed
+     * this function will sets the motors that control cargo intake/ejection to
+     * intake cargo at a set speed
+     * 
      * @param speed
      */
     public void intakeCargo(double speed)
@@ -136,9 +138,9 @@ public class Arm
     }
 
     /**
-     * this function will set the motors that
-     * control cargo intake/ejectin to a eject that
-     * cargo at a set speed.
+     * this function will set the motors that control cargo intake/ejectin to a
+     * eject that cargo at a set speed.
+     * 
      * @param speed
      */
     public void ejectCargo(double speed)
@@ -148,8 +150,8 @@ public class Arm
     }
 
     /**
-     * this function sets the motors that control the cargo
-     * intake/ejection to 0 so they stop rotating.
+     * this function sets the motors that control the cargo intake/ejection to 0 so
+     * they stop rotating.
      */
     public void stopCargo()
     {
@@ -157,8 +159,7 @@ public class Arm
     }
 
     /**
-     * this function sets the solenoid that
-     * expands the HPP
+     * this function sets the solenoid that expands the HPP
      */
     public void grabHatchPanel()
     {
@@ -167,8 +168,7 @@ public class Arm
     }
 
     /**
-     * this function sets the solenoid that 
-     * contracts the HPP 
+     * this function sets the solenoid that contracts the HPP
      */
     public void releaseHatchPanel()
     {
@@ -176,10 +176,9 @@ public class Arm
         hatchPanelPosition = false;
     }
 
-
     /**
-     * this function gets the potentiometer value that
-     * moniters the arms position
+     * this function gets the potentiometer value that moniters the arms position
+     * 
      * @return returns the potentiometer value for the arm
      */
     public int getPotValue()
@@ -188,8 +187,8 @@ public class Arm
     }
 
     /**
-     * this function sets the target position to be used later
-     * in the program
+     * this function sets the target position to be used later in the program
+     * 
      * @param targetPosition have to send the target position
      */
     public void setTargetPosition(Constants.Position targetPosition)
@@ -197,76 +196,99 @@ public class Arm
         this.targetPosition = targetPosition;
     }
 
-    public static void setRobotType(boolean isCompetitionBot)
+    public Constants.WristPosition getWristTargetPosition()
     {
-        if(isCompetitionBot)
+        return targetPosition.wristPosition;
+    }
+
+    public void setRobotType(SlabShuffleboard.RobotType robotType)
+    {
+        if (robotType == SlabShuffleboard.RobotType.kCompetition)
         {
             horizontalArmPosition = Constants.COMPETITION_HORIZONTAL_ARM_POSITION;
-            armRaisedPosition = Constants.COMPETITION_ARM_RAISED_POSITION;
         }
         else
         {
             horizontalArmPosition = Constants.PRACTICE_HORIZONTAL_ARM_POSITION;
-            armRaisedPosition = Constants.PRACTICE_ARM_RAISED_POSITION;
         }
     }
 
-    public int getArmRaisedPosition()
+    public int getHorizontalArmPosition()
     {
-        return armRaisedPosition;
+        return horizontalArmPosition;
+    }
+
+    public boolean isWristMoving()
+    {
+        return isWristMoving;
+    }
+
+    public boolean getWristDownLimitSwitch()
+    {
+        return wristDownLimitSwitch.get();
     }
 
     /**
-     * this function will move to the position that has been specified 
-     * by the variabe targetPosition
+     * this function will move to the position that has been specified by the
+     * variabe targetPosition
      */
     public void moveTo()
     {
         potValue = getPotValue();
 
-        if(!targetPosition.equals(Constants.Position.kNone))
+        if (!targetPosition.equals(Constants.Position.kNone))
         {
-            if(potValue < targetPosition.armPosition.armPosition - Constants.ARM_THRESHOLD)
+            if (targetPosition.wristPosition == Constants.WristPosition.kWristDown)
+            {
+                isWristMoving = true;
+                moveWristDown();
+
+                if (wristDownLimitSwitch.get() == false)
+                {
+                    isWristMoving = false;
+                }
+            }
+            else if (targetPosition.wristPosition == Constants.WristPosition.kWristUp)
+            {
+                isWristMoving = true;
+
+                if (elevator.getPotValue() > elevator.getInitialElevatorPosition() - 50
+                    && getPotValue() > horizontalArmPosition - 50)
+                {
+                    moveWristUp();
+
+                    if (wristUpLimitSwitch.get() == false)
+                    {
+                        isWristMoving = false;
+                    }
+                }
+            }
+            
+            if (potValue < targetPosition.armPosition.armPosition - Constants.ARM_THRESHOLD)
             {
                 moveArmUp();
                 isArmMoving = true;
             }
-
-            else if(potValue > targetPosition.armPosition.armPosition + Constants.ARM_THRESHOLD)
+            else if (potValue > targetPosition.armPosition.armPosition + Constants.ARM_THRESHOLD)
             {
-                moveArmDown();
                 isArmMoving = true;
-            }
 
+                if((targetPosition.wristPosition == WristPosition.kWristDown && wristDownLimitSwitch.get()) && elevator.getPotValue() < elevator.getInitialElevatorPosition() + 100 && potValue < horizontalArmPosition)
+                {
+                    stopArm();
+                }
+                else
+                {
+                    moveArmDown();
+                }
+            }
             else
             {
                 stopArm();
                 isArmMoving = false;
             }
 
-            if(targetPosition.wristPosition.wristPosition == Value.kReverse)
-            {
-                moveWristDown();
-                isWristMoving = true;
-
-                if(wristDownLimitSwitch.get() == false)
-                {
-                    isWristMoving = false;
-                }
-            }
-
-            else if(targetPosition.wristPosition.wristPosition == Value.kForward)
-            {
-                moveWristUp();
-                isWristMoving = true;
-
-                if(wristUpLimitSwitch.get() == false)
-                {
-                    isWristMoving = false;
-                }
-            }
-
-            if((isWristMoving == false) && (isArmMoving == false))
+            if ((isWristMoving == false) && (isArmMoving == false))
             {
                 targetPosition = Position.kNone;
             }
@@ -275,7 +297,7 @@ public class Arm
 
     public void teleop()
     {
-       
+
     }
 
     @Override
@@ -283,44 +305,47 @@ public class Arm
     {
         return String.format(
                 "ArmPosition: %s, HPP: %s, WristPosition: %s, (true is up/expanded false is down/contracted",
-                isArmMoving, hatchPanelPosition , isWristMoving);
-        // return String.format("Arm Pot Value: " + getPotValue() + "   Arm Target Position:   " + targetPosition.armPosition.armPosition + "  Wrist Moving:  " + isWristMoving);
+                isArmMoving, hatchPanelPosition, isWristMoving);
+        // return String.format("Arm Pot Value: " + getPotValue() + " Arm Target
+        // Position: " + targetPosition.armPosition.armPosition + " Wrist Moving: " +
+        // isWristMoving);
     }
 
     public static class Constants
     {
         public static enum ArmPosition
         {
-            kFloorArmPosition(horizontalArmPosition - 50, "Floor Arm Position"),
-            kHorizontalArmPosition(horizontalArmPosition, "Horizontal Arm Position"),  
-            kMiddleArmPosition(horizontalArmPosition + 50,"Middle Arm Position"),
+            kFloorArmPosition(horizontalArmPosition - 50, "Floor Arm Position"), 
+            kHorizontalArmPosition(horizontalArmPosition, "Horizontal Arm Position"), 
+            kMiddleArmPosition(horizontalArmPosition + 50, "Middle Arm Position"),
             kTopArmPosition(horizontalArmPosition + 100, "Top Arm Position"),
-
             kArmNone(-1, "Arm to None");
-
 
             private final int armPosition;
             private final String name;
+
             private ArmPosition(int armPosition, String name)
             {
                 this.armPosition = armPosition;
                 this.name = name;
-            }  
+            }
 
             @Override
             public String toString()
             {
-                return(name);
+                return (name);
             }
         }
+
         public static enum WristPosition
         {
-            kWristDown(DoubleSolenoid.Value.kReverse, "Wrist Down"),
-            kWristUp(DoubleSolenoid.Value.kForward, "Wrist Up"),
+            kWristDown(DoubleSolenoid.Value.kReverse, "Wrist Down"), 
+            kWristUp(DoubleSolenoid.Value.kForward, "Wrist Up"), 
             kWristNone(DoubleSolenoid.Value.kOff, "Wrist None");
 
             private final DoubleSolenoid.Value wristPosition;
             private final String name;
+
             private WristPosition(DoubleSolenoid.Value wristPosition, String name)
             {
                 this.wristPosition = wristPosition;
@@ -330,24 +355,23 @@ public class Arm
             @Override
             public String toString()
             {
-                return(name);
+                return (name);
             }
         }
+
         public static enum Position
-		{
-            kFloor(Constants.WristPosition.kWristDown, Constants.ArmPosition.kFloorArmPosition, "Floor"),
+        {
+            kFloor(Constants.WristPosition.kWristDown, Constants.ArmPosition.kFloorArmPosition, "Floor"),              
             kCargoShipCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kHorizontalArmPosition, "Cargo Ship Cargo"),
-
-            kBottomHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kHorizontalArmPosition, "Bottom Hatch"),      // 1 ft 7 inches to center
-            kCenterHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kHorizontalArmPosition, "Center Hatch"),      // 3 ft 11 inches to center
-            kTopHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kMiddleArmPosition, "Top Hatch"),         // 6 ft 3 inches to center
-
-            kBottomCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kHorizontalArmPosition, "Bottom Cargo"),       // 2 ft 3.5 inches to center
-            kCenterCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kHorizontalArmPosition, "Center Cargo"),       // 4 ft 7.5 inches to center
-            kTopCargo(Constants.WristPosition.kWristDown,Constants.ArmPosition.kMiddleArmPosition, "Top Cargo"),          // 6 ft 11.5 inches to center
-
-            kDrive(Constants.WristPosition.kWristUp, Constants.ArmPosition.kMiddleArmPosition, "Driving"),
+            kBottomHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kHorizontalArmPosition, "Bottom Hatch"), // 1 ft 7 inches to center
+            kCenterHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kHorizontalArmPosition, "Center Hatch"), // 3 ft 11 inches to center
+            kTopHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kMiddleArmPosition, "Top Hatch"), // 6 ft 3 inches to center
+            kBottomCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kHorizontalArmPosition, "Bottom Cargo"), // 2 ft 3.5 inches to center
+            kCenterCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kHorizontalArmPosition, "Center Cargo"), // 4 ft 7.5 inches to center
+            kTopCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kMiddleArmPosition, "Top Cargo"), // 6 ft 11.5 inches to center
+            kDrive(Constants.WristPosition.kWristUp, Constants.ArmPosition.kMiddleArmPosition, "Driving"), 
             kNone(Constants.WristPosition.kWristNone, Constants.ArmPosition.kArmNone, "No Target");
+
             private final Constants.ArmPosition armPosition;
             private final Constants.WristPosition wristPosition;
             private final String name;
@@ -380,9 +404,6 @@ public class Arm
 
         public static final int COMPETITION_HORIZONTAL_ARM_POSITION = 0;
         public static final int PRACTICE_HORIZONTAL_ARM_POSITION = 0;
-
-        public static final int COMPETITION_ARM_RAISED_POSITION = 200;
-        public static final int PRACTICE_ARM_RAISED_POSITION = 200;
     }
 
 }

@@ -35,7 +35,7 @@ public class Robot extends TimedRobot
     @Override
     public void teleopInit()
     {
-        teleop.teleopInit(isCompetitionBot);
+        teleop.teleopInit();
     }
 
     @Override

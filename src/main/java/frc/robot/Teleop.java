@@ -25,6 +25,7 @@ public class Teleop
     private DriverXbox driverXbox = DriverXbox.getInstance();
     private ButtonBoard buttonBoard = ButtonBoard.getInstance();
     private Climber climber = Climber.getInstance();
+    private SlabShuffleboard shuffleboard = SlabShuffleboard.getInstance();
 
     private static Teleop instance = new Teleop();
     
@@ -39,9 +40,11 @@ public class Teleop
         return(instance);
     }
 
-    public void teleopInit(boolean competitionBot)
+    public void teleopInit()
     {
-        arm.setRobotType(competitionBot);
+        SlabShuffleboard.PregameSetupTabData pregame = shuffleboard.getPregameSetupTabData(); 
+        arm.setRobotType(pregame.robotType);
+        elevator.setRobotType(pregame.robotType);
     }
 
     public void teleop()
@@ -108,8 +111,8 @@ public class Teleop
             arm.setTargetPosition(Arm.Constants.Position.kTopCargo);
         }
 
-        elevator.moveTo();
         arm.moveTo();
+        elevator.moveTo();
         
         if(cargoInButton)
         {
