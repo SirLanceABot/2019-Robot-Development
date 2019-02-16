@@ -13,6 +13,7 @@ import frc.components.Climber;
 import frc.components.Drivetrain;
 import frc.control.Xbox;
 import frc.control.DriverXbox;
+import frc.control.OperatorXbox;
 import frc.control.ButtonBoard;
 
 /**
@@ -24,6 +25,7 @@ public class Teleop
     private Elevator elevator = Elevator.getInstance();
 
     private DriverXbox driverXbox = DriverXbox.getInstance();
+    private OperatorXbox operatorXbox = OperatorXbox.getInstance();
     private ButtonBoard buttonBoard = ButtonBoard.getInstance();
     private Climber climber = Climber.getInstance();
     private SlabShuffleboard shuffleboard = SlabShuffleboard.getInstance();
@@ -73,7 +75,38 @@ public class Teleop
         boolean yButton = driverXbox.getRawButtonPressed(Xbox.Constants.Y_BUTTON);          // Retract pin solenoid
         boolean leftBumper = driverXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);    // Hold button in order to access climbing
         
-        
+
+        boolean operatorLeftBumper = operatorXbox.getRawButton(Xbox.Constants.LEFT_BUMPER);
+        boolean operatorRightBumper = operatorXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER);
+        boolean operatorXButton = operatorXbox.getRawButton(Xbox.Constants.X_BUTTON);
+        boolean operatorAButton = operatorXbox.getRawButton(Xbox.Constants.A_BUTTON);
+
+        if(operatorLeftBumper)
+        {
+            elevator.lowerElevator();
+        }
+        else if(operatorRightBumper)
+        {
+            elevator.raiseElevator();
+        }
+        else
+        {
+            elevator.stopElevator();
+        }
+        if(operatorXButton)
+        {
+            arm.moveWristUp();
+        }
+        else if(operatorAButton)
+        {
+            arm.moveWristDown();
+        }
+        else
+        {
+            arm.stopArm();
+        }
+
+
         if(floorButton)
         {
             elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kFloor);

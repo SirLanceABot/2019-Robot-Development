@@ -7,29 +7,23 @@
 
 package frc.components;
 
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import frc.control.DriverXbox;
-import frc.control.Xbox;
 import frc.components.Arm.Constants.Position;
 import frc.components.Arm.Constants.WristPosition;
-import frc.control.ButtonBoard;
 import frc.robot.SlabShuffleboard;
 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * Add your docs here.
  */
 public class Arm
 {
-    private DoubleSolenoid armSolenoid = new DoubleSolenoid(Constants.ARM_SOLENOID_PORT_1,
-            Constants.ARM_SOLENOID_PORT_2);
     private DoubleSolenoid wristSolenoid = new DoubleSolenoid(Constants.WRIST_SOLENOID_PORT_1,
             Constants.WRIST_SOLENOID_PORT_2);
     private DoubleSolenoid grabberSolenoid = new DoubleSolenoid(Constants.GRABBER_SOLENOID_PORT_1,
@@ -40,18 +34,17 @@ public class Arm
     private DigitalInput wristUpLimitSwitch = new DigitalInput(0);
     private DigitalInput wristDownLimitSwitch = new DigitalInput(1);
 
+    private Timer grabberTimer = new Timer();
+
     private Constants.Position targetPosition = Constants.Position.kNone;
 
     private WPI_TalonSRX masterIntakeRoller = new WPI_TalonSRX(Constants.ROLLER_TALON_ID);
     private WPI_VictorSPX slaveIntakeRoller = new WPI_VictorSPX(Constants.ROLLER_VICTOR_ID);
-    private boolean armPosition; // true is up false is down
-    private boolean wristPosition; // true is up false is down
-    private boolean hatchPanelPosition; // true for expanded false for contracted
+    private boolean isGrabberMoving = false;
     private boolean isWristMoving;
     private boolean isArmMoving;
     private int armPotValue = 0;
     private int elevatorPotValue = 0;
-    private static DriverXbox driverXbox = DriverXbox.getInstance();
     private static Elevator elevator = Elevator.getInstance();
 
     private static int horizontalArmPosition = 0;
@@ -113,7 +106,6 @@ public class Arm
     public void moveWristUp()
     {
         wristSolenoid.set(Value.kForward);
-        wristPosition = true;
     }
 
     /**
@@ -123,7 +115,6 @@ public class Arm
     public void moveWristDown()
     {
         wristSolenoid.set(Value.kReverse);
-        wristPosition = false;
     }
 
     /**
@@ -164,8 +155,18 @@ public class Arm
      */
     public void grabHatchPanel()
     {
-        grabberSolenoid.set(Value.kForward);
-        hatchPanelPosition = true;
+        if(!isGrabberMoving)
+        {
+            grabberTimer.reset();
+            grabberTimer.start();
+            grabberSolenoid.set(Value.kForward);
+            isGrabberMoving = true;
+        }
+        
+        if(grabberTimer.get() > 0.5)
+        {
+            isGrabberMoving = false;
+        }
     }
 
     /**
@@ -173,8 +174,26 @@ public class Arm
      */
     public void releaseHatchPanel()
     {
-        grabberSolenoid.set(Value.kReverse);
-        hatchPanelPosition = false;
+        if(!isGrabberMoving)
+        {
+            grabberTimer.reset();
+            grabberTimer.start();
+            grabberSolenoid.set(Value.kReverse);
+            isGrabberMoving = true;
+        }
+        
+        if(grabberTimer.get() > 0.5)
+        {
+            isGrabberMoving = false;
+        }
+    }
+
+    /**
+     * @return the isGrabberMoving, whether the grabber is moving or not
+     */
+    public boolean isGrabberMoving()
+    {
+        return isGrabberMoving;
     }
 
     /**
@@ -184,7 +203,7 @@ public class Arm
      */
     public int getPotValue()
     {
-        return armMotor.getSelectedSensorPosition(0);
+        return armMotor.getSelectedSensorPosition(0);   // Subtract a number from this to flip the directions (Down is low num, up is high num)
     }
 
     /**
@@ -253,6 +272,11 @@ public class Arm
             return true;
         }
          
+    }
+
+    private static int angleToTicks(double angle)
+    {
+        return (int)((500.0 * angle / 360.0) / (1000.0 + (500.0 * angle / 360.0)) * 1024.0);
     }
 
     /**
@@ -340,22 +364,17 @@ public class Arm
     @Override
     public String toString()
     {
-        return String.format(
-                "ArmPosition: %s, HPP: %s, WristPosition: %s, (true is up/expanded false is down/contracted",
-                isArmMoving, hatchPanelPosition, isWristMoving);
-        // return String.format("Arm Pot Value: " + getPotValue() + " Arm Target
-        // Position: " + targetPosition.armPosition.armPosition + " Wrist Moving: " +
-        // isWristMoving);
+        return String.format("Arm Pot Value: " + getPotValue());
     }
 
     public static class Constants
     {
         public static enum ArmPosition
         {
-            kFloorArmPosition(horizontalArmPosition - 50, "Floor Arm Position"), 
+            kFloorArmPosition(horizontalArmPosition + HORIZONTAL_TO_FLOOR, "Floor Arm Position"), 
             kHorizontalArmPosition(horizontalArmPosition, "Horizontal Arm Position"), 
-            kMiddleArmPosition(horizontalArmPosition + 50, "Middle Arm Position"),
-            kTopArmPosition(horizontalArmPosition + 100, "Top Arm Position"),
+            kMiddleArmPosition(horizontalArmPosition + HORIZONTAL_TO_MIDDLE, "Middle Arm Position"),
+            kTopArmPosition(horizontalArmPosition + HORIZONTAL_TO_TOP, "Top Arm Position"),
             kArmNone(-1, "Arm to None");
 
             private int armPosition;
@@ -426,6 +445,10 @@ public class Arm
                 return name;
             }
         }
+
+        public static final int HORIZONTAL_TO_FLOOR = angleToTicks(-30); // -30 degrees
+        public static final int HORIZONTAL_TO_MIDDLE = angleToTicks(45); // 45 degrees
+        public static final int HORIZONTAL_TO_TOP = angleToTicks(90); // 90 degrees
 
         public static final int ARM_SOLENOID_PORT_1 = 4;
         public static final int ARM_SOLENOID_PORT_2 = 5;

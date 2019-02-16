@@ -11,7 +11,6 @@ import frc.components.Elevator.Constants.ElevatorPosition;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
-import javax.naming.InitialContext;
 import frc.robot.SlabShuffleboard;
 import frc.components.Arm;
 
@@ -145,6 +144,11 @@ public class Elevator
     {
         return initialElevatorPosition;
     }
+
+    private static int inchesToTicks(double inches)
+    {
+        return (int)((1.00/8.3) * inches * 100); 
+    }
     
     /**
      * Moves the elevator to the current set target position. 
@@ -201,7 +205,7 @@ public class Elevator
     @Override
     public String toString()
     {
-        return String.format("Pot Value: %d    Target Position: %d    Elevator Current: %.2f", getPotValue(), targetPosition.position, masterElevatorMotor.getOutputCurrent());
+        return String.format("Pot Value: %d", getPotValue());
     }
 
     public static class Constants
@@ -209,19 +213,19 @@ public class Elevator
         public static enum ElevatorPosition
 		{
             kInitialHeight(initialElevatorPosition, "Initial Height"),
-            kMinHeight(initialElevatorPosition - 50, "Min Height"),
-            kMaxHeight(initialElevatorPosition + 600, "Max Height"),
-            kFloor(initialElevatorPosition - 35, "Floor"),
-            kCargoShipCargo(initialElevatorPosition + 150, "Cargo Ship Cargo"),
+            kMinHeight(initialElevatorPosition + INITIAL_HEIGHT_TO_MIN_HEIGHT, "Min Height"),
+            kMaxHeight(initialElevatorPosition + INITIAL_HEIGHT_TO_MAX_HEIGHT, "Max Height"),
+            kFloor(initialElevatorPosition + INITIAL_HEIGHT_TO_FLOOR, "Floor"),
+            kCargoShipCargo(initialElevatorPosition + INITIAL_HEIGHT_TO_CARGO_SHIP_CARGO, "Cargo Ship Cargo"),
             kThreshold(5, "Threshold"),
 
-            kBottomHatch(initialElevatorPosition + 100, "Bottom Hatch"),      // 1 ft 7 inches to center
-            kCenterHatch(initialElevatorPosition + 300, "Center Hatch"),      // 3 ft 11 inches to center
-            kTopHatch(initialElevatorPosition + 500, "Top Hatch"),         // 6 ft 3 inches to center
+            kBottomHatch(initialElevatorPosition + INITIAL_HEIGHT_TO_BOTTOM_HATCH, "Bottom Hatch"),      // 1 ft 7 inches to center
+            kCenterHatch(initialElevatorPosition + INITIAL_HEIGHT_TO_CENTER_HATCH, "Center Hatch"),      // 3 ft 11 inches to center
+            kTopHatch(initialElevatorPosition + INITIAL_HEIGHT_TO_TOP_HATCH, "Top Hatch"),         // 6 ft 3 inches to center
 
-            kBottomCargo(initialElevatorPosition + 200, "Bottom Cargo"),       // 2 ft 3.5 inches to center
-            kCenterCargo(initialElevatorPosition + 400, "Center Cargo"),       // 4 ft 7.5 inches to center
-            kTopCargo(initialElevatorPosition + 600, "Top Cargo"),          // 6 ft 11.5 inches to center
+            kBottomCargo(initialElevatorPosition + INITIAL_HEIGHT_TO_BOTTOM_CARGO, "Bottom Cargo"),       // 2 ft 3.5 inches to center
+            kCenterCargo(initialElevatorPosition + INITIAL_HEIGHT_TO_CENTER_CARGO, "Center Cargo"),       // 4 ft 7.5 inches to center
+            kTopCargo(initialElevatorPosition + INITIAL_HEIGHT_TO_TOP_CARGO, "Top Cargo"),          // 6 ft 11.5 inches to center
             kNone(-1, "None");
 
             
@@ -241,6 +245,16 @@ public class Elevator
             }
         }
     
+        public static final int INITIAL_HEIGHT_TO_MIN_HEIGHT = inchesToTicks(-10);
+        public static final int INITIAL_HEIGHT_TO_MAX_HEIGHT = inchesToTicks(85);
+        public static final int INITIAL_HEIGHT_TO_FLOOR = inchesToTicks(-5);
+        public static final int INITIAL_HEIGHT_TO_CARGO_SHIP_CARGO = inchesToTicks(10);
+        public static final int INITIAL_HEIGHT_TO_BOTTOM_HATCH = inchesToTicks(5);
+        public static final int INITIAL_HEIGHT_TO_CENTER_HATCH = inchesToTicks(15);
+        public static final int INITIAL_HEIGHT_TO_TOP_HATCH = inchesToTicks(25);
+        public static final int INITIAL_HEIGHT_TO_BOTTOM_CARGO = inchesToTicks(10);
+        public static final int INITIAL_HEIGHT_TO_CENTER_CARGO = inchesToTicks(20);
+        public static final int INITIAL_HEIGHT_TO_TOP_CARGO = inchesToTicks(30);
 
         public static final int MASTER_ELEVATOR_MOTOR_PORT = 0;
         public static final int SLAVE_ELEVATOR_MOTOR_PORT = 0;
