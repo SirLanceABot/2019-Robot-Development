@@ -28,7 +28,8 @@ public class Elevator
 
     private boolean isMoving = false;
     private Constants.ElevatorPosition targetPosition = Constants.ElevatorPosition.kNone;
-    private int potValue;
+    private int elevatorPotValue;
+    private int armPotValue;
     private static int initialElevatorPosition = 100;
 
     private static Elevator instance = new Elevator();
@@ -154,26 +155,34 @@ public class Elevator
      */
     public void moveTo()
     {
-        potValue = getPotValue();
+        elevatorPotValue = getPotValue();
+        armPotValue = arm.getPotValue();
 
         if(targetPosition != ElevatorPosition.kNone)
         {
-            if( arm.getPotValue() < initialElevatorPosition + 200)
+            if( armPotValue < arm.getHorizontalArmPosition() + 200)
             {
                 stopElevator();
                 isMoving = true;
             }
-            else if(potValue < (targetPosition.position - ElevatorPosition.kThreshold.position))
+            else if(elevatorPotValue < (targetPosition.position - ElevatorPosition.kThreshold.position))
             {
                 raiseElevator();
                 isMoving = true;
             }
-            else if(potValue > (targetPosition.position + ElevatorPosition.kThreshold.position))
+            else if(elevatorPotValue > (targetPosition.position + ElevatorPosition.kThreshold.position))
             {
                 isMoving = true;
-                if((arm.getWristTargetPosition() == Arm.Constants.WristPosition.kWristDown && arm.getWristDownLimitSwitch()) && potValue < initialElevatorPosition + 100 && arm.getPotValue() < arm.getHorizontalArmPosition())
+                if(arm.getWristTargetPosition() == Arm.Constants.WristPosition.kWristDown)
                 {
-                    stopElevator();
+                    if(elevatorPotValue > initialElevatorPosition || armPotValue > arm.getHorizontalArmPosition())
+                    {
+                        lowerElevator();
+                    }
+                    else
+                    {
+                        stopElevator();
+                    }
                 }
                 else
                 {       

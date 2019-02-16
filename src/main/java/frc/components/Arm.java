@@ -49,7 +49,8 @@ public class Arm
     private boolean hatchPanelPosition; // true for expanded false for contracted
     private boolean isWristMoving;
     private boolean isArmMoving;
-    private int potValue = 0;
+    private int armPotValue = 0;
+    private int elevatorPotValue = 0;
     private static DriverXbox driverXbox = DriverXbox.getInstance();
     private static Elevator elevator = Elevator.getInstance();
 
@@ -223,9 +224,35 @@ public class Arm
         return isWristMoving;
     }
 
-    public boolean getWristDownLimitSwitch()
+    public boolean isArmMoving()
     {
-        return wristDownLimitSwitch.get();
+        return isArmMoving;
+    }
+
+    public boolean isWristDown()
+    {
+        if(wristDownLimitSwitch.get())
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+         
+    }
+
+    public boolean isWristUp()
+    {
+        if(wristUpLimitSwitch.get())
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+         
     }
 
     /**
@@ -234,7 +261,8 @@ public class Arm
      */
     public void moveTo()
     {
-        potValue = getPotValue();
+        armPotValue = getPotValue();
+        elevatorPotValue = elevator.getPotValue();
 
         if (!targetPosition.equals(Constants.Position.kNone))
         {
@@ -243,8 +271,9 @@ public class Arm
                 isWristMoving = true;
                 moveWristDown();
 
-                if (wristDownLimitSwitch.get() == false)
+                if (isWristDown())
                 {
+                    targetPosition.wristPosition = Constants.WristPosition.kWristNone;
                     isWristMoving = false;
                 }
             }
@@ -252,30 +281,38 @@ public class Arm
             {
                 isWristMoving = true;
 
-                if (elevator.getPotValue() > elevator.getInitialElevatorPosition() - 50
-                    && getPotValue() > horizontalArmPosition - 50)
+                if (elevatorPotValue > elevator.getInitialElevatorPosition() - 50
+                    && armPotValue > horizontalArmPosition - 50)
                 {
                     moveWristUp();
 
-                    if (wristUpLimitSwitch.get() == false)
+                    if (isWristUp())
                     {
+                        targetPosition.wristPosition = Constants.WristPosition.kWristNone;
                         isWristMoving = false;
                     }
                 }
             }
             
-            if (potValue < targetPosition.armPosition.armPosition - Constants.ARM_THRESHOLD)
+            if (armPotValue < targetPosition.armPosition.armPosition - Constants.ARM_THRESHOLD)
             {
                 moveArmUp();
                 isArmMoving = true;
             }
-            else if (potValue > targetPosition.armPosition.armPosition + Constants.ARM_THRESHOLD)
+            else if (armPotValue > targetPosition.armPosition.armPosition + Constants.ARM_THRESHOLD)
             {
                 isArmMoving = true;
 
-                if((targetPosition.wristPosition == WristPosition.kWristDown && wristDownLimitSwitch.get()) && elevator.getPotValue() < elevator.getInitialElevatorPosition() + 100 && potValue < horizontalArmPosition)
+                if((targetPosition.wristPosition == WristPosition.kWristDown && !isWristDown())) 
                 {
-                    stopArm();
+                    if(elevatorPotValue > elevator.getInitialElevatorPosition() || armPotValue > horizontalArmPosition)
+                    {
+                        moveArmDown();
+                    }   
+                    else
+                    {
+                        stopArm();
+                    }        
                 }
                 else
                 {
@@ -321,7 +358,7 @@ public class Arm
             kTopArmPosition(horizontalArmPosition + 100, "Top Arm Position"),
             kArmNone(-1, "Arm to None");
 
-            private final int armPosition;
+            private int armPosition;
             private final String name;
 
             private ArmPosition(int armPosition, String name)
@@ -343,7 +380,7 @@ public class Arm
             kWristUp(DoubleSolenoid.Value.kForward, "Wrist Up"), 
             kWristNone(DoubleSolenoid.Value.kOff, "Wrist None");
 
-            private final DoubleSolenoid.Value wristPosition;
+            private DoubleSolenoid.Value wristPosition;
             private final String name;
 
             private WristPosition(DoubleSolenoid.Value wristPosition, String name)
@@ -372,8 +409,8 @@ public class Arm
             kDrive(Constants.WristPosition.kWristUp, Constants.ArmPosition.kMiddleArmPosition, "Driving"), 
             kNone(Constants.WristPosition.kWristNone, Constants.ArmPosition.kArmNone, "No Target");
 
-            private final Constants.ArmPosition armPosition;
-            private final Constants.WristPosition wristPosition;
+            private Constants.ArmPosition armPosition;
+            private Constants.WristPosition wristPosition;
             private final String name;
 
             private Position(Constants.WristPosition wristPosition, Constants.ArmPosition armPosition, String name)
