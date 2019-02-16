@@ -34,7 +34,14 @@ public class SlabShuffleboard
 
     public enum MotorSpeed
     {
-        kQuarter, kHalf, kFull;
+        k25percent(25), k50percent(50), k75percent(75), k100percent(100);
+
+        public int value;
+
+        private MotorSpeed(int value)
+        {
+            this.value = value;
+        }
     }
 
     public enum GamePiece
@@ -64,45 +71,49 @@ public class SlabShuffleboard
 
     public class PregameSetupTabData
     {
-        StartingLocation startingLocation;
-        RobotType robotType;
-        MotorSpeed motorSpeed;
+        StartingLocation startingLocation = StartingLocation.kNone;
+        RobotType robotType = RobotType.kCompetition;
+        MotorSpeed motorSpeed = MotorSpeed.k100percent;
 
-        GamePiece task1GamePiece;
-        Objective task1Objective;
-        RocketLevel task1RocketLevel;
-        RocketHatch task1RocketHatch;
-        CargoShip task1CargoShip;
+        GamePiece task1GamePiece = GamePiece.kNone;
+        Objective task1Objective = Objective.kNothing;
+        RocketLevel task1RocketLevel = RocketLevel.kNone;
+        RocketHatch task1RocketHatch = RocketHatch.kNone;
+        CargoShip task1CargoShip = CargoShip.kNone;
 
-        GamePiece task2GamePiece;
-        Objective task2Objective;
-        RocketLevel task2RocketLevel;
-        RocketHatch task2RocketHatch;
-        CargoShip task2CargoShip;
+        GamePiece task2GamePiece = GamePiece.kNone;
+        Objective task2Objective = Objective.kNothing;
+        RocketLevel task2RocketLevel = RocketLevel.kNone;
+        RocketHatch task2RocketHatch = RocketHatch.kNone;
+        CargoShip task2CargoShip = CargoShip.kNone;
 
         @Override
         public String toString()
         {
             String str;
-            str = String.format("\n\nStarting Location:     %s", startingLocation);
-            str = str + String.format("\nRobot Type:            %s", robotType);
-            str = str + String.format("\nMotor Speed:           %s", motorSpeed);
-            str = str + String.format("\n\nTask 1");
-            str = str + String.format("\nGame Piece:   %s", task1GamePiece);
-            str = str + String.format("\nObjective:    %s", task1Objective);
-            str = str + String.format("\nRocket Level: %s", task1RocketLevel);
-            str = str + String.format("\nRocket Hatch: %s", task1RocketHatch);
-            str = str + String.format("\nCargo Ship:   %s", task1CargoShip);
-            str = str + String.format("\n\nTask 2");
-            str = str + String.format("\nGame Piece:   %s", task2GamePiece);
-            str = str + String.format("\nObjective:    %s", task2Objective);
-            str = str + String.format("\nRocket Level: %s", task2RocketLevel);
-            str = str + String.format("\nRocket Hatch: %s", task2RocketHatch);
-            str = str + String.format("\nCargo Ship:   %s", task2CargoShip);
+
+            str = String.format("\n\n*****  PREGAME SELECTION  *****\n");
+            str += String.format("Starting Location: %s\n", startingLocation);
+            str += String.format("Robot Type:   %s\n", robotType);
+            str += String.format("Motor Speed:  %s\n\n", motorSpeed);
+            str += String.format("***** TASK 1  *****\n");
+            str += String.format("Game Piece:   %s\n", task1GamePiece);
+            str += String.format("Objective:    %s\n", task1Objective);
+            str += String.format("Rocket Level: %s\n", task1RocketLevel);
+            str += String.format("Rocket Hatch: %s\n", task1RocketHatch);
+            str += String.format("Cargo Ship:   %s\n\n", task1CargoShip);
+            str += String.format("***** TASK 2  *****\n");
+            str += String.format("Game Piece:   %s\n", task2GamePiece);
+            str += String.format("Objective:    %s\n", task2Objective);
+            str += String.format("Rocket Level: %s\n", task2RocketLevel);
+            str += String.format("Rocket Hatch: %s\n", task2RocketHatch);
+            str += String.format("Cargo Ship:   %s\n", task2CargoShip);
 
             return str;
         }
     }
+
+    private PregameSetupTabData pregameSetupTabData = new PregameSetupTabData();
 
     // Input boxes on the Autonomous tab
     private ShuffleboardTab pregameSetupTab;
@@ -124,10 +135,9 @@ public class SlabShuffleboard
 
     private SendableChooser<Boolean> sendDataButton = new SendableChooser<>();
 
+    private ShuffleboardTab configurationTab;
     private NetworkTableEntry maxSpeed;
     private SimpleWidget maxSpeedWidget;
-
-    private ShuffleboardTab configurationTab;
 
     private static SlabShuffleboard instance = new SlabShuffleboard();
 
@@ -167,9 +177,10 @@ public class SlabShuffleboard
 
         // ComboBox for the Motor Speed
         motorSpeedComboBox.setName("Motor Speed");
-        motorSpeedComboBox.setDefaultOption("Full (default)", MotorSpeed.kFull);
-        motorSpeedComboBox.addOption("Half", MotorSpeed.kHalf);
-        motorSpeedComboBox.addOption("Quarter", MotorSpeed.kQuarter);
+        motorSpeedComboBox.setDefaultOption("100% (default)", MotorSpeed.k100percent);
+        motorSpeedComboBox.addOption("75%", MotorSpeed.k75percent);
+        motorSpeedComboBox.addOption("50%", MotorSpeed.k50percent);
+        motorSpeedComboBox.addOption("25%", MotorSpeed.k25percent);
         pregameSetupTab.add(motorSpeedComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 6).withSize(4,
                 1);
 
@@ -271,8 +282,6 @@ public class SlabShuffleboard
 
     public PregameSetupTabData getPregameSetupTabData()
     {
-        PregameSetupTabData pregameSetupTabData = new PregameSetupTabData();
-
         pregameSetupTabData.startingLocation = startingLocationComboBox.getSelected();
         pregameSetupTabData.robotType = robotTypeComboBox.getSelected();
         pregameSetupTabData.motorSpeed = motorSpeedComboBox.getSelected();
@@ -283,11 +292,11 @@ public class SlabShuffleboard
         pregameSetupTabData.task1RocketHatch = task1RocketHatchComboBox.getSelected();
         pregameSetupTabData.task1CargoShip = task1CargoShipComboBox.getSelected();
 
-        pregameSetupTabData.task2GamePiece = task1GamePieceComboBox.getSelected();
-        pregameSetupTabData.task2Objective = task1ObjectiveComboBox.getSelected();
-        pregameSetupTabData.task2RocketLevel = task1RocketLevelComboBox.getSelected();
-        pregameSetupTabData.task2RocketHatch = task1RocketHatchComboBox.getSelected();
-        pregameSetupTabData.task2CargoShip = task1CargoShipComboBox.getSelected();
+        pregameSetupTabData.task2GamePiece = task2GamePieceComboBox.getSelected();
+        pregameSetupTabData.task2Objective = task2ObjectiveComboBox.getSelected();
+        pregameSetupTabData.task2RocketLevel = task2RocketLevelComboBox.getSelected();
+        pregameSetupTabData.task2RocketHatch = task2RocketHatchComboBox.getSelected();
+        pregameSetupTabData.task2CargoShip = task2CargoShipComboBox.getSelected();
 
         return pregameSetupTabData;
     }
