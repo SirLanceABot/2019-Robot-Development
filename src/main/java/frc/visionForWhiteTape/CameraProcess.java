@@ -15,64 +15,88 @@ import java.lang.Math;
 
 public class CameraProcess implements Runnable
 {
-    public static final int STRAFE_LEFT = 1;
-    public static final int STRAFE_RIGHT = 2;
-    public static final int STRAFE_NONE = 3;
-    public static final int ROTATE_LEFT = 4;
-    public static final int ROTATE_RIGHT = 5;
-    public static final int ROTATE_NONE = 6;
+    public enum strafeDirection
+    {
+        kLeft, kRight, kNone;
+    }
+
+    public enum rotate
+    {
+        kLeft, kRight, kNone;
+    }
+   
+    private static CameraProcess instance = new CameraProcess();
+
+    private CameraProcess()
+    {
+
+    }
+    
+    public static CameraProcess getInstance()
+    {
+        return instance;
+    }
+
 
     private TargetDataController targetInfo = new TargetDataController();
     // int heightOfMask = 76;
     //private CvSource outputStream;
     //private MjpegServer mjpegserver2;(
 
-    public static int getStrafeDirection(TargetData targetDataParameter)
+    public strafeDirection getStrafeDirection(TargetData targetDataParameter)
     {
-        int returnStrafeDirectionValue;
+        strafeDirection returnStrafeDirectionValue;
         if (targetDataParameter.getCenter().x < 79) 
         {
-            returnStrafeDirectionValue = STRAFE_LEFT;
+            returnStrafeDirectionValue = strafeDirection.kLeft;
         } 
         else if (targetDataParameter.getCenter().x > 81) 
         {
-            returnStrafeDirectionValue = STRAFE_RIGHT;
+            returnStrafeDirectionValue = strafeDirection.kRight;
         } 
         else 
         {
-            returnStrafeDirectionValue = STRAFE_NONE;
+            returnStrafeDirectionValue = strafeDirection.kNone;
         }
         return returnStrafeDirectionValue;
 
     }
 
-    public static double getStrafeFactor(TargetData targetDataParameter)
+    /**
+     * return a value between -80 and 80 that is your strafe factor
+     */
+    public double getStrafeFactor(TargetData targetDataParameter)
     {
         double returnStrafeFactor = targetDataParameter.center.x - 80;
 
         return returnStrafeFactor;
     }
 
-    public static int getRotateDirection(TargetData targetDataParameter)
+    public rotate getRotateDirection(TargetData targetDataParameter)
     {
-        int returnRotateDirectionValue;
+        rotate returnRotateDirectionValue;
         if (targetDataParameter.fixedAngle < 89)
          {
-            returnRotateDirectionValue = ROTATE_LEFT;
+            returnRotateDirectionValue = rotate.kLeft;
         } 
         else if (targetDataParameter.fixedAngle > 91) 
         {
-            returnRotateDirectionValue = ROTATE_RIGHT;
+            returnRotateDirectionValue = rotate.kRight;
         } 
         else
         {
-            returnRotateDirectionValue = ROTATE_NONE;
+            returnRotateDirectionValue = rotate.kNone;
         }
 
         return returnRotateDirectionValue;
     }
 
-    public static double getRotateFactor(TargetData targetDataParameter)
+    /**
+     * 
+     * @param targetDataParameter
+     * @return  returns the rotation factor between -90 and 90 
+     */
+    public double getRotateFactor(TargetData targetDataParameter)
     {
         double returnRotateFactor = targetDataParameter.fixedAngle - 90;
 

@@ -12,18 +12,28 @@ import frc.components.Arm;
 import frc.components.Elevator;
 import frc.components.Arm.Constants.Position;
 import frc.components.Drivetrain.Constants.OmniEncoder;
-import frc.components.Elevator.Constants;
 import frc.components.Elevator.Constants.ElevatorPosition;
+import frc.visionForWhiteTape.CameraProcess;
+import frc.visionForWhiteTape.TargetData;
+import frc.visionForWhiteTape.CameraProcess.rotate;
 
 import java.awt.Point;
 import java.util.ArrayList;
+
+import javax.xml.stream.util.StreamReaderDelegate;
+
 import edu.wpi.first.wpilibj.Timer;
 
 /**
- * TODO: methodize some driving stuff for reuse move some variables to the top
- * as instance variables - done create function to use the vision code Need to
- * add the timer to the placement of cargo or HP make the drivetopoint function
- * more of a state machine - done
+ * TODO: methodize some driving stuff for reuse move some variables to the top - done
+ * as instance variables - done
+ * 
+ * create function to use the vision code - done
+ * 
+ * Need to add the timer to the placement of cargo or HP make the drivetopoint- done
+
+ * function more of a state machine - done
+ * 
  * add variable motor speeds
  */
 public class Autonomous
@@ -32,14 +42,16 @@ public class Autonomous
     private Drivetrain drivetrain = Drivetrain.getInstance();
     private Arm arm = Arm.getInstance();
     private Elevator elevator = Elevator.getInstance();
+    private CameraProcess vision = CameraProcess.getInstance();
     private Timer timer = new Timer();
-
     private boolean isBackingUp = true;
     private boolean continueToNextTask = false;
     private boolean donePlacing = false;
     private int drivingStep = -1;
     private int driveDistance;
     private int angle;
+    private TargetData targetData;
+    private double motorSpeedFactor;
     boolean isDoneDriving = false; // move to top
     boolean isDoneSpinning = false; // move to top
 
@@ -47,6 +59,24 @@ public class Autonomous
 
     private PregameSetupTabData pregameSetupTabData;
 
+    public void setMotorSpeeds()
+    {
+        switch(pregameSetupTabData.motorSpeed)
+        {
+            case k100percent:
+                motorSpeedFactor = 1.00;
+                break;
+            case k75percent:
+                motorSpeedFactor = 0.75;
+                break;
+            case k50percent:
+                motorSpeedFactor = 0.50;
+                break;
+            case k25percent:
+                motorSpeedFactor = 0.25;
+                break;
+        }
+    }
     /**
      * this function is meant to be called before adding any points based on the
      * pregame info it will intialize the first point to where the robot is starting
@@ -114,15 +144,15 @@ public class Autonomous
             case kHatchPanel:
                 switch (pregameSetupTabData.task1RocketLevel)
                 {
-                    case kBottom:
-                        placeObject(ElevatorPosition.kBottomHatch, Position.kBottomHatch);
-                        break;
-                    case kMiddle:
-                        placeObject(ElevatorPosition.kCenterHatch, Position.kCenterHatch);
-                        break;
-                    case kTop:
-                        placeObject(ElevatorPosition.kTopHatch, Position.kTopHatch);
-                        break;
+                case kBottom:
+                    placeObject(ElevatorPosition.kBottomHatch, Position.kBottomHatch);
+                    break;
+                case kMiddle:
+                    placeObject(ElevatorPosition.kCenterHatch, Position.kCenterHatch);
+                    break;
+                case kTop:
+                    placeObject(ElevatorPosition.kTopHatch, Position.kTopHatch);
+                    break;
                 }
                 break;
             case kCargo:
@@ -155,7 +185,8 @@ public class Autonomous
                 break;
 
             case kHatchPanel:
-                placeObject(ElevatorPosition.kCargoShipCargo, Position.kCargoShipCargo); // is there an enum for cargo ship hatch panel???
+                placeObject(ElevatorPosition.kCargoShipCargo, Position.kCargoShipCargo); // is there an enum for cargo
+                                                                                         // ship hatch panel???
                 break;
 
             }
@@ -165,7 +196,7 @@ public class Autonomous
 
     public boolean placeObject(Elevator.Constants.ElevatorPosition elevatorPosition, Arm.Constants.Position armPosition)
     {
-        
+
         boolean elevatorDoneMoving;
         boolean armDoneMoving;
         boolean doneDriving;
@@ -173,19 +204,21 @@ public class Autonomous
         armDoneMoving = moveArm(armPosition);
         if (elevatorDoneMoving && armDoneMoving)
         {
-            doneDriving = drivetrain.driveDistanceInInches(18, .7, (int) drivetrain.getHeadingInDegrees(), 3, OmniEncoder.kAverage);
+            doneDriving = drivetrain.driveDistanceInInches(18, .7, (int) drivetrain.getHeadingInDegrees(), 3,
+                    OmniEncoder.kAverage);
             if (doneDriving)
             {
-                if(pregameSetupTabData.task1GamePiece == GamePiece.kHatchPanel)
+                if (pregameSetupTabData.task1GamePiece == GamePiece.kHatchPanel)
                 {
                     arm.releaseHatchPanel(); // add the timer function
                 }
-                else if(pregameSetupTabData.task1GamePiece == GamePiece.kCargo)
+                else if (pregameSetupTabData.task1GamePiece == GamePiece.kCargo)
                 {
                     arm.ejectCargo(.9);
                 }
             }
-            isBackingUp = drivetrain.driveDistanceInInches(18, -.7, (int) drivetrain.getHeadingInDegrees(), 3, OmniEncoder.kAverage);
+            isBackingUp = drivetrain.driveDistanceInInches(18, -.7, (int) drivetrain.getHeadingInDegrees(), 3,
+                    OmniEncoder.kAverage);
             if (!isBackingUp)
             {
                 continueToNextTask = true;
@@ -203,16 +236,43 @@ public class Autonomous
         case kRocket:
             if (pregameSetupTabData.task1RocketHatch == RocketHatch.kBack)
             {
-                isDoneSpinning = drivetrain.spinToBearing(120 * leftOrRight(), .75);
+                isDoneSpinning = drivetrain.spinToBearing(120 * leftOrRight(), Constants.ROTATION_SPEED * motorSpeedFactor);
             }
             // possibly add the front rocket
             break;
         case kCargoShip:
-            isDoneSpinning = drivetrain.spinToBearing(90 * -leftOrRight(), .75);
-            break;
+            isDoneSpinning = drivetrain.spinToBearing(90 * -leftOrRight(), Constants.ROTATION_SPEED * motorSpeedFactor);
+        break;
         }
 
         return isDoneSpinning;
+    }
+
+    public boolean whiteLineAlignment()
+    {
+        targetData = vision.getTargetData();
+        if (targetData.isFreshData())
+        {
+            CameraProcess.rotate rotation = vision.getRotateDirection(targetData);
+            double rotationFactor = vision.getRotateFactor(targetData);
+            CameraProcess.strafeDirection strafeDirection = vision.getStrafeDirection(targetData);
+            double strafeDirectionFactor = vision.getStrafeFactor(targetData);
+
+            // rotate first then strafe
+            if (rotation != rotate.kNone)
+            {
+                drivetrain.driveCartesian(0.0, 0.0, Constants.ROTATION_SPEED * (rotationFactor / 90.0));
+            }
+            else if (strafeDirection != CameraProcess.strafeDirection.kNone)
+            {
+                drivetrain.driveCartesian(0.0, Constants.STRAFE_SPEED * (strafeDirectionFactor / 80.0), 0.0);
+            }
+            else
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -344,8 +404,12 @@ public class Autonomous
             }
             break;
         case 2: // this step will moving the robot if needed
-            isDoneDriving = drivetrain.driveDistanceInInches(driveDistance, 1, 0, driveDistance,
-                    OmniEncoder.kAverage);// these are integer division, change it
+            isDoneDriving = drivetrain.driveDistanceInInches(driveDistance, 1 * motorSpeedFactor, 0, driveDistance, OmniEncoder.kAverage);// these
+                                                                                                                       // are
+                                                                                                                       // integer
+                                                                                                                       // division,
+                                                                                                                       // change
+                                                                                                                       // it
             if (isDoneDriving)
             {
                 drivingStep++;
@@ -401,15 +465,19 @@ public class Autonomous
             isDone = taskOneFinalSpin();
             if (isDone)
                 step++;
-        case 3:
+        case 3: 
+            isDone = whiteLineAlignment();
+            if(isDone)
+                step++;
+        case 4:
             isDone = taskOnePlacement();
             if (isDone)
                 step++;
             break;
-
         }
         // right side start, right rocket, near side hatch, bottom
     }
+
 
     public static class Constants
     {
@@ -419,5 +487,8 @@ public class Autonomous
         private static final int RIGHT_STARTING_POSITION_Y = 1;
         private static final int CENTER_STARTING_POSITION_X = 1;
         private static final int CENTER_STARTING_POSITION_Y = 1;
+
+        private static final double ROTATION_SPEED = .5;
+        private static final double STRAFE_SPEED = .5;
     }
 }
