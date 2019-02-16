@@ -1,6 +1,7 @@
 package frc.components;
 
 import frc.control.Xbox;
+import frc.components.Drivetrain.Constants.OmniEncoder;
 import frc.control.DriverXbox;
 
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
@@ -97,15 +98,20 @@ public class Drivetrain extends MecanumDrive
 	 * 
 	 * @return Distance traveled.
 	 */
-        public double getLeftDistanceInInches()
-        {
-            return leftEncoder.getRaw() / 141.1;
-        }
+    public double getLeftDistanceInInches()
+    {
+        return leftEncoder.getRaw() / 141.1;
+    }
     
     public double getRightDistanceInInches()
 	{
         //141.1 = (CPR 360 * 4) / (3.25 inch diameter omni wheel * PI)
 		return rightEncoder.getRaw() / 141.1;
+    }
+
+    public double getAvgDistanceInInches()
+    {
+        return (getRightDistanceInInches() + getLeftDistanceInInches() ) / 2.0;
     }
     
     public void moveOmniEncoders()
@@ -136,7 +142,8 @@ public class Drivetrain extends MecanumDrive
     public double getRightServo()
 	{
 		return rightServo.get();
-	}
+    }
+
 
 	public void resetLeftServo()
 	{
@@ -167,7 +174,7 @@ public class Drivetrain extends MecanumDrive
         System.out.println("X Axis:" + leftXAxis);
         System.out.println("Y Axis:" + -leftYAxis);
 
-        if(driverXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER))
+        if(driverXbox.getRawButtonPressed(Xbox.Constants.START_BUTTON))
         {
             driveInFieldOriented = !driveInFieldOriented;
         }
@@ -191,9 +198,19 @@ public class Drivetrain extends MecanumDrive
 		System.out.println(toString());
     }
 
-    public double getHeadingInDegrees()
+    public void driveFieldOriented(double leftXAxis, double leftYAxis, double rightXAxis)
+    {
+        driveCartesian(leftXAxis, leftYAxis, rightXAxis, getHeadingFieldOriented());
+    }
+
+    private double getHeadingFieldOriented()
     {
         return -navX.getYaw();
+    }
+
+    public double getHeadingInDegrees()
+    {
+        return navX.getYaw();
     }
 
     public void resetNavX()
@@ -208,15 +225,28 @@ public class Drivetrain extends MecanumDrive
 	 */
 
      //TODO: change starting and stopping speed to constants, make starting distance proportional to maxSpeed
-	public boolean driveDistanceInInchesRightSide(int inches, double maxSpeed, int heading, int stoppingDistance)
+	public boolean driveDistanceInInches(int inches, double maxSpeed, int course, int stoppingDistance, OmniEncoder encoder)
 	{
+        inches = Math.abs(inches);
 		boolean isDoneDriving = false;
-		double distanceTravelled = Math.abs(getRightDistanceInInches());
-		double startingSpeed = 0.3;
-		double stoppingSpeed = 0.175;
-		int startingDistance = 12;
-		int direction = 1;
-		double rotate = getHeadingInDegrees();
+        double startingDistance = maxSpeed * 12.0;
+        double distanceTravelled;
+        int direction = 1;
+        double bearing = course - getHeadingInDegrees();
+        double rotate = bearing / 30;
+        
+        if( encoder == OmniEncoder.kLeft)
+        {
+            distanceTravelled = Math.abs(getLeftDistanceInInches());
+        }
+        else if( encoder == OmniEncoder.kRight)
+        {
+            distanceTravelled = Math.abs(getRightDistanceInInches());
+        }
+        else 
+        {
+            distanceTravelled = Math.abs(getAvgDistanceInInches());
+        }
 
 		if (maxSpeed < 0)
 		{
@@ -227,16 +257,16 @@ public class Drivetrain extends MecanumDrive
 		{
 			if (distanceTravelled <= startingDistance)
 			{
-				driveCartesian(0, ((maxSpeed - (startingSpeed * direction)) / startingDistance) * distanceTravelled
-						+ (startingSpeed * direction), -rotate);
+				driveCartesian(0, ((maxSpeed - (Constants.STARTING_SPEED * direction)) / startingDistance) * distanceTravelled
+						+ (Constants.STARTING_SPEED * direction), rotate);
 			}
 			else if (distanceTravelled >= startingDistance && distanceTravelled <= inches - stoppingDistance)
 			{
-				driveCartesian(0, maxSpeed, -rotate);
+				driveCartesian(0, maxSpeed, rotate);
 			}
 			else
 			{
-				driveCartesian(0, stoppingSpeed * direction, -rotate);
+				driveCartesian(0, Constants.STOPPING_SPEED * direction, rotate);
 			}
 		}
 		else
@@ -247,51 +277,6 @@ public class Drivetrain extends MecanumDrive
 
 		return isDoneDriving;
     }
-    
-    /**
-	 * Drive the distance passed into the method.
-	 * 
-	 * @return If the robot has completed the drive.
-	 */
-	public boolean driveDistanceInInchesLeftSide(int inches, double maxSpeed, int heading, int stoppingDistance)
-	{
-		boolean isDoneDriving = false;
-		double distanceTravelled = Math.abs(getLeftDistanceInInches());
-		double startingSpeed = 0.3;
-		double stoppingSpeed = 0.175;
-		int startingDistance = 12;
-		int direction = 1;
-		double rotate = getHeadingInDegrees();
-
-		if (maxSpeed < 0)
-		{
-			direction = -1;
-		}
-
-		if (distanceTravelled <= inches)
-		{
-			if (distanceTravelled <= startingDistance)
-			{
-				driveCartesian(0, ((maxSpeed - (startingSpeed * direction)) / startingDistance) * distanceTravelled
-						+ (startingSpeed * direction), -rotate);
-			}
-			else if (distanceTravelled >= startingDistance && distanceTravelled <= inches - stoppingDistance)
-			{
-				driveCartesian(0, maxSpeed, -rotate);
-			}
-			else
-			{
-				driveCartesian(0, stoppingSpeed * direction, -rotate);
-			}
-		}
-		else
-		{
-			driveCartesian(0, 0, 0);
-			isDoneDriving = true;
-		}
-
-		return isDoneDriving;
-	}
 
 	/**
 	 * Strafe at a specific angle. 0 degrees is North
@@ -327,7 +312,7 @@ public class Drivetrain extends MecanumDrive
 		}
 
 		return isDoneDriving;
-	}
+    }
 
 	/**
 	 * Method to return whether the robot should abort autonomous.
@@ -391,7 +376,7 @@ public class Drivetrain extends MecanumDrive
 		}
 
 		return doneSpinning;
-	}
+    }
 
 	@Override
 	public String toString()
@@ -403,6 +388,11 @@ public class Drivetrain extends MecanumDrive
 
 	public static class Constants
 	{
+        public static enum OmniEncoder
+        {
+            kLeft, kRight, kAverage;
+        }
+
 		public static final int FRONT_RIGHT_MOTOR_PORT = 0;
 		public static final int FRONT_LEFT_MOTOR_PORT = 1;
 		public static final int BACK_RIGHT_MOTOR_PORT = 3;
@@ -411,7 +401,10 @@ public class Drivetrain extends MecanumDrive
 		public static final int PRIMARY_MOTOR_CURRENT_LIMIT = 35;
 		public static final int SECONDARY_MOTOR_CURRENT_LIMIT = 45;
 
-		public static final double DRIVE_RAMP_TIME = 0.10;
+        public static final double DRIVE_RAMP_TIME = 0.10;
+        
+        public static final double STARTING_SPEED = 0.3;
+        public static final double STOPPING_SPEED = 0.175;
 
         public static final int LEFT_SERVO_PORT = 0;
         public static final int RIGHT_SERVO_PORT = 1;

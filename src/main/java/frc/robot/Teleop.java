@@ -10,6 +10,7 @@ package frc.robot;
 import frc.components.Arm;
 import frc.components.Elevator;
 import frc.components.Climber;
+import frc.components.Drivetrain;
 import frc.control.Xbox;
 import frc.control.DriverXbox;
 import frc.control.ButtonBoard;
@@ -26,6 +27,9 @@ public class Teleop
     private ButtonBoard buttonBoard = ButtonBoard.getInstance();
     private Climber climber = Climber.getInstance();
     private SlabShuffleboard shuffleboard = SlabShuffleboard.getInstance();
+    private Drivetrain drivetrain = Drivetrain.getInstance();
+
+
 
     private static Teleop instance = new Teleop();
     
@@ -152,6 +156,33 @@ public class Teleop
             {
                 climber.resetPin();
             }
+        }
+
+        double[] rightAxes = driverXbox.getScaledAxes(Xbox.Constants.RIGHT_STICK_AXES, Xbox.Constants.PolynomialDrive.kCubicDrive);
+        double rightXAxis = rightAxes[0];
+
+        double[] leftAxes = driverXbox.getScaledAxes(Xbox.Constants.LEFT_STICK_AXES, Xbox.Constants.PolynomialDrive.kCubicDrive);
+        double leftXAxis = leftAxes[0];
+        double leftYAxis = leftAxes[1];
+        boolean driveInFieldOriented = true;
+
+        boolean xBoxAButton = driverXbox.getRawButtonPressed(Xbox.Constants.A_BUTTON);
+
+        System.out.println("X Axis:" + leftXAxis);
+        System.out.println("Y Axis:" + -leftYAxis);
+
+        if(driverXbox.getRawButtonPressed(Xbox.Constants.START_BUTTON))
+        {
+            driveInFieldOriented = !driveInFieldOriented;
+        }
+
+		if (driveInFieldOriented)
+		{
+            drivetrain.driveFieldOriented(leftXAxis, leftYAxis, rightXAxis);
+		}
+		else
+		{
+			drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
         }
     }
 
