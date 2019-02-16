@@ -3,18 +3,29 @@ package frc.robot;
 
 import frc.components.Drivetrain;
 import frc.robot.SlabShuffleboard;
+import frc.robot.SlabShuffleboard.GamePiece;
 import frc.robot.SlabShuffleboard.Objective;
 import frc.robot.SlabShuffleboard.PregameSetupTabData;
 import frc.robot.SlabShuffleboard.RocketHatch;
 import frc.robot.SlabShuffleboard.StartingLocation;
 import frc.components.Arm;
 import frc.components.Elevator;
-
+import frc.components.Arm.Constants.Position;
+import frc.components.Drivetrain.Constants.OmniEncoder;
+import frc.components.Elevator.Constants;
+import frc.components.Elevator.Constants.ElevatorPosition;
 
 import java.awt.Point;
 import java.util.ArrayList;
 import edu.wpi.first.wpilibj.Timer;
 
+/**
+ * TODO: methodize some driving stuff for reuse move some variables to the top
+ * as instance variables - done create function to use the vision code Need to
+ * add the timer to the placement of cargo or HP make the drivetopoint function
+ * more of a state machine - done
+ * add variable motor speeds
+ */
 public class Autonomous
 {
     private SlabShuffleboard shuffleboard = SlabShuffleboard.getInstance();
@@ -22,7 +33,16 @@ public class Autonomous
     private Arm arm = Arm.getInstance();
     private Elevator elevator = Elevator.getInstance();
     private Timer timer = new Timer();
+
+    private boolean isBackingUp = true;
+    private boolean continueToNextTask = false;
     private boolean donePlacing = false;
+    private int drivingStep = -1;
+    private int driveDistance;
+    private int angle;
+    boolean isDoneDriving = false; // move to top
+    boolean isDoneSpinning = false; // move to top
+
     ArrayList<Point> pathing = new ArrayList<Point>();
 
     private PregameSetupTabData pregameSetupTabData;
@@ -87,12 +107,6 @@ public class Autonomous
 
     public boolean taskOnePlacement()
     {
-        boolean elevatorDoneMoving;
-        boolean armDoneMoving;
-        boolean doneDriving;
-        boolean isBackingUp = true;
-        boolean continueToNextTask = false;
-
         if (pregameSetupTabData.task1Objective == Objective.kRocket)
         {
             switch (pregameSetupTabData.task1GamePiece)
@@ -100,139 +114,30 @@ public class Autonomous
             case kHatchPanel:
                 switch (pregameSetupTabData.task1RocketLevel)
                 {
-
-                case kBottom:
-                    elevatorDoneMoving = moveElevator(Elevator.Constants.ElevatorPosition.kBottomHatch);
-                    armDoneMoving = moveArm(Arm.Constants.Position.kBottomHatch);
-                    if (elevatorDoneMoving && armDoneMoving)
-                    {
-                        doneDriving = drivetrain.driveDistanceInInchesLeftSide(18, .7,
-                                (int) drivetrain.getHeadingInDegrees(), 3);
-                        if (doneDriving)
-                        {
-                            arm.releaseHatchPanel(); // add the timer function
-
-                        }
-                        isBackingUp = drivetrain.driveDistanceInInchesLeftSide(18, -.7,
-                                (int) drivetrain.getHeadingInDegrees(), 3);
-                        if (!isBackingUp)
-                        {
-                            continueToNextTask = true;
-                            return continueToNextTask;
-                        }
-                    }
-                    break;
-                ////////////////////////////////////////////////////////////////////////////////////
-                case kMiddle:
-                    elevatorDoneMoving = moveElevator(Elevator.Constants.ElevatorPosition.kCenterHatch);
-                    armDoneMoving = moveArm(Arm.Constants.Position.kCenterHatch);
-                    if (elevatorDoneMoving && armDoneMoving)
-                    {
-                        doneDriving = drivetrain.driveDistanceInInchesLeftSide(18, .7,
-                                (int) drivetrain.getHeadingInDegrees(), 3);
-                        if (doneDriving)
-                        {
-                            arm.releaseHatchPanel(); // add the timer function
-                        }
-                        isBackingUp = drivetrain.driveDistanceInInchesLeftSide(18, -.7,
-                                (int) drivetrain.getHeadingInDegrees(), 3);
-                        if (!isBackingUp)
-                        {
-                            continueToNextTask = true;
-                            return continueToNextTask;
-                        }
-                    }
-                    break;
-                ///////////////////////////////////////////////////////////////////////
-                case kTop:
-                    elevatorDoneMoving = moveElevator(Elevator.Constants.ElevatorPosition.kTopHatch);
-                    armDoneMoving = moveArm(Arm.Constants.Position.kTopHatch);
-                    if (elevatorDoneMoving && armDoneMoving)
-                    {
-                        doneDriving = drivetrain.driveDistanceInInchesLeftSide(18, .7,
-                                (int) drivetrain.getHeadingInDegrees(), 3);
-                        if (doneDriving)
-                        {
-                            arm.releaseHatchPanel(); // add the timer function
-                        }
-                        isBackingUp = drivetrain.driveDistanceInInchesLeftSide(18, -.7,
-                                (int) drivetrain.getHeadingInDegrees(), 3);
-                        if (!isBackingUp)
-                        {
-                            continueToNextTask = true;
-                            return continueToNextTask;
-                        }
-                    }
-                    break;
-                //////////////////////////////////////////////////////////////////////
+                    case kBottom:
+                        placeObject(ElevatorPosition.kBottomHatch, Position.kBottomHatch);
+                        break;
+                    case kMiddle:
+                        placeObject(ElevatorPosition.kCenterHatch, Position.kCenterHatch);
+                        break;
+                    case kTop:
+                        placeObject(ElevatorPosition.kTopHatch, Position.kTopHatch);
+                        break;
                 }
                 break;
-
             case kCargo:
-
                 switch (pregameSetupTabData.task1RocketLevel)
                 {
 
                 case kBottom:
-                    elevatorDoneMoving = moveElevator(Elevator.Constants.ElevatorPosition.kBottomCargo);
-                    armDoneMoving = moveArm(Arm.Constants.Position.kBottomCargo);
-                    if (elevatorDoneMoving && armDoneMoving)
-                    {
-                        doneDriving = drivetrain.driveDistanceInInchesLeftSide(18, .7,
-                                (int) drivetrain.getHeadingInDegrees(), 3);
-                        if (doneDriving)
-                        {
-                            arm.ejectCargo(.75); // add the timer function
-                        }
-                        isBackingUp = drivetrain.driveDistanceInInchesLeftSide(18, -.7,
-                                (int) drivetrain.getHeadingInDegrees(), 3);
-                    }
-                    if (!isBackingUp)
-                    {
-                        continueToNextTask = true;
-                        break;
-                    }
-                    ////////////////////////////////////////////////////////////////////////////////////
+                    placeObject(ElevatorPosition.kBottomCargo, Position.kBottomCargo);
+                    break;
                 case kMiddle:
-                    elevatorDoneMoving = moveElevator(Elevator.Constants.ElevatorPosition.kCenterCargo);
-                    armDoneMoving = moveArm(Arm.Constants.Position.kCenterCargo);
-                    if (elevatorDoneMoving && armDoneMoving)
-                    {
-                        doneDriving = drivetrain.driveDistanceInInchesLeftSide(18, .7,
-                                (int) drivetrain.getHeadingInDegrees(), 3);
-                        if (doneDriving)
-                        {
-                            arm.ejectCargo(.75); // add the timer function
-                        }
-                        isBackingUp = drivetrain.driveDistanceInInchesLeftSide(18, -.7,
-                                (int) drivetrain.getHeadingInDegrees(), 3);
-                    }
-                    if (!isBackingUp)
-                    {
-                        continueToNextTask = true;
-                        break;
-                    }
-                    ///////////////////////////////////////////////////////////////////////
+                    placeObject(ElevatorPosition.kCenterCargo, Position.kCenterCargo);
+                    break;
                 case kTop:
-                    elevatorDoneMoving = moveElevator(Elevator.Constants.ElevatorPosition.kTopCargo);
-                    armDoneMoving = moveArm(Arm.Constants.Position.kTopCargo);
-                    if (elevatorDoneMoving && armDoneMoving)
-                    {
-                        doneDriving = drivetrain.driveDistanceInInchesLeftSide(18, .7,
-                                (int) drivetrain.getHeadingInDegrees(), 3);
-                        if (doneDriving)
-                        {
-                            arm.ejectCargo(.75); // add the timer function
-                        }
-                        isBackingUp = drivetrain.driveDistanceInInchesLeftSide(18, -.7,
-                                (int) drivetrain.getHeadingInDegrees(), 3);
-                    }
-                    if (!isBackingUp)
-                    {
-                        continueToNextTask = true;
-                        break;
-                    }
-                    //////////////////////////////////////////////////////////////////////
+                    placeObject(ElevatorPosition.kTopCargo, Position.kTopCargo);
+                    break;
                 }
                 break;
 
@@ -241,59 +146,53 @@ public class Autonomous
 
             }
         }
-        if (pregameSetupTabData.task1Objective == Objective.kCargoShip)
+        else if (pregameSetupTabData.task1Objective == Objective.kCargoShip)
         {
             switch (pregameSetupTabData.task1GamePiece)
             {
             case kCargo:
-                elevatorDoneMoving = moveElevator(Elevator.Constants.ElevatorPosition.kCargoShipCargo);
-                armDoneMoving = moveArm(Arm.Constants.Position.kCargoShipCargo);
-                if (elevatorDoneMoving && armDoneMoving)
-                {
-                    doneDriving = drivetrain.driveDistanceInInchesLeftSide(18, .7,
-                            (int) drivetrain.getHeadingInDegrees(), 3);
-                    if (doneDriving)
-                    {
-                        arm.ejectCargo(.75); // add the timer function
-
-                    }
-                    isBackingUp = drivetrain.driveDistanceInInchesLeftSide(18, -.7,
-                            (int) drivetrain.getHeadingInDegrees(), 3);
-                    if (!isBackingUp)
-                    {
-                        continueToNextTask = true;
-                        return continueToNextTask;
-
-                    }
-                }
+                placeObject(ElevatorPosition.kCargoShipCargo, Position.kCargoShipCargo);
                 break;
 
             case kHatchPanel:
-                elevatorDoneMoving = moveElevator(Elevator.Constants.ElevatorPosition.kCargoShipCargo);
-                armDoneMoving = moveArm(Arm.Constants.Position.kCargoShipCargo);
-                if (elevatorDoneMoving && armDoneMoving)
-                {
-                    doneDriving = drivetrain.driveDistanceInInchesLeftSide(18, .7,
-                            (int) drivetrain.getHeadingInDegrees(), 3);
-                    if (doneDriving)
-                    {
-                        arm.releaseHatchPanel(); // add the timer function
-
-                    }
-                    isBackingUp = drivetrain.driveDistanceInInchesLeftSide(18, -.7,
-                            (int) drivetrain.getHeadingInDegrees(), 3);
-                    if (!isBackingUp)
-                    {
-                        continueToNextTask = true;
-                        return continueToNextTask;
-
-                    }
-                }
+                placeObject(ElevatorPosition.kCargoShipCargo, Position.kCargoShipCargo); // is there an enum for cargo ship hatch panel???
                 break;
 
             }
         }
         return continueToNextTask;
+    }
+
+    public boolean placeObject(Elevator.Constants.ElevatorPosition elevatorPosition, Arm.Constants.Position armPosition)
+    {
+        
+        boolean elevatorDoneMoving;
+        boolean armDoneMoving;
+        boolean doneDriving;
+        elevatorDoneMoving = moveElevator(elevatorPosition);
+        armDoneMoving = moveArm(armPosition);
+        if (elevatorDoneMoving && armDoneMoving)
+        {
+            doneDriving = drivetrain.driveDistanceInInches(18, .7, (int) drivetrain.getHeadingInDegrees(), 3, OmniEncoder.kAverage);
+            if (doneDriving)
+            {
+                if(pregameSetupTabData.task1GamePiece == GamePiece.kHatchPanel)
+                {
+                    arm.releaseHatchPanel(); // add the timer function
+                }
+                else if(pregameSetupTabData.task1GamePiece == GamePiece.kCargo)
+                {
+                    arm.ejectCargo(.9);
+                }
+            }
+            isBackingUp = drivetrain.driveDistanceInInches(18, -.7, (int) drivetrain.getHeadingInDegrees(), 3, OmniEncoder.kAverage);
+            if (!isBackingUp)
+            {
+                continueToNextTask = true;
+                return continueToNextTask;
+            }
+        }
+        return false;
     }
 
     public boolean taskOneFinalSpin()
@@ -306,7 +205,7 @@ public class Autonomous
             {
                 isDoneSpinning = drivetrain.spinToBearing(120 * leftOrRight(), .75);
             }
-            //possibly add the front rocket
+            // possibly add the front rocket
             break;
         case kCargoShip:
             isDoneSpinning = drivetrain.spinToBearing(90 * -leftOrRight(), .75);
@@ -316,6 +215,12 @@ public class Autonomous
         return isDoneSpinning;
     }
 
+    /**
+     * this function moves the elevator to the position specified
+     * 
+     * @return this function returns true if the elevator is not moving and false if
+     *         it is still moving
+     */
     public boolean moveElevator(Elevator.Constants.ElevatorPosition position)
     {
         elevator.setTargetPosition(position);
@@ -324,25 +229,30 @@ public class Autonomous
         else
             return false;
     }
-    
+
+    /**
+     * this function will move the arm
+     * 
+     * @return gives back boolean true is done moving, false if it is still moving
+     */
     public boolean moveArm(Arm.Constants.Position position)
     {
-        /*
+        boolean isArmMoving = arm.isArmMoving();
+        boolean isWristMoving = arm.isWristMoving();
         arm.setTargetPosition(position);
-        if (Arm.isWristMoving() && Arm.isArmMoving)
+        if (!isWristMoving && !isArmMoving)
         {
             return true;
         }
         else
             return false;
-        */
-        return false;
+
     }
-    
+
     /**
      * this function will add another point to drive to in INCHES
      */
-    
+
     public void addPoint(int x, int y)
     {
         pathing.add(new Point(x, y));
@@ -404,28 +314,58 @@ public class Autonomous
         return Math.atan2(yDifference, xDifference) * (180.0 / Math.PI);
     }
 
-    public boolean driveToPoint(int counter)
-    //change to be like the step in the execute
+    /**
+     * this will take the point you are on, and drive you to the next one in the
+     * arrayList
+     * 
+     * @param pointCounter
+     * @param stepper
+     * @return boolean true if done false if still moving.
+     * 
+     */
+    public boolean driveToPoint(int pointCounter)
     {
-        int numberOfPoints = pathing.size();
-        int driveDistance;
-        int angle;
-        boolean isDoneDriving = false; //move to top
-        boolean isDoneSpinning = false; //move to top
-        driveDistance = (int) calculateMagnitude(counter);
-        angle = (int) calculateAngle(counter);
-
-        if ((angle != drivetrain.getHeadingInDegrees() && !isDoneSpinning)) //add tolerance
+        switch (drivingStep)
         {
-            isDoneSpinning = drivetrain.spinToBearing(angle, 0.5);
-        }
-        else if (!isDoneDriving)
-        {
-            isDoneDriving = drivetrain.driveDistanceInInchesLeftSide(driveDistance / 20, 1, 0, driveDistance / 20);//these are integer division, change it
+        case 0: // this case will just calculate the values needed
+            driveDistance = (int) calculateMagnitude(pointCounter);
+            angle = (int) calculateAngle(pointCounter);
+            drivingStep++;
+            break;
+        case 1: // this step will rotate the robot if needed
+            if ((angle > drivetrain.getHeadingInDegrees() - 5) && (angle < drivetrain.getHeadingInDegrees() + 5)) // add
+                                                                                                                  // tolerance
+            {
+                isDoneSpinning = drivetrain.spinToBearing(angle, 0.5);
+            }
+            if (isDoneSpinning)
+            {
+                drivingStep++;
+            }
+            break;
+        case 2: // this step will moving the robot if needed
+            isDoneDriving = drivetrain.driveDistanceInInches(driveDistance, 1, 0, driveDistance,
+                    OmniEncoder.kAverage);// these are integer division, change it
+            if (isDoneDriving)
+            {
+                drivingStep++;
+            }
+            break;
+        default: // this case will intialize the values needed.
+            drivingStep = 0;
+            isDoneDriving = false;
+            isDoneSpinning = false;
+            break;
         }
         return isDoneDriving;
+
     }
 
+    /**
+     * this function sets a value to use for right or left calculation
+     * 
+     * @return -1 if left, +1 if right
+     */
     public int leftOrRight()
     {
         if (pregameSetupTabData.startingLocation == StartingLocation.kLeft)
@@ -442,7 +382,7 @@ public class Autonomous
     public void executeTasks()
     {
         int step = 0; // move to top
-        int pointCounter = 0; //moveto top
+        int pointCounter = 0; // moveto top
         boolean isDone;
         switch (step)
         {
