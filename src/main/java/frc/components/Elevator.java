@@ -31,8 +31,9 @@ public class Elevator
     private int armPotValue;
     private static int initialElevatorPosition = 100;
 
+   
+    // private Arm arm = Arm.getInstance();
     private static Elevator instance = new Elevator();
-    private Arm arm = Arm.getInstance();
 
     public static Elevator getInstance()
 	{
@@ -160,11 +161,11 @@ public class Elevator
     public void moveTo()
     {
         elevatorPotValue = getPotValue();
-        armPotValue = arm.getPotValue();
+        //armPotValue = arm.getPotValue();
 
         if(targetPosition != ElevatorPosition.kNone)
         {
-            if( armPotValue < arm.getHorizontalArmPosition() + 200)
+             if(false)// armPotValue < arm.getHorizontalArmPosition() + 200)
             {
                 stopElevator();
                 isMoving = true;
@@ -177,9 +178,9 @@ public class Elevator
             else if(elevatorPotValue > (targetPosition.position + ElevatorPosition.kThreshold.position))
             {
                 isMoving = true;
-                if(arm.getWristTargetPosition() == Arm.Constants.WristPosition.kWristDown)
+                if(false)//arm.getWristTargetPosition() == Arm.Constants.WristPosition.kWristDown)
                 {
-                    if(elevatorPotValue > initialElevatorPosition || armPotValue > arm.getHorizontalArmPosition())
+                    if(false)//elevatorPotValue > initialElevatorPosition || armPotValue > arm.getHorizontalArmPosition())
                     {
                         lowerElevator();
                     }

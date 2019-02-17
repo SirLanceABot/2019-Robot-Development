@@ -31,8 +31,8 @@ public class Arm
 
     private WPI_TalonSRX armMotor = new WPI_TalonSRX(Constants.ARM_MOTOR_ID);
 
-    private DigitalInput wristUpLimitSwitch = new DigitalInput(0);
-    private DigitalInput wristDownLimitSwitch = new DigitalInput(1);
+    private DigitalInput wristUpLimitSwitch = new DigitalInput(Constants.WRIST_UP_LIMIT_SWITCH_PORT);
+    private DigitalInput wristDownLimitSwitch = new DigitalInput(Constants.WRIST_DOWN_LIMIT_SWITCH_PORT);
 
     private Timer grabberTimer = new Timer();
 
@@ -45,7 +45,7 @@ public class Arm
     private boolean isArmMoving;
     private int armPotValue = 0;
     private int elevatorPotValue = 0;
-    private static Elevator elevator = Elevator.getInstance();
+    // private static Elevator elevator = Elevator.getInstance();
 
     private static int horizontalArmPosition = 0;
 
@@ -62,6 +62,7 @@ public class Arm
  
 
         armMotor.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.Analog, 0, 0);
+    
     }
 
     /**
@@ -202,7 +203,7 @@ public class Arm
      */
     public int getPotValue()
     {
-        return armMotor.getSelectedSensorPosition(0);   // Subtract a number from this to flip the directions (Down is low num, up is high num)
+        return 1;//armMotor.getSelectedSensorPosition();   // Subtract a number from this to flip the directions (Down is low num, up is high num)
     }
 
     /**
@@ -285,7 +286,7 @@ public class Arm
     public void moveTo()
     {
         armPotValue = getPotValue();
-        elevatorPotValue = elevator.getPotValue();
+        //elevatorPotValue = elevator.getPotValue();
 
         if (!targetPosition.equals(Constants.Position.kNone))
         {
@@ -304,8 +305,8 @@ public class Arm
             {
                 isWristMoving = true;
 
-                if (elevatorPotValue > elevator.getInitialElevatorPosition() - 50
-                    && armPotValue > horizontalArmPosition - 50)
+                if (false)//elevatorPotValue > elevator.getInitialElevatorPosition() - 50
+                    // && armPotValue > horizontalArmPosition - 50)
                 {
                     moveWristUp();
 
@@ -328,7 +329,7 @@ public class Arm
 
                 if((targetPosition.wristPosition == WristPosition.kWristDown && !isWristDown())) 
                 {
-                    if(elevatorPotValue > elevator.getInitialElevatorPosition() || armPotValue > horizontalArmPosition)
+                    if(false)//elevatorPotValue > elevator.getInitialElevatorPosition() || armPotValue > horizontalArmPosition)
                     {
                         moveArmDown();
                     }   
@@ -455,11 +456,15 @@ public class Arm
         public static final int GRABBER_SOLENOID_PORT_2 = 3;
         public static final int ROLLER_TALON_ID = 12;
         public static final int ARM_MOTOR_ID = 9;
+        public static final int WRIST_DOWN_LIMIT_SWITCH_PORT = 4;
+        public static final int WRIST_UP_LIMIT_SWITCH_PORT = 5;
 
         public static final int ARM_THRESHOLD = 5;
 
         public static final int COMPETITION_HORIZONTAL_ARM_POSITION = 0;
         public static final int PRACTICE_HORIZONTAL_ARM_POSITION = 0;
+
+
     }
 
 }

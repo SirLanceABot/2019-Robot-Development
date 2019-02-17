@@ -360,10 +360,10 @@ public class Drivetrain extends MecanumDrive
             kLeft, kRight, kBoth;
         }
 
-        public static final int FRONT_RIGHT_MOTOR_PORT = 0;
-        public static final int FRONT_LEFT_MOTOR_PORT = 1;
-        public static final int BACK_RIGHT_MOTOR_PORT = 3;
-        public static final int BACK_LEFT_MOTOR_PORT = 2;
+        public static final int FRONT_RIGHT_MOTOR_PORT = 1;
+        public static final int FRONT_LEFT_MOTOR_PORT = 0;
+        public static final int BACK_RIGHT_MOTOR_PORT = 2;
+        public static final int BACK_LEFT_MOTOR_PORT = 3;
 
         public static final int PRIMARY_MOTOR_CURRENT_LIMIT = 35;
         public static final int SECONDARY_MOTOR_CURRENT_LIMIT = 45;
