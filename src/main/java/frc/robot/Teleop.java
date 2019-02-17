@@ -15,6 +15,7 @@ import frc.control.Xbox;
 import frc.control.DriverXbox;
 import frc.control.OperatorXbox;
 import frc.control.ButtonBoard;
+import frc.components.ElevatorAndArm;
 
 /**
  * Add your docs here.
@@ -23,6 +24,7 @@ public class Teleop
 {    
     private Arm arm = Arm.getInstance();
     private Elevator elevator = Elevator.getInstance();
+    private ElevatorAndArm elevatorAndArm = ElevatorAndArm.getInstance();
 
     private DriverXbox driverXbox = DriverXbox.getInstance();
     private OperatorXbox operatorXbox = OperatorXbox.getInstance();
@@ -109,47 +111,46 @@ public class Teleop
 
         if(floorButton)
         {
-            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kFloor);
-            arm.setTargetPosition(Arm.Constants.Position.kFloor);
+            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kFloor);
+            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kFloor);
         }
         else if(cargoShipPortButton)
         {
-            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kCargoShipCargo);
-            arm.setTargetPosition(Arm.Constants.Position.kCargoShipCargo);
+            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCargoShipCargo);
+            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCargoShipCargo);
         }
         else if(bottomHatchButton)
         {
-            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kBottomHatch);
-            arm.setTargetPosition(Arm.Constants.Position.kBottomHatch);
+            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kBottomHatch);
+            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kBottomHatch);
         }
         else if(centerHatchButton)
         {
-            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kCenterHatch);
-            arm.setTargetPosition(Arm.Constants.Position.kCenterHatch);
+            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCenterHatch);
+            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCenterHatch);
         }
         else if(topHatchButton)
         {
-            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kTopHatch);
-            arm.setTargetPosition(Arm.Constants.Position.kTopHatch);
+            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kTopHatch);
+            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kTopHatch);
         }
         else if(bottomCargoButton)
         {
-            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kBottomCargo);
-            arm.setTargetPosition(Arm.Constants.Position.kBottomCargo);
+            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kBottomCargo);
+            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kBottomCargo);
         }
         else if(centerCargoButton)
         {
-            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kCenterCargo);
-            arm.setTargetPosition(Arm.Constants.Position.kCenterCargo);
+            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCenterCargo);
+            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCenterCargo);
         }
         else if(topCargoButton)
         {
-            elevator.setTargetPosition(Elevator.Constants.ElevatorPosition.kTopCargo);
-            arm.setTargetPosition(Arm.Constants.Position.kTopCargo);
+            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kTopCargo);
+            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kTopCargo);
         }
 
-        arm.moveTo();
-        elevator.moveTo();
+        elevatorAndArm.moveTo();
         
         if(cargoInButton)
         {
@@ -194,17 +195,16 @@ public class Teleop
         double[] leftAxes = driverXbox.getScaledAxes(Xbox.Constants.LEFT_STICK_AXES, Xbox.Constants.PolynomialDrive.kCubicDrive);
         double leftXAxis = leftAxes[0];
         double leftYAxis = leftAxes[1];
-        boolean driveInFieldOriented = true;
 
         System.out.println("X Axis:" + leftXAxis);
         System.out.println("Y Axis:" + -leftYAxis);
 
         if(driverXbox.getRawButtonPressed(Xbox.Constants.START_BUTTON))
         {
-            driveInFieldOriented = !driveInFieldOriented;
+            drivetrain.toggleDriveInFieldOriented();
         }
 
-		if (driveInFieldOriented)
+		if (drivetrain.getDriveInFieldOriented())
 		{
             drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis, drivetrain.getFieldOrientedHeading());
 		}

@@ -36,16 +36,12 @@ public class Arm
 
     private Timer grabberTimer = new Timer();
 
-    private Constants.Position targetPosition = Constants.Position.kNone;
 
     private WPI_TalonSRX masterIntakeRoller = new WPI_TalonSRX(Constants.ROLLER_TALON_ID);
 
     private boolean isGrabberMoving = false;
     private boolean isWristMoving;
     private boolean isArmMoving;
-    private int armPotValue = 0;
-    private int elevatorPotValue = 0;
-    // private static Elevator elevator = Elevator.getInstance();
 
     private static int horizontalArmPosition = 0;
 
@@ -203,7 +199,7 @@ public class Arm
      */
     public int getPotValue()
     {
-        return 1;//armMotor.getSelectedSensorPosition();   // Subtract a number from this to flip the directions (Down is low num, up is high num)
+        return armMotor.getSelectedSensorPosition();   // Subtract a number from this to flip the directions (Down is low num, up is high num)
     }
 
     /**
@@ -211,14 +207,23 @@ public class Arm
      * 
      * @param targetPosition have to send the target position
      */
-    public void setTargetPosition(Constants.Position targetPosition)
+
+
+    public Constants.WristPosition getWristPosition(Constants.Position position)
     {
-        this.targetPosition = targetPosition;
+        return position.wristPosition;
     }
 
-    public Constants.WristPosition getWristTargetPosition()
+    public int getTargetPositionArmPositionValue(Constants.Position position)
     {
-        return targetPosition.wristPosition;
+        return position.armPosition.armPosition;
+    }
+
+    public Constants.Position setWristPosition(Constants.Position position, Constants.WristPosition wristPosition)
+    {
+        position.wristPosition = wristPosition;
+
+        return position;
     }
 
     public void setRobotType(SlabShuffleboard.RobotType robotType)
@@ -243,9 +248,19 @@ public class Arm
         return isWristMoving;
     }
 
+    public void setIsWristMoving(boolean isWristMoving)
+    {
+        this.isWristMoving = isWristMoving;
+    }
+
     public boolean isArmMoving()
     {
         return isArmMoving;
+    }
+
+    public void setIsArmMoving(boolean isArmMoving)
+    {
+        this.isArmMoving = isArmMoving;
     }
 
     public boolean isWristDown()
@@ -279,82 +294,6 @@ public class Arm
         return (int)((500.0 * angle / 360.0) / (1000.0 + (500.0 * angle / 360.0)) * 1024.0);
     }
 
-    /**
-     * this function will move to the position that has been specified by the
-     * variabe targetPosition
-     */
-    public void moveTo()
-    {
-        armPotValue = getPotValue();
-        //elevatorPotValue = elevator.getPotValue();
-
-        if (!targetPosition.equals(Constants.Position.kNone))
-        {
-            if (targetPosition.wristPosition == Constants.WristPosition.kWristDown)
-            {
-                isWristMoving = true;
-                moveWristDown();
-
-                if (isWristDown())
-                {
-                    targetPosition.wristPosition = Constants.WristPosition.kWristNone;
-                    isWristMoving = false;
-                }
-            }
-            else if (targetPosition.wristPosition == Constants.WristPosition.kWristUp)
-            {
-                isWristMoving = true;
-
-                if (false)//elevatorPotValue > elevator.getInitialElevatorPosition() - 50
-                    // && armPotValue > horizontalArmPosition - 50)
-                {
-                    moveWristUp();
-
-                    if (isWristUp())
-                    {
-                        targetPosition.wristPosition = Constants.WristPosition.kWristNone;
-                        isWristMoving = false;
-                    }
-                }
-            }
-            
-            if (armPotValue < targetPosition.armPosition.armPosition - Constants.ARM_THRESHOLD)
-            {
-                moveArmUp();
-                isArmMoving = true;
-            }
-            else if (armPotValue > targetPosition.armPosition.armPosition + Constants.ARM_THRESHOLD)
-            {
-                isArmMoving = true;
-
-                if((targetPosition.wristPosition == WristPosition.kWristDown && !isWristDown())) 
-                {
-                    if(false)//elevatorPotValue > elevator.getInitialElevatorPosition() || armPotValue > horizontalArmPosition)
-                    {
-                        moveArmDown();
-                    }   
-                    else
-                    {
-                        stopArm();
-                    }        
-                }
-                else
-                {
-                    moveArmDown();
-                }
-            }
-            else
-            {
-                stopArm();
-                isArmMoving = false;
-            }
-
-            if ((isWristMoving == false) && (isArmMoving == false))
-            {
-                targetPosition = Position.kNone;
-            }
-        }
-    }
 
     public void teleop()
     {

@@ -188,6 +188,16 @@ public class Drivetrain extends MecanumDrive
         return navX.getYaw();
     }
 
+    public void toggleDriveInFieldOriented()
+    {
+        driveInFieldOriented = !driveInFieldOriented;
+    }
+
+    public boolean getDriveInFieldOriented()
+    {
+        return driveInFieldOriented;
+    }
+
     public void resetNavX()
     {
         navX.reset();

@@ -12,8 +12,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import frc.robot.SlabShuffleboard;
-import frc.components.Arm;
 
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 /**
@@ -26,13 +26,9 @@ public class Elevator
 
 
     private boolean isMoving = false;
-    private Constants.ElevatorPosition targetPosition = Constants.ElevatorPosition.kNone;
-    private int elevatorPotValue;
-    private int armPotValue;
     private static int initialElevatorPosition = 100;
 
    
-    // private Arm arm = Arm.getInstance();
     private static Elevator instance = new Elevator();
 
     public static Elevator getInstance()
@@ -49,6 +45,13 @@ public class Elevator
         slaveElevatorMotor.setNeutralMode(NeutralMode.Brake);
 
         masterElevatorMotor.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.Analog, 0, 0);
+
+        masterElevatorMotor.setNeutralMode(NeutralMode.Brake);
+        slaveElevatorMotor.setNeutralMode(NeutralMode.Brake);
+
+        masterElevatorMotor.setSensorPhase(true);
+        masterElevatorMotor.setInverted(InvertType.InvertMotorOutput);
+        slaveElevatorMotor.setInverted(InvertType.InvertMotorOutput);
 
         masterElevatorMotor.configReverseSoftLimitThreshold(Constants.ElevatorPosition.kMinHeight.position, 0);
         masterElevatorMotor.configForwardSoftLimitThreshold(Constants.ElevatorPosition.kMaxHeight.position, 0);
@@ -109,24 +112,14 @@ public class Elevator
         return isMoving;
     }
 
-    /**
-     * Sets the target position for the elevator
-     * 
-     * @param targetPosition the location the elevator is attempting to move to
-     */
-    public void setTargetPosition(ElevatorPosition targetPosition)
+    public void setIsMoving(boolean isMoving)
     {
-        this.targetPosition = targetPosition;
+        this.isMoving = isMoving;
     }
 
-    /**
-     * Returns the current target position of the elevator
-     * 
-     * @return the target position the elevator is attempting to move to
-     */
-    public ElevatorPosition getTargetPosition()
+    public int getPositionValue(ElevatorPosition position)
     {
-       return targetPosition;
+        return position.position;
     }
 
     public void setRobotType(SlabShuffleboard.RobotType robotType)
@@ -151,57 +144,6 @@ public class Elevator
         return (int)((1.00/8.3) * inches * 100); 
     }
     
-    /**
-     * Moves the elevator to the current set target position. 
-     * Checks to see if the target position is above or below the current elevator position.
-     * Raises elevator if above and lowers elevator if below.
-     * 
-     * Also updates the integer potValue to equal the current value of the potentiometer.
-     */
-    public void moveTo()
-    {
-        elevatorPotValue = getPotValue();
-        //armPotValue = arm.getPotValue();
-
-        if(targetPosition != ElevatorPosition.kNone)
-        {
-             if(false)// armPotValue < arm.getHorizontalArmPosition() + 200)
-            {
-                stopElevator();
-                isMoving = true;
-            }
-            else if(elevatorPotValue < (targetPosition.position - ElevatorPosition.kThreshold.position))
-            {
-                raiseElevator();
-                isMoving = true;
-            }
-            else if(elevatorPotValue > (targetPosition.position + ElevatorPosition.kThreshold.position))
-            {
-                isMoving = true;
-                if(false)//arm.getWristTargetPosition() == Arm.Constants.WristPosition.kWristDown)
-                {
-                    if(false)//elevatorPotValue > initialElevatorPosition || armPotValue > arm.getHorizontalArmPosition())
-                    {
-                        lowerElevator();
-                    }
-                    else
-                    {
-                        stopElevator();
-                    }
-                }
-                else
-                {       
-                    lowerElevator();
-                }
-            }
-            else
-            {
-                stopElevator();
-                targetPosition = ElevatorPosition.kNone;
-                isMoving = false;
-            }
-        }
-    }   
 
     @Override
     public String toString()
@@ -246,8 +188,8 @@ public class Elevator
             }
         }
     
-        public static final int INITIAL_HEIGHT_TO_MIN_HEIGHT = inchesToTicks(-10);
-        public static final int INITIAL_HEIGHT_TO_MAX_HEIGHT = inchesToTicks(85);
+        public static final int INITIAL_HEIGHT_TO_MIN_HEIGHT = 111;//inchesToTicks(-10);
+        public static final int INITIAL_HEIGHT_TO_MAX_HEIGHT = 876;//inchesToTicks(85);
         public static final int INITIAL_HEIGHT_TO_FLOOR = inchesToTicks(-5);
         public static final int INITIAL_HEIGHT_TO_CARGO_SHIP_CARGO = inchesToTicks(10);
         public static final int INITIAL_HEIGHT_TO_BOTTOM_HATCH = inchesToTicks(5);
@@ -267,7 +209,7 @@ public class Elevator
         public static final int CONTINOUS_CURRENT_LIMIT = 20;   // In Amps
         public static final double OPEN_LOOP_RAMP = 0.05;       // In seconds
 
-        public static final int COMPETITION_INITIAL_ELEVATOR_POSITION = 200;
-        public static final int PRACTICE_INITIAL_ELEVATOR_POSITION = 200;
+        public static final int COMPETITION_INITIAL_ELEVATOR_POSITION = 0;
+        public static final int PRACTICE_INITIAL_ELEVATOR_POSITION = 0;
     }
 }
