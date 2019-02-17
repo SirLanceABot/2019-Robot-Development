@@ -256,8 +256,8 @@ public class Elevator
         public static final int INITIAL_HEIGHT_TO_CENTER_CARGO = inchesToTicks(20);
         public static final int INITIAL_HEIGHT_TO_TOP_CARGO = inchesToTicks(30);
 
-        public static final int MASTER_ELEVATOR_MOTOR_PORT = 0;
-        public static final int SLAVE_ELEVATOR_MOTOR_PORT = 0;
+        public static final int MASTER_ELEVATOR_MOTOR_PORT = 10;
+        public static final int SLAVE_ELEVATOR_MOTOR_PORT = 11;
 
         public static final double ELEVATOR_SPEED = 0.25;
 

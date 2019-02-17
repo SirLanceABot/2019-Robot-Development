@@ -2,7 +2,6 @@ package frc.components;
 
 import frc.control.Xbox;
 import frc.components.Drivetrain.Constants.OmniEncoder;
-import frc.components.Drivetrain.Constants.RotateDirection;
 import frc.control.DriverXbox;
 
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
@@ -249,7 +248,7 @@ public class Drivetrain extends MecanumDrive
         }
         else
         {
-            distanceTravelled = Math.abs(getAvgDistanceInInches());
+            distanceTravelled = Math.abs(getDistaceInInches());
         }
 
         if (maxSpeed < 0)
@@ -358,7 +357,7 @@ public class Drivetrain extends MecanumDrive
     {
         public static enum OmniEncoder
         {
-            kLeft, kRight, kAverage, kBoth;
+            kLeft, kRight, kBoth;
         }
 
         public static final int FRONT_RIGHT_MOTOR_PORT = 0;

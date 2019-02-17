@@ -205,7 +205,7 @@ public class Autonomous
         if (elevatorDoneMoving && armDoneMoving)
         {
             doneDriving = drivetrain.driveDistanceInInches(18, .7, (int) drivetrain.getHeadingInDegrees(), 3,
-                    OmniEncoder.kAverage);
+                    OmniEncoder.kBoth);
             if (doneDriving)
             {
                 if (pregameSetupTabData.task1GamePiece == GamePiece.kHatchPanel)
@@ -218,7 +218,7 @@ public class Autonomous
                 }
             }
             isBackingUp = drivetrain.driveDistanceInInches(18, -.7, (int) drivetrain.getHeadingInDegrees(), 3,
-                    OmniEncoder.kAverage);
+                    OmniEncoder.kBoth);
             if (!isBackingUp)
             {
                 continueToNextTask = true;
@@ -404,7 +404,7 @@ public class Autonomous
             }
             break;
         case 2: // this step will moving the robot if needed
-            isDoneDriving = drivetrain.driveDistanceInInches(driveDistance, 1 * motorSpeedFactor, 0, driveDistance, OmniEncoder.kAverage);// these
+            isDoneDriving = drivetrain.driveDistanceInInches(driveDistance, 1 * motorSpeedFactor, 0, driveDistance, OmniEncoder.kBoth);// these
                                                                                                                        // are
                                                                                                                        // integer
                                                                                                                        // division,

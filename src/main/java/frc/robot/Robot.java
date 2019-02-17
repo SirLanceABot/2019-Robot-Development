@@ -42,7 +42,6 @@ public class Robot extends TimedRobot
     public void teleopPeriodic()
     {
         double[] scaledArray = driverXbox.getScaledAxes(Constants.LEFT_STICK_AXES, Xbox.Constants.PolynomialDrive.kCubicDrive);
-        drivetrain.teleop();
         teleop.teleop();
 
         System.out.printf("X = %5.3f Y = %5.3f X = %5.3f Y = %5.3f \n",

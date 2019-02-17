@@ -104,8 +104,8 @@ public class Climber
     {
         public static final int SOLENOID_PORT_1 = 0;
         public static final int SOLENOID_PORT_2 = 1;
-        public static final int CLIMBER_TALON_PORT = 0;
-        public static final int CLIMBER_VICTOR_PORT = 0;
+        public static final int CLIMBER_TALON_PORT = 14;
+        public static final int CLIMBER_VICTOR_PORT = 15;
 
         public static final int MAX_CLIMBER_HEIGHT = 500;
         public static final int MIN_CLIMBER_HEIGHT = -5;
