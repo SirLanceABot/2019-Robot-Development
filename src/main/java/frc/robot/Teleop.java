@@ -196,21 +196,27 @@ public class Teleop
         double leftXAxis = leftAxes[0];
         double leftYAxis = leftAxes[1];
 
-        System.out.println("X Axis:" + leftXAxis);
-        System.out.println("Y Axis:" + -leftYAxis);
+        // System.out.println("X Axis:" + leftXAxis);
+        // System.out.println("Y Axis:" + -leftYAxis);
 
         if(driverXbox.getRawButtonPressed(Xbox.Constants.START_BUTTON))
         {
             drivetrain.toggleDriveInFieldOriented();
+            System.out.println(drivetrain.getDriveInFieldOriented());
         }
 
 		if (drivetrain.getDriveInFieldOriented())
 		{
             drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis, drivetrain.getFieldOrientedHeading());
-		}
+        }
 		else
 		{
 			drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
+        }
+
+        if(driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON))
+        {
+            drivetrain.resetNavX();
         }
 
         if(aButton)

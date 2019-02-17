@@ -23,6 +23,6 @@ public class OperatorXbox extends Xbox
 
     public static class Constants
     {
-        public static int PORT = 1;
+        public static int PORT = 2;
     }
 }

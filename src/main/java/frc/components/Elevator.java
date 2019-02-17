@@ -190,14 +190,14 @@ public class Elevator
     
         public static final int INITIAL_HEIGHT_TO_MIN_HEIGHT = 111;//inchesToTicks(-10);
         public static final int INITIAL_HEIGHT_TO_MAX_HEIGHT = 876;//inchesToTicks(85);
-        public static final int INITIAL_HEIGHT_TO_FLOOR = inchesToTicks(-5);
-        public static final int INITIAL_HEIGHT_TO_CARGO_SHIP_CARGO = inchesToTicks(10);
-        public static final int INITIAL_HEIGHT_TO_BOTTOM_HATCH = inchesToTicks(5);
-        public static final int INITIAL_HEIGHT_TO_CENTER_HATCH = inchesToTicks(15);
-        public static final int INITIAL_HEIGHT_TO_TOP_HATCH = inchesToTicks(25);
-        public static final int INITIAL_HEIGHT_TO_BOTTOM_CARGO = inchesToTicks(10);
-        public static final int INITIAL_HEIGHT_TO_CENTER_CARGO = inchesToTicks(20);
-        public static final int INITIAL_HEIGHT_TO_TOP_CARGO = inchesToTicks(30);
+        public static final int INITIAL_HEIGHT_TO_FLOOR = 111; //inchesToTicks(-5);
+        public static final int INITIAL_HEIGHT_TO_CARGO_SHIP_CARGO = 360; // inchesToTicks(10);
+        public static final int INITIAL_HEIGHT_TO_BOTTOM_HATCH = 111; //inchesToTicks(5);
+        public static final int INITIAL_HEIGHT_TO_CENTER_HATCH = 406; //inchesToTicks(15);
+        public static final int INITIAL_HEIGHT_TO_TOP_HATCH = 744; //inchesToTicks(25);
+        public static final int INITIAL_HEIGHT_TO_BOTTOM_CARGO = 283; //inchesToTicks(10);
+        public static final int INITIAL_HEIGHT_TO_CENTER_CARGO = 636; //inchesToTicks(20);
+        public static final int INITIAL_HEIGHT_TO_TOP_CARGO = 876; //inchesToTicks(30);
 
         public static final int MASTER_ELEVATOR_MOTOR_PORT = 10;
         public static final int SLAVE_ELEVATOR_MOTOR_PORT = 11;

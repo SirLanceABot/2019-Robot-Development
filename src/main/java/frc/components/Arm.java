@@ -25,9 +25,9 @@ import edu.wpi.first.wpilibj.Timer;
 public class Arm
 {
     private DoubleSolenoid wristSolenoid = new DoubleSolenoid(Constants.WRIST_SOLENOID_PORT_1,
-            Constants.WRIST_SOLENOID_PORT_2);
+            Constants.WRIST_SOLENOID_PORT_2); // On the blue solenoid holder
     private DoubleSolenoid grabberSolenoid = new DoubleSolenoid(Constants.GRABBER_SOLENOID_PORT_1,
-            Constants.GRABBER_SOLENOID_PORT_2);
+            Constants.GRABBER_SOLENOID_PORT_2); // On the orange solenoid holder
 
     private WPI_TalonSRX armMotor = new WPI_TalonSRX(Constants.ARM_MOTOR_ID);
 

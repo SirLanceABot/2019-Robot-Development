@@ -23,7 +23,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
  */
 public class Climber 
 {
-    private DoubleSolenoid pinSolenoid = new DoubleSolenoid(Constants.SOLENOID_PORT_1, Constants.SOLENOID_PORT_2);
+    private DoubleSolenoid pinSolenoid = new DoubleSolenoid(Constants.SOLENOID_PORT_1, Constants.SOLENOID_PORT_2); // // On the white solenoid holder
     private WPI_TalonSRX masterLegMotor =  new WPI_TalonSRX(Constants.CLIMBER_TALON_PORT);
     private WPI_VictorSPX slaveLegMotor = new WPI_VictorSPX(Constants.CLIMBER_VICTOR_PORT);
 
@@ -102,7 +102,7 @@ public class Climber
 
     public static class Constants
     {
-        public static final int SOLENOID_PORT_1 = 4;
+        public static final int SOLENOID_PORT_1 = 4; 
         public static final int SOLENOID_PORT_2 = 5;
         public static final int CLIMBER_TALON_PORT = 14;
         public static final int CLIMBER_VICTOR_PORT = 15;

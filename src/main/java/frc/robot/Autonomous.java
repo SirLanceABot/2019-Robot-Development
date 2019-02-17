@@ -13,6 +13,7 @@ import frc.components.Elevator;
 import frc.components.Arm.Constants.Position;
 import frc.components.Drivetrain.Constants.OmniEncoder;
 import frc.components.Elevator.Constants.ElevatorPosition;
+import frc.components.ElevatorAndArm;
 import frc.visionForWhiteTape.CameraProcess;
 import frc.visionForWhiteTape.TargetData;
 import frc.visionForWhiteTape.CameraProcess.rotate;
@@ -42,6 +43,7 @@ public class Autonomous
     private Drivetrain drivetrain = Drivetrain.getInstance();
     private Arm arm = Arm.getInstance();
     private Elevator elevator = Elevator.getInstance();
+    private ElevatorAndArm elevatorAndArm = ElevatorAndArm.getInstance();
     private CameraProcess vision = CameraProcess.getInstance();
     private Timer timer = new Timer();
     private boolean isBackingUp = true;
@@ -283,7 +285,7 @@ public class Autonomous
      */
     public boolean moveElevator(Elevator.Constants.ElevatorPosition position)
     {
-        elevator.setTargetPosition(position);
+        elevatorAndArm.setElevatorTargetPosition(position);
         if (!elevator.isMoving())
             return true;
         else
@@ -299,7 +301,7 @@ public class Autonomous
     {
         boolean isArmMoving = arm.isArmMoving();
         boolean isWristMoving = arm.isWristMoving();
-        arm.setTargetPosition(position);
+        elevatorAndArm.setArmTargetPosition(position);
         if (!isWristMoving && !isArmMoving)
         {
             return true;

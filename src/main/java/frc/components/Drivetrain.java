@@ -67,19 +67,19 @@ public class Drivetrain extends MecanumDrive
 
         frontRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
         // frontRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
-        frontRightMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
+        //frontRightMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
 
         frontLeftMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
         // frontLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
-        frontLeftMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
+        //frontLeftMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
 
         backRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
         // backRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
-        backRightMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
+        //backRightMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
 
         backLeftMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
         // backLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
-        backLeftMotor.setRampRate(Constants.DRIVE_RAMP_TIME);
+        //backLeftMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
 
         navXTimer.reset();
         navXTimer.start();
@@ -90,7 +90,8 @@ public class Drivetrain extends MecanumDrive
 
         if(!navX.isCalibrating())
         {
-            System.out.println("NavX is done calibrating");
+            System.out.println("NavX is done calibrating" + navXTimer.get());
+            System.out.println("Firmware version: " + navX.getFirmwareVersion());
             navXIsCalibrated = true;
             navX.reset();
         }
@@ -358,9 +359,9 @@ public class Drivetrain extends MecanumDrive
     @Override
     public String toString()
     {
-        return String.format("Enc: %.2f, FRC: %.2f, FLC: %.2f, BRC: %.2f, BLC: %.2f, Yaw: %.2f",
-                getRightDistanceInInches(), frontRightMotor.getOutputCurrent(), frontLeftMotor.getOutputCurrent(),
-                backRightMotor.getOutputCurrent(), backLeftMotor.getOutputCurrent(), getHeadingInDegrees());
+        return String.format(" FR: %.2f, FL: %.2f, BR: %.2f, BL: %.2f, Yaw: %.2f",
+                 frontRightMotor.getEncoder().getVelocity(), frontLeftMotor.getEncoder().getVelocity(),
+                backRightMotor.getEncoder().getVelocity(), backLeftMotor.getEncoder().getVelocity(), getHeadingInDegrees());
     }
 
     public static class Constants
@@ -370,8 +371,8 @@ public class Drivetrain extends MecanumDrive
             kLeft, kRight, kBoth;
         }
 
+        public static final int FRONT_LEFT_MOTOR_PORT = 4;
         public static final int FRONT_RIGHT_MOTOR_PORT = 1;
-        public static final int FRONT_LEFT_MOTOR_PORT = 0;
         public static final int BACK_RIGHT_MOTOR_PORT = 2;
         public static final int BACK_LEFT_MOTOR_PORT = 3;
 
