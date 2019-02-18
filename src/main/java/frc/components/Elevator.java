@@ -26,7 +26,7 @@ public class Elevator
 
 
     private boolean isMoving = false;
-    private static int initialElevatorPosition = 100;
+    private static int initialElevatorPosition = 0;
 
    
     private static Elevator instance = new Elevator();
@@ -45,9 +45,6 @@ public class Elevator
         slaveElevatorMotor.setNeutralMode(NeutralMode.Brake);
 
         masterElevatorMotor.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.Analog, 0, 0);
-
-        masterElevatorMotor.setNeutralMode(NeutralMode.Brake);
-        slaveElevatorMotor.setNeutralMode(NeutralMode.Brake);
 
         masterElevatorMotor.setSensorPhase(true);
         masterElevatorMotor.setInverted(InvertType.InvertMotorOutput);
@@ -202,7 +199,7 @@ public class Elevator
         public static final int MASTER_ELEVATOR_MOTOR_PORT = 10;
         public static final int SLAVE_ELEVATOR_MOTOR_PORT = 11;
 
-        public static final double ELEVATOR_SPEED = 0.25;
+        public static final double ELEVATOR_SPEED = 0.5;
 
         public static final int PEAK_CURRENT_LIMIT = 20;        // In Amps
         public static final int PEAK_CURRENT_DURATION = 250;    // In milliseconds

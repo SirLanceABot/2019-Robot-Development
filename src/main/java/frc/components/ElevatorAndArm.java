@@ -71,18 +71,21 @@ public class ElevatorAndArm
     public void moveTo()
     {
         elevatorPotValue = elevator.getPotValue();
+        //System.out.println(elevator + "Target Elevator: " + targetElevatorPosition);
+        System.out.println(arm + "Arm Elevator: " + targetArmPosition);
         armPotValue = arm.getPotValue();
         horizontalArmPosition = arm.getHorizontalArmPosition();
         initialElevatorPosition = elevator.getInitialElevatorPosition();
 
         if(targetElevatorPosition != Elevator.Constants.ElevatorPosition.kNone)
         {
-            if(armPotValue < horizontalArmPosition + 200)
-            {
-                elevator.stopElevator();
-                elevator.setIsMoving(true);
-            }
-            else if(elevatorPotValue < (elevator.getPositionValue(targetElevatorPosition) - elevator.getPositionValue(Elevator.Constants.ElevatorPosition.kThreshold)))
+            // if(armPotValue < horizontalArmPosition + 200)
+            // {
+            //     elevator.stopElevator();
+            //     elevator.setIsMoving(true);
+            // }
+            //else 
+            if(elevatorPotValue < (elevator.getPositionValue(targetElevatorPosition) - elevator.getPositionValue(Elevator.Constants.ElevatorPosition.kThreshold)))
             {
                 elevator.raiseElevator();
                 elevator.setIsMoving(true);
@@ -90,21 +93,22 @@ public class ElevatorAndArm
             else if(elevatorPotValue > (elevator.getPositionValue(targetElevatorPosition) + elevator.getPositionValue(Elevator.Constants.ElevatorPosition.kThreshold)))
             {
                 elevator.setIsMoving(true);
-                if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristDown)
-                {
-                    if(elevatorPotValue > initialElevatorPosition || armPotValue > arm.getHorizontalArmPosition())
-                    {
-                        elevator.lowerElevator();
-                    }
-                    else
-                    {
-                        elevator.stopElevator();
-                    }
-                }
-                else
-                {       
-                    elevator.lowerElevator();
-                }
+                elevator.lowerElevator();
+                // if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristDown)
+                // {
+                //     if(elevatorPotValue > initialElevatorPosition || armPotValue > arm.getHorizontalArmPosition())
+                //     {
+                //         elevator.lowerElevator();
+                //     }
+                //     else
+                //     {
+                //         elevator.stopElevator();
+                //     }
+                // }
+                // else
+                // {       
+                //     elevator.lowerElevator();
+                // }
             }
             else
             {
@@ -130,18 +134,24 @@ public class ElevatorAndArm
             else if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristUp)
             {
                 arm.setIsArmMoving(true);
+                arm.moveWristUp();
 
-                if (elevatorPotValue > initialElevatorPosition - 50
-                     && armPotValue > horizontalArmPosition - 50)
+                if (arm.isWristUp())
                 {
-                    arm.moveWristUp();
-
-                    if (arm.isWristUp())
-                    {
-                        targetArmPosition = arm.setWristPosition(targetArmPosition, Arm.Constants.WristPosition.kWristNone);
-                        arm.setIsWristMoving(false);
-                    }
+                    targetArmPosition = arm.setWristPosition(targetArmPosition, Arm.Constants.WristPosition.kWristNone);
+                    arm.setIsWristMoving(false);
                 }
+                // if (elevatorPotValue > initialElevatorPosition - 50
+                //      && armPotValue > horizontalArmPosition - 50)
+                // {
+                //     arm.moveWristUp();
+
+                //     if (arm.isWristUp())
+                //     {
+                //         targetArmPosition = arm.setWristPosition(targetArmPosition, Arm.Constants.WristPosition.kWristNone);
+                //         arm.setIsWristMoving(false);
+                //     }
+                // }
             }
 
             if(armPotValue < arm.getTargetPositionArmPositionValue(targetArmPosition))
@@ -152,22 +162,23 @@ public class ElevatorAndArm
             else if(armPotValue > arm.getTargetPositionArmPositionValue(targetArmPosition))
             {
                 arm.setIsArmMoving(true);
-                
-                if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristDown && !arm.isWristDown())
-                {
-                    if(elevatorPotValue > initialElevatorPosition || armPotValue > horizontalArmPosition)
-                    {
-                        arm.moveArmDown();
-                    }
-                    else
-                    {
-                        arm.stopArm();
-                    }
-                }
-                else
-                {
-                    arm.moveArmDown();
-                }
+                arm.moveArmDown();
+
+                // if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristDown && !arm.isWristDown())
+                // {
+                //     if(elevatorPotValue > initialElevatorPosition || armPotValue > horizontalArmPosition)
+                //     {
+                //         arm.moveArmDown();
+                //     }
+                //     else
+                //     {
+                //         arm.stopArm();
+                //     }
+                // }
+                // else
+                // {
+                //     arm.moveArmDown();
+                // }
 
             }
             else

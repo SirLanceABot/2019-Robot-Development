@@ -16,6 +16,9 @@ import frc.robot.SlabShuffleboard;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -31,8 +34,6 @@ public class Arm
 
     private WPI_TalonSRX armMotor = new WPI_TalonSRX(Constants.ARM_MOTOR_ID);
 
-    private DigitalInput wristUpLimitSwitch = new DigitalInput(Constants.WRIST_UP_LIMIT_SWITCH_PORT);
-    private DigitalInput wristDownLimitSwitch = new DigitalInput(Constants.WRIST_DOWN_LIMIT_SWITCH_PORT);
 
     private Timer grabberTimer = new Timer();
 
@@ -55,6 +56,12 @@ public class Arm
 
         armMotor.setNeutralMode(NeutralMode.Brake);
         masterIntakeRoller.setNeutralMode(NeutralMode.Brake);
+
+        armMotor.setSensorPhase(true);
+        armMotor.setInverted(InvertType.InvertMotorOutput);
+
+        armMotor.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled);
+        armMotor.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled);
  
 
         armMotor.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.Analog, 0, 0);
@@ -76,7 +83,7 @@ public class Arm
      */
     public void moveArmUp()
     {
-        armMotor.set(.5);
+        armMotor.set(.15);
     }
 
     /**
@@ -265,28 +272,12 @@ public class Arm
 
     public boolean isWristDown()
     {
-        if(wristDownLimitSwitch.get())
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-         
+        return armMotor.getSensorCollection().isRevLimitSwitchClosed();
     }
 
     public boolean isWristUp()
     {
-        if(wristUpLimitSwitch.get())
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-         
+        return armMotor.getSensorCollection().isFwdLimitSwitchClosed();
     }
 
     private static int angleToTicks(double angle)
@@ -395,8 +386,6 @@ public class Arm
         public static final int GRABBER_SOLENOID_PORT_2 = 3;
         public static final int ROLLER_TALON_ID = 12;
         public static final int ARM_MOTOR_ID = 9;
-        public static final int WRIST_DOWN_LIMIT_SWITCH_PORT = 4;
-        public static final int WRIST_UP_LIMIT_SWITCH_PORT = 5;
 
         public static final int ARM_THRESHOLD = 5;
 

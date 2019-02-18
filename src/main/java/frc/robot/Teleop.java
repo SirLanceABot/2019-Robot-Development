@@ -20,8 +20,8 @@ import frc.components.ElevatorAndArm;
 /**
  * Add your docs here.
  */
-public class Teleop 
-{    
+public class Teleop
+{
     private Arm arm = Arm.getInstance();
     private Elevator elevator = Elevator.getInstance();
     private ElevatorAndArm elevatorAndArm = ElevatorAndArm.getInstance();
@@ -33,10 +33,7 @@ public class Teleop
     private SlabShuffleboard shuffleboard = SlabShuffleboard.getInstance();
     private Drivetrain drivetrain = Drivetrain.getInstance();
 
-
-
     private static Teleop instance = new Teleop();
-    
 
     private Teleop()
     {
@@ -45,18 +42,18 @@ public class Teleop
 
     public static Teleop getInstance()
     {
-        return(instance);
+        return (instance);
     }
 
     public void teleopInit()
     {
-        SlabShuffleboard.PregameSetupTabData pregame = shuffleboard.getPregameSetupTabData(); 
+        SlabShuffleboard.PregameSetupTabData pregame = shuffleboard.getPregameSetupTabData();
         arm.setRobotType(pregame.robotType);
         elevator.setRobotType(pregame.robotType);
     }
 
     public void teleop()
-    {     
+    {
         boolean cargoInButton = buttonBoard.getRawButton(ButtonBoard.Constants.SLOW_SPEED_BUTTON);
         boolean cargoOutButton = buttonBoard.getRawButton(ButtonBoard.Constants.FAST_SPEED_BUTTON);
 
@@ -71,109 +68,125 @@ public class Teleop
         boolean centerCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_CARGO_BUTTON);
         boolean topCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_CARGO_BUTTON);
 
-        boolean aButton = driverXbox.getRawButton(Xbox.Constants.A_BUTTON);                 // Extend climber elevator
-        boolean bButton = driverXbox.getRawButton(Xbox.Constants.B_BUTTON);                 // Retract climber elevator
-        boolean xButton = driverXbox.getRawButtonPressed(Xbox.Constants.X_BUTTON);          // Release pin solenoid
-        boolean yButton = driverXbox.getRawButtonPressed(Xbox.Constants.Y_BUTTON);          // Retract pin solenoid
-        boolean rightBumper = driverXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER);    // Hold button in order to access climbing
-        
+        boolean aButton = driverXbox.getRawButton(Xbox.Constants.A_BUTTON); // Extend climber elevator
+        boolean bButton = driverXbox.getRawButton(Xbox.Constants.B_BUTTON); // Retract climber elevator
+        boolean xButton = driverXbox.getRawButtonPressed(Xbox.Constants.X_BUTTON); // Release pin solenoid
+        boolean yButton = driverXbox.getRawButtonPressed(Xbox.Constants.Y_BUTTON); // Retract pin solenoid
+        boolean rightBumper = driverXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER); // Hold button in order to
+                                                                                           // access climbing
 
         boolean operatorLeftBumper = operatorXbox.getRawButton(Xbox.Constants.LEFT_BUMPER);
         boolean operatorRightBumper = operatorXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER);
         boolean operatorXButton = operatorXbox.getRawButton(Xbox.Constants.X_BUTTON);
         boolean operatorAButton = operatorXbox.getRawButton(Xbox.Constants.A_BUTTON);
+        boolean operatorYButton = operatorXbox.getRawButton(Xbox.Constants.Y_BUTTON);
+        boolean operatorYButtonReleased = operatorXbox.getRawButtonReleased(Xbox.Constants.Y_BUTTON);
 
-        if(operatorLeftBumper)
+        if (operatorYButton)
         {
-            elevator.lowerElevator();
-        }
-        else if(operatorRightBumper)
-        {
-            elevator.raiseElevator();
+            if (operatorLeftBumper)
+            {
+                elevator.lowerElevator();
+            }
+            else if (operatorRightBumper)
+            {
+                elevator.raiseElevator();
+            }
+            else
+            {
+                elevator.stopElevator();
+            }
+            if (operatorXButton)
+            {
+                arm.moveArmUp();
+            }
+            else if (operatorAButton)
+            {
+                arm.moveArmDown();
+            }
+            else
+            {
+                arm.stopArm();
+            }
+
+            System.out.println(arm);
+            //System.out.println(arm);
         }
         else
+        {
+            if (floorButton)
+            {
+                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kFloor);
+                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kFloor);
+            }
+            else if (cargoShipPortButton)
+            {
+                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCargoShipCargo);
+                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCargoShipCargo);
+            }
+            else if (bottomHatchButton)
+            {
+                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kBottomHatch);
+                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kBottomHatch);
+            }
+            else if (centerHatchButton)
+            {
+                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCenterHatch);
+                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCenterHatch);
+            }
+            else if (topHatchButton)
+            {
+                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kTopHatch);
+                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kTopHatch);
+            }
+            else if (bottomCargoButton)
+            {
+                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kBottomCargo);
+                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kBottomCargo);
+                System.out.println("Bottom Cargo Button");
+            }
+            else if (centerCargoButton)
+            {
+                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCenterCargo);
+                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCenterCargo);
+            }
+            else if (topCargoButton)
+            {
+                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kTopCargo);
+                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kTopCargo);
+            }
+
+            elevatorAndArm.moveTo();
+        }
+
+        if (operatorYButtonReleased)
         {
             elevator.stopElevator();
-        }
-        if(operatorXButton)
-        {
-            arm.moveWristUp();
-        }
-        else if(operatorAButton)
-        {
-            arm.moveWristDown();
-        }
-        else
-        {
             arm.stopArm();
         }
 
-
-        if(floorButton)
-        {
-            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kFloor);
-            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kFloor);
-        }
-        else if(cargoShipPortButton)
-        {
-            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCargoShipCargo);
-            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCargoShipCargo);
-        }
-        else if(bottomHatchButton)
-        {
-            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kBottomHatch);
-            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kBottomHatch);
-        }
-        else if(centerHatchButton)
-        {
-            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCenterHatch);
-            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCenterHatch);
-        }
-        else if(topHatchButton)
-        {
-            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kTopHatch);
-            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kTopHatch);
-        }
-        else if(bottomCargoButton)
-        {
-            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kBottomCargo);
-            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kBottomCargo);
-        }
-        else if(centerCargoButton)
-        {
-            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCenterCargo);
-            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCenterCargo);
-        }
-        else if(topCargoButton)
-        {
-            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kTopCargo);
-            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kTopCargo);
-        }
-
-        elevatorAndArm.moveTo();
-        
-        if(cargoInButton)
+        if (cargoInButton)
         {
             arm.ejectCargo(0.5);
         }
-    
-        else if(cargoOutButton)
+
+        else if (cargoOutButton)
         {
             arm.intakeCargo(0.5);
         }
-    
+
         else
         {
             arm.stopCargo();
         }
-        
-        if(rightBumper)
+
+        if (rightBumper)
         {
-            if(xButton && climber.getEncoder() < Climber.Constants.MAX_CLIMBER_HEIGHT)
+            if (xButton && climber.getEncoder() < Climber.Constants.MAX_CLIMBER_HEIGHT)
             {
                 climber.extendLegs(0.5);
             }
-            else if(yButton && climber.getEncoder() > Climber.Constants.MIN_CLIMBER_HEIGHT)
+            else if (yButton && climber.getEncoder() > Climber.Constants.MIN_CLIMBER_HEIGHT)
             {
                 climber.retractLegs(0.5);
             }
@@ -182,46 +195,50 @@ public class Teleop
                 climber.stopLegs();
             }
 
-            if(xButton)
+            if (xButton)
             {
                 climber.ejectPin();
             }
             // have way to reset pin solenoid
         }
 
-        double[] rightAxes = driverXbox.getScaledAxes(Xbox.Constants.RIGHT_STICK_AXES, Xbox.Constants.PolynomialDrive.kCubicDrive);
+        double[] rightAxes = driverXbox.getScaledAxes(Xbox.Constants.RIGHT_STICK_AXES,
+                Xbox.Constants.PolynomialDrive.kCubicDrive);
         double rightXAxis = rightAxes[0];
 
-        double[] leftAxes = driverXbox.getScaledAxes(Xbox.Constants.LEFT_STICK_AXES, Xbox.Constants.PolynomialDrive.kCubicDrive);
+        double[] leftAxes = driverXbox.getScaledAxes(Xbox.Constants.LEFT_STICK_AXES,
+                Xbox.Constants.PolynomialDrive.kCubicDrive);
         double leftXAxis = leftAxes[0];
         double leftYAxis = leftAxes[1];
 
         // System.out.println("X Axis:" + leftXAxis);
         // System.out.println("Y Axis:" + -leftYAxis);
 
-        if(driverXbox.getRawButtonPressed(Xbox.Constants.START_BUTTON))
+        if (driverXbox.getRawButtonPressed(Xbox.Constants.START_BUTTON))
         {
             drivetrain.toggleDriveInFieldOriented();
             System.out.println(drivetrain.getDriveInFieldOriented());
         }
 
-		if (drivetrain.getDriveInFieldOriented())
-		{
+        if (drivetrain.getDriveInFieldOriented())
+        {
             drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis, drivetrain.getFieldOrientedHeading());
         }
-		else
-		{
-			drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
+        else
+        {
+            drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
         }
 
-        if(driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON))
+        if (driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON))
         {
             drivetrain.resetNavX();
         }
 
-        if(aButton)
+        // System.out.println(elevator);
+
+        if (aButton)
         {
-            //omniwheel up/down 
+            // omniwheel up/down
         }
     }
 
@@ -230,7 +247,3 @@ public class Teleop
 
     }
 }
-
-
-
-

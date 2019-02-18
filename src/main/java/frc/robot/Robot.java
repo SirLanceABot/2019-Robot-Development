@@ -44,7 +44,7 @@ public class Robot extends TimedRobot
     {
         double[] scaledArray = driverXbox.getScaledAxes(Constants.LEFT_STICK_AXES, Xbox.Constants.PolynomialDrive.kCubicDrive);
         teleop.teleop();
-        System.out.println(drivetrain);
+        //System.out.println(drivetrain);
 
         // System.out.printf("X = %5.3f Y = %5.3f X = %5.3f Y = %5.3f \n",
         //         driverXbox.getRawAxis(Constants.LEFT_STICK_X_AXIS), driverXbox.getRawAxis(Constants.LEFT_STICK_Y_AXIS),
