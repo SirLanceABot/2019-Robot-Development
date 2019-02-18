@@ -17,7 +17,8 @@ public class Robot extends TimedRobot
 
     public Robot()
     {
-
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
     @Override

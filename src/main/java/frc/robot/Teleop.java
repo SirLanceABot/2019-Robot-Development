@@ -37,7 +37,8 @@ public class Teleop
 
     private Teleop()
     {
-
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
     public static Teleop getInstance()
@@ -50,6 +51,8 @@ public class Teleop
         SlabShuffleboard.PregameSetupTabData pregame = shuffleboard.getPregameSetupTabData();
         arm.setRobotType(pregame.robotType);
         elevator.setRobotType(pregame.robotType);
+        elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
+        elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
     }
 
     public void teleop()
@@ -161,6 +164,8 @@ public class Teleop
 
         if (operatorYButtonReleased)
         {
+            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
+            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
             elevator.stopElevator();
             arm.stopArm();
         }

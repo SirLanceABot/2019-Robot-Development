@@ -27,7 +27,9 @@ public class AMSColorSensor
 	 */
 	public AMSColorSensor(I2C.Port port, Address deviceAddress)
 	{
-		this(port, deviceAddress, 0.015 /* Default Sample Period in seconds*/);
+        this(port, deviceAddress, 0.015 /* Default Sample Period in seconds*/);
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
 	}
 
 	public AMSColorSensor(I2C.Port port, Address deviceAddress, double samplePeriod)

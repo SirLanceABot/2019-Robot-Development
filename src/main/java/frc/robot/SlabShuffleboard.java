@@ -143,10 +143,11 @@ public class SlabShuffleboard
 
     private SlabShuffleboard()
     {
+        System.out.println(this.getClass().getName() + ": Started Constructing");
         // Shuffleboard.startRecording();
         // setupConfigurationTab();
         createPregameSetupTab();
-
+        System.out.println(this.getClass().getName() + ": Started Constructing");
     }
 
     public static SlabShuffleboard getInstance()

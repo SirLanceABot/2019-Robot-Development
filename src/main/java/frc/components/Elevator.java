@@ -38,6 +38,8 @@ public class Elevator
     
     private Elevator()
 	{
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+
         masterElevatorMotor.configFactoryDefault();
         slaveElevatorMotor.configFactoryDefault();
 
@@ -63,6 +65,8 @@ public class Elevator
         masterElevatorMotor.enableCurrentLimit(true);
         
         slaveElevatorMotor.follow(masterElevatorMotor);
+
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
     /**

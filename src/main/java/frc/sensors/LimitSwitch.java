@@ -15,6 +15,8 @@ public class LimitSwitch extends DigitalInput
 	 */
 	public LimitSwitch(int port)
 	{
-		super(port);
+        super(port);
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
 	}
 }

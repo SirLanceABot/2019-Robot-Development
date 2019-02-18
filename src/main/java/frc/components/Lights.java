@@ -17,7 +17,9 @@ public class Lights extends DigitalOutput
 	 */
 	private Lights(int port)
 	{
-		super(port);
+        super(port);
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
     public static Lights getInstance()

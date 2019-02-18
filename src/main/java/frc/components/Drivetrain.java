@@ -62,6 +62,8 @@ public class Drivetrain extends MecanumDrive
     {
         super(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
 
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+
         // TODO: bring this back in
         // setSafetyEnabled(false);
 
@@ -99,6 +101,8 @@ public class Drivetrain extends MecanumDrive
         {
             System.out.println("NavX calibration timed out");
         }
+
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
     public static Drivetrain getInstance()

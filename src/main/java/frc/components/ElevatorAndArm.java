@@ -30,7 +30,8 @@ public class ElevatorAndArm
 
     private ElevatorAndArm()
     {
-
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
     public static ElevatorAndArm getInstance()

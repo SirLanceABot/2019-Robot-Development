@@ -14,6 +14,8 @@ public class OperatorXbox extends Xbox
     private OperatorXbox(int port)
     {
         super(port);
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
     public static OperatorXbox getInstance()

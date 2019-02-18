@@ -11,7 +11,9 @@ public class DriverXbox extends Xbox
 	
 	private DriverXbox(int port)
 	{
-		super(port);
+        super(port);
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
 	}
 	
 	public static class Constants

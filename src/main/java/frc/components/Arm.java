@@ -50,6 +50,7 @@ public class Arm
 
     private Arm()
     {
+        System.out.println(this.getClass().getName() + ": Started Constructing");
         masterIntakeRoller.configFactoryDefault();
 
         armMotor.configFactoryDefault();
@@ -66,6 +67,7 @@ public class Arm
 
         armMotor.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.Analog, 0, 0);
     
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
     /**
@@ -83,7 +85,7 @@ public class Arm
      */
     public void moveArmUp()
     {
-        armMotor.set(.15);
+        armMotor.set(.5);
     }
 
     /**
@@ -91,7 +93,7 @@ public class Arm
      */
     public void moveArmDown()
     {
-        armMotor.set(-.5);
+        armMotor.set(-.25);
     }
 
     /**

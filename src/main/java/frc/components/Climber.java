@@ -31,6 +31,8 @@ public class Climber
 
     private Climber()
     {
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+        
         masterLegMotor.configFactoryDefault();
         slaveLegMotor.configFactoryDefault();
 
@@ -44,6 +46,8 @@ public class Climber
         masterLegMotor.configClearPositionOnLimitR(true, 0);
 
         slaveLegMotor.follow(masterLegMotor);
+
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
     public static Climber getInstance()

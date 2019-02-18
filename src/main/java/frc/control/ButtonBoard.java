@@ -24,6 +24,8 @@ public class ButtonBoard extends Joystick
     private ButtonBoard(int port)
     {
         super(port);
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
     public static class Constants
