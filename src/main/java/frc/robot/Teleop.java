@@ -16,6 +16,9 @@ import frc.control.DriverXbox;
 import frc.control.OperatorXbox;
 import frc.control.ButtonBoard;
 import frc.components.ElevatorAndArm;
+import frc.visionForWhiteTape.CameraProcess;
+import frc.visionForWhiteTape.TargetData;
+import frc.visionForWhiteTape.CameraProcess.rotate;
 
 /**
  * Add your docs here.
@@ -25,6 +28,7 @@ public class Teleop
     private Arm arm = Arm.getInstance();
     private Elevator elevator = Elevator.getInstance();
     private ElevatorAndArm elevatorAndArm = ElevatorAndArm.getInstance();
+    private CameraProcess vision = CameraProcess.getInstance();
 
     private DriverXbox driverXbox = DriverXbox.getInstance();
     private OperatorXbox operatorXbox = OperatorXbox.getInstance();
@@ -34,6 +38,7 @@ public class Teleop
     private Drivetrain drivetrain = Drivetrain.getInstance();
 
     private static Teleop instance = new Teleop();
+    private TargetData targetData;
 
     private Teleop()
     {
@@ -82,6 +87,7 @@ public class Teleop
         boolean yButton = driverXbox.getRawButtonPressed(Xbox.Constants.Y_BUTTON); // Retract pin solenoid
         boolean rightBumper = driverXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER); // Hold button in order to
                                                                                            // access climbing
+        boolean leftBumper = driverXbox.getRawButton(Xbox.Constants.LEFT_BUMPER); //hybrid auto switch
 
         boolean operatorLeftBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);
         boolean operatorRightBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER);
@@ -171,6 +177,9 @@ public class Teleop
                     elevator.stopElevator();
                 }
             }
+
+            System.out.println(arm);
+            // System.out.println(arm);
         }
         else
         {
@@ -318,11 +327,47 @@ public class Teleop
         }
 
 
-        System.out.println(drivetrain.getLeftServo() + "     " + drivetrain.getLeftServoPosition());
+        if (aButton)
+        {
+            // omniwheel up/down
+        }
+
+        if(leftBumper)
+        {
+            whiteLineAlignment();
+        }
+    }
+
+    public boolean whiteLineAlignment()
+    {
+        targetData = vision.getTargetData();
+        if (targetData.isFreshData())
+        {
+            CameraProcess.rotate rotation = vision.getRotateDirection(targetData);
+            double rotationFactor = vision.getRotateFactor(targetData);
+            CameraProcess.strafeDirection strafeDirection = vision.getStrafeDirection(targetData);
+            double strafeDirectionFactor = vision.getStrafeFactor(targetData);
+
+            // rotate first then strafe
+            if (rotation != rotate.kNone)
+            {
+                drivetrain.driveCartesian(0.0, 0.0, Constants.ROTATION_SPEED * (rotationFactor / 90.0));
+            }
+            else if (strafeDirection != CameraProcess.strafeDirection.kNone)
+            {
+                drivetrain.driveCartesian(0.0, Constants.STRAFE_SPEED * (strafeDirectionFactor / 80.0), 0.0);
+            }
+            else
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static class Constants
     {
-
+        private static final double ROTATION_SPEED = 0.5;
+        private static final double STRAFE_SPEED = 0.5;
     }
 }

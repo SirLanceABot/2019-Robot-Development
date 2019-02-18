@@ -64,7 +64,8 @@ public class Autonomous
 
     private Autonomous()
     {
-
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
     public static Autonomous getInstance()
@@ -518,7 +519,7 @@ public class Autonomous
         private static final int CENTER_STARTING_POSITION_X = 1;
         private static final int CENTER_STARTING_POSITION_Y = 1;
 
-        private static final double ROTATION_SPEED = .5;
-        private static final double STRAFE_SPEED = .5;
+        private static final double ROTATION_SPEED = 0.5;
+        private static final double STRAFE_SPEED = 0.5;
     }
 }
