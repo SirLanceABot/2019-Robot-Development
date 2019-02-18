@@ -41,10 +41,10 @@ public class Autonomous
 {
     private SlabShuffleboard shuffleboard = SlabShuffleboard.getInstance();
     private Drivetrain drivetrain = Drivetrain.getInstance();
-    private Arm arm = Arm.getInstance();
-    private Elevator elevator = Elevator.getInstance();
-    private ElevatorAndArm elevatorAndArm = ElevatorAndArm.getInstance();
-    private CameraProcess vision = CameraProcess.getInstance();
+    //private Arm arm = Arm.getInstance();
+    //private Elevator elevator = Elevator.getInstance();
+    //private ElevatorAndArm elevatorAndArm = ElevatorAndArm.getInstance();
+    //private CameraProcess vision = CameraProcess.getInstance();
     private Timer timer = new Timer();
     private boolean isBackingUp = true;
     private boolean continueToNextTask = false;
@@ -52,11 +52,25 @@ public class Autonomous
     private int drivingStep = -1;
     private int driveDistance;
     private int angle;
-    private TargetData targetData;
+    private TargetData targetData;        
+    private int step = 0; // move to top
+    private int pointCounter = 0; // moveto top
     private double motorSpeedFactor;
+
     boolean isDoneDriving = false; // move to top
     boolean isDoneSpinning = false; // move to top
 
+    private static Autonomous instance = new Autonomous();
+
+    private Autonomous()
+    {
+
+    }
+
+    public static Autonomous getInstance()
+    {
+        return instance;
+    }
     ArrayList<Point> pathing = new ArrayList<Point>();
 
     private PregameSetupTabData pregameSetupTabData;
@@ -83,6 +97,8 @@ public class Autonomous
      * this function is meant to be called before adding any points based on the
      * pregame info it will intialize the first point to where the robot is starting
      */
+
+    
     public void taskOnePathing()
     {
         switch (pregameSetupTabData.startingLocation)
@@ -137,6 +153,7 @@ public class Autonomous
         }
     }
 
+    /*
     public boolean taskOnePlacement()
     {
         if (pregameSetupTabData.task1Objective == Objective.kRocket)
@@ -195,7 +212,8 @@ public class Autonomous
         }
         return continueToNextTask;
     }
-
+    */
+    /*
     public boolean placeObject(Elevator.Constants.ElevatorPosition elevatorPosition, Arm.Constants.Position armPosition)
     {
 
@@ -229,6 +247,7 @@ public class Autonomous
         }
         return false;
     }
+    */
 
     public boolean taskOneFinalSpin()
     {
@@ -249,7 +268,8 @@ public class Autonomous
 
         return isDoneSpinning;
     }
-
+    
+    /*
     public boolean whiteLineAlignment()
     {
         targetData = vision.getTargetData();
@@ -276,6 +296,7 @@ public class Autonomous
         }
         return false;
     }
+    */
 
     /**
      * this function moves the elevator to the position specified
@@ -283,6 +304,7 @@ public class Autonomous
      * @return this function returns true if the elevator is not moving and false if
      *         it is still moving
      */
+    /*
     public boolean moveElevator(Elevator.Constants.ElevatorPosition position)
     {
         elevatorAndArm.setElevatorTargetPosition(position);
@@ -291,12 +313,14 @@ public class Autonomous
         else
             return false;
     }
+    */
 
     /**
      * this function will move the arm
      * 
      * @return gives back boolean true is done moving, false if it is still moving
      */
+    /*
     public boolean moveArm(Arm.Constants.Position position)
     {
         boolean isArmMoving = arm.isArmMoving();
@@ -310,7 +334,8 @@ public class Autonomous
             return false;
 
     }
-
+    */
+    
     /**
      * this function will add another point to drive to in INCHES
      */
@@ -447,13 +472,14 @@ public class Autonomous
 
     public void executeTasks()
     {
-        int step = 0; // move to top
-        int pointCounter = 0; // moveto top
+
         boolean isDone;
         switch (step)
         {
         case 0:
-            taskOnePathing();
+            //taskOnePathing();
+            addPoint(0, 0);
+            addPoint(0, 15);
             step++;
             break;
         case 1:
@@ -461,20 +487,22 @@ public class Autonomous
             if (isDone)
                 pointCounter++;
             if (pointCounter > pathing.size())
-                step++;
+                step = 3;;
             break;
         case 2:
-            isDone = taskOneFinalSpin();
-            if (isDone)
-                step++;
+            //isDone = taskOneFinalSpin();
+            //if (isDone)
+                //step++;
+            break;
         case 3: 
-            isDone = whiteLineAlignment();
-            if(isDone)
-                step++;
+            //isDone = whiteLineAlignment();
+            //if(isDone)
+                //step++;
+            break;
         case 4:
-            isDone = taskOnePlacement();
-            if (isDone)
-                step++;
+            //isDone = taskOnePlacement();
+            //if (isDone)
+                //step++;
             break;
         }
         // right side start, right rocket, near side hatch, bottom
