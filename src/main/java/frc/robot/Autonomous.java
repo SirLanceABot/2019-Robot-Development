@@ -399,7 +399,8 @@ public class Autonomous
         xDifference = xFinal - xInitial;
         yDifference = yFinal - yInitial;
         // calculate the angle to travel
-        return Math.atan2(yDifference, xDifference) * (180.0 / Math.PI);
+        return Math.atan2(xDifference, yDifference) * (180.0 / Math.PI);  //the x and y are flipped because thte
+        //navX and the atan two work on different coordinate planes.
     }
 
     /**
@@ -418,29 +419,37 @@ public class Autonomous
         case 0: // this case will just calculate the values needed
             driveDistance = (int) calculateMagnitude(pointCounter);
             angle = (int) calculateAngle(pointCounter);
+            System.out.println("Heading : " + drivetrain.getHeadingInDegrees() +  " Angle: " + calculateAngle(pointCounter) + " Magnitude: " + calculateMagnitude(pointCounter));
             drivingStep++;
+            if(drivingStep == 1)
+            {
+                System.out.println("Moving on to step 1");
+            }
             break;
         case 1: // this step will rotate the robot if needed
-            if ((angle > drivetrain.getHeadingInDegrees() - 5) && (angle < drivetrain.getHeadingInDegrees() + 5)) // add
-                                                                                                                  // tolerance
+            //System.out.println("Heading : " + drivetrain.getHeadingInDegrees() +  " Angle: " + calculateAngle(pointCounter) + " Magnitude: " + calculateMagnitude(pointCounter));
+            if ((angle < drivetrain.getHeadingInDegrees() - 3) || (angle > drivetrain.getHeadingInDegrees() + 3)) 
             {
-                isDoneSpinning = drivetrain.spinToBearing(angle, 0.5);
+                isDoneSpinning = drivetrain.spinToBearing(angle, 0.3);
+            }
+            else
+            {
+                isDoneSpinning = true;
             }
             if (isDoneSpinning)
+           
             {
                 drivingStep++;
+                System.out.println("Moving On to step 2");
             }
             break;
         case 2: // this step will moving the robot if needed
-            isDoneDriving = drivetrain.driveDistanceInInches(driveDistance, 1 * motorSpeedFactor, 0, driveDistance, OmniEncoder.kBoth);// these
-                                                                                                                       // are
-                                                                                                                       // integer
-                                                                                                                       // division,
-                                                                                                                       // change
-                                                                                                                       // it
+            isDoneDriving = drivetrain.driveDistanceInInches(driveDistance, 0.25 , angle, 5, OmniEncoder.kLeft);
+            //System.out.println("Encoder Value: " + drivetrain.getAvgDistanceInInches() + "   navX Value: " + drivetrain.getHeadingInDegrees());
             if (isDoneDriving)
             {
                 drivingStep++;
+                System.out.println("Moving On To Default");
             }
             break;
         default: // this case will intialize the values needed.
@@ -471,24 +480,26 @@ public class Autonomous
         }
     }
 
-    public void executeTasks()
+    public boolean executeTasks()
     {
-
+        boolean isAllDone = false;
         boolean isDone;
         switch (step)
         {
         case 0:
             //taskOnePathing();
             addPoint(0, 0);
-            addPoint(0, 15);
+            addPoint(0, 24);
+            addPoint(48, 72);
+            addPoint(108, 72);
             step++;
             break;
         case 1:
             isDone = driveToPoint(pointCounter);
             if (isDone)
                 pointCounter++;
-            if (pointCounter > pathing.size())
-                step = 3;;
+            if (pointCounter > pathing.size() - 2)
+                isAllDone = true;
             break;
         case 2:
             //isDone = taskOneFinalSpin();
@@ -505,8 +516,9 @@ public class Autonomous
             //if (isDone)
                 //step++;
             break;
+        
         }
-        // right side start, right rocket, near side hatch, bottom
+        return isAllDone;
     }
 
 
