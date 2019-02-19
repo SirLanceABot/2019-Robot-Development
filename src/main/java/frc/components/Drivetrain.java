@@ -85,7 +85,7 @@ public class Drivetrain extends MecanumDrive
         frontRightMotor.setParameter(ConfigParameter.kHardLimitRevEn, false);
         frontRightMotor.setParameter(ConfigParameter.kSoftLimitFwdEn, false);
         frontRightMotor.setParameter(ConfigParameter.kSoftLimitRevEn, false);
-        frontRightMotor.setParameter(ConfigParameter.kInputDeadband, 0);
+        frontRightMotor.setParameter(ConfigParameter.kInputDeadband, Constants.MOTOR_DEADBAND);
 
         frontLeftMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
         // frontLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
@@ -468,6 +468,8 @@ public class Drivetrain extends MecanumDrive
         public static final int SECONDARY_MOTOR_CURRENT_LIMIT = 45;
 
         public static final double DRIVE_RAMP_TIME = 0.10;
+
+        public static final double MOTOR_DEADBAND = 0.01;
 
         public static final double STARTING_SPEED = 0.3;
         public static final double STOPPING_SPEED = 0.175;
