@@ -15,9 +15,10 @@ import edu.wpi.first.wpilibj.Servo;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.CANSparkMaxLowLevel.ConfigParameter;
 // import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 // import com.revrobotics.CANEncoder;
-
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.kauailabs.navx.frc.AHRS;
 
 /**
@@ -46,6 +47,8 @@ public class Drivetrain extends MecanumDrive
     // TODO: find actual values for encoders channel A and B
     private Encoder leftEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
     private Encoder rightEncoder = new Encoder(2, 3, false, Encoder.EncodingType.k4X);
+    private boolean needToResetEncoder = true;
+    private boolean isEncoderResetting = false;
 
     private AHRS navX = new AHRS(I2C.Port.kOnboard);
     private double previousNavXValue = 999.999;
@@ -63,6 +66,12 @@ public class Drivetrain extends MecanumDrive
     {
         super(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
 
+        frontRightMotor.restoreFactoryDefaults();
+        frontLeftMotor.restoreFactoryDefaults();
+        backRightMotor.restoreFactoryDefaults();
+        backLeftMotor.restoreFactoryDefaults();
+
+
         System.out.println(this.getClass().getName() + ": Started Constructing");
 
         // TODO: bring this back in
@@ -70,19 +79,43 @@ public class Drivetrain extends MecanumDrive
 
         frontRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
         // frontRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
-        //frontRightMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
+        frontRightMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
+        frontRightMotor.setIdleMode(IdleMode.kBrake);
+        frontRightMotor.setParameter(ConfigParameter.kHardLimitFwdEn, false);
+        frontRightMotor.setParameter(ConfigParameter.kHardLimitRevEn, false);
+        frontRightMotor.setParameter(ConfigParameter.kSoftLimitFwdEn, false);
+        frontRightMotor.setParameter(ConfigParameter.kSoftLimitRevEn, false);
+        frontRightMotor.setParameter(ConfigParameter.kInputDeadband, 0);
 
         frontLeftMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
         // frontLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
-        //frontLeftMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
+        frontLeftMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
+        frontLeftMotor.setIdleMode(IdleMode.kBrake);
+        frontLeftMotor.setParameter(ConfigParameter.kHardLimitFwdEn, false);
+        frontLeftMotor.setParameter(ConfigParameter.kHardLimitRevEn, false);
+        frontLeftMotor.setParameter(ConfigParameter.kSoftLimitFwdEn, false);
+        frontLeftMotor.setParameter(ConfigParameter.kSoftLimitRevEn, false);
+        frontLeftMotor.setParameter(ConfigParameter.kInputDeadband, 0);
 
         backRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
         // backRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
-        //backRightMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
+        backRightMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
+        backRightMotor.setIdleMode(IdleMode.kBrake);
+        backRightMotor.setParameter(ConfigParameter.kHardLimitFwdEn, false);
+        backRightMotor.setParameter(ConfigParameter.kHardLimitRevEn, false);
+        backRightMotor.setParameter(ConfigParameter.kSoftLimitFwdEn, false);
+        backRightMotor.setParameter(ConfigParameter.kSoftLimitRevEn, false);
+        backRightMotor.setParameter(ConfigParameter.kInputDeadband, 0);
 
         backLeftMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
         // backLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
-        //backLeftMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
+        backLeftMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
+        backLeftMotor.setIdleMode(IdleMode.kBrake);
+        backLeftMotor.setParameter(ConfigParameter.kHardLimitFwdEn, false);
+        backLeftMotor.setParameter(ConfigParameter.kHardLimitRevEn, false);
+        backLeftMotor.setParameter(ConfigParameter.kSoftLimitFwdEn, false);
+        backLeftMotor.setParameter(ConfigParameter.kSoftLimitRevEn, false);
+        backLeftMotor.setParameter(ConfigParameter.kInputDeadband, 0);
 
         navXTimer.reset();
         navXTimer.start();
@@ -91,7 +124,7 @@ public class Drivetrain extends MecanumDrive
         {
         }
 
-        if(!navX.isCalibrating())
+        if (!navX.isCalibrating())
         {
             System.out.println("NavX is done calibrating" + navXTimer.get());
             System.out.println("Firmware version: " + navX.getFirmwareVersion());
@@ -135,7 +168,7 @@ public class Drivetrain extends MecanumDrive
     {
         double rightDistance = getRightDistanceInInches();
         double leftDistance = getLeftDistanceInInches();
-        
+
         return rightDistance > leftDistance ? rightDistance : leftDistance;
     }
 
@@ -163,14 +196,14 @@ public class Drivetrain extends MecanumDrive
 
     // public void moveOmniWheelUp()
     // {
-    //     leftServoPosition = leftServoPosition + .05;
-    //     leftServo.set(leftServoPosition);
+    // leftServoPosition = leftServoPosition + .05;
+    // leftServo.set(leftServoPosition);
     // }
 
     // public void moveOmniWheelDown()
     // {
-    //     leftServoPosition = leftServoPosition - .05;
-    //     leftServo.set(leftServoPosition);
+    // leftServoPosition = leftServoPosition - .05;
+    // leftServo.set(leftServoPosition);
     // }
 
     public double getLeftServo()
@@ -200,9 +233,10 @@ public class Drivetrain extends MecanumDrive
         rightServo.set(rightServoPosition);
     }
 
-    // public void driveFieldOriented(double leftXAxis, double leftYAxis, double rightXAxis)
+    // public void driveFieldOriented(double leftXAxis, double leftYAxis, double
+    // rightXAxis)
     // {
-    //     driveCartesian(leftXAxis, leftYAxis, rightXAxis, getHeadingFieldOriented());
+    // driveCartesian(leftXAxis, leftYAxis, rightXAxis, getHeadingFieldOriented());
     // }
 
     public double getFieldOrientedHeading()
@@ -230,15 +264,21 @@ public class Drivetrain extends MecanumDrive
         navX.reset();
     }
 
+    public void resetBothEncoders()
+    {
+        leftEncoder.reset();
+        rightEncoder.reset();
+    }
+
     public double getAngleToRotate(double bearing)
     {
-        //direction: 1 = clockwise, -1 = counter-clockwise
+        // direction: 1 = clockwise, -1 = counter-clockwise
         double direction = 1;
 
-        double bearingX = Math.sin(Math.toRadians(bearing));
-        double bearingY = Math.cos(Math.toRadians(bearing));
-        double headingX = Math.sin(Math.toRadians(getHeadingInDegrees()));
-        double headingY = Math.cos(Math.toRadians(getHeadingInDegrees()));
+        double bearingX = Math.cos(Math.toRadians(bearing));
+        double bearingY = Math.sin(Math.toRadians(bearing));
+        double headingX = Math.cos(Math.toRadians(getHeadingInDegrees()));
+        double headingY = Math.sin(Math.toRadians(getHeadingInDegrees()));
 
         double angleToRotateRad = Math.acos((bearingX * headingX) + (bearingY * headingY));
 
@@ -254,7 +294,7 @@ public class Drivetrain extends MecanumDrive
         {
             direction = -1;
         }
-        
+
         return Math.toDegrees(angleToRotateRad) * direction;
     }
 
@@ -266,53 +306,74 @@ public class Drivetrain extends MecanumDrive
     public boolean driveDistanceInInches(int inches, double maxSpeed, int bearing, int stoppingDistance,
             OmniEncoder encoder)
     {
-        inches = Math.abs(inches);
         boolean isDoneDriving = false;
-        double startingDistance = maxSpeed * 12.0;
-        double distanceTravelled;
-        int driveDirection = 1;
-        double angleToRotate = getAngleToRotate(bearing);
 
-        double rotate = -angleToRotate / 30.0;
-
-        if (encoder == OmniEncoder.kLeft)
+        if (needToResetEncoder)
         {
-            distanceTravelled = Math.abs(getLeftDistanceInInches());
+            resetBothEncoders();
+            isEncoderResetting = true;
+            needToResetEncoder = false;
         }
-        else if (encoder == OmniEncoder.kRight)
+        else if (isEncoderResetting)
         {
-            distanceTravelled = Math.abs(getRightDistanceInInches());
+            if (Math.abs(getLeftDistanceInInches()) < 2 && Math.abs(getRightDistanceInInches()) < 2)
+            {
+                isEncoderResetting = false;
+                // System.out.println("Encoder has Reset");
+            }
+
         }
         else
         {
-            distanceTravelled = Math.abs(getDistaceInInches());
-        }
+            inches = Math.abs(inches);
+            double startingDistance = maxSpeed * 12.0;
+            double distanceTravelled;
+            int driveDirection = 1;
+            double angleToRotate = getAngleToRotate(bearing);
 
-        if (maxSpeed < 0)
-        {
-            driveDirection = -1;
-        }
+            double rotate = angleToRotate / 30.0;
 
-        if (distanceTravelled <= inches)
-        {
-            if (distanceTravelled <= startingDistance)
+            if (encoder == OmniEncoder.kLeft)
             {
-                driveCartesian(0, ((maxSpeed - (Constants.STARTING_SPEED * driveDirection)) / startingDistance)
-                        * distanceTravelled + (Constants.STARTING_SPEED * driveDirection), rotate);
+                distanceTravelled = Math.abs(getLeftDistanceInInches());
             }
-            else if (distanceTravelled >= startingDistance && distanceTravelled <= inches - stoppingDistance)
+            else if (encoder == OmniEncoder.kRight)
             {
-                driveCartesian(0, maxSpeed, rotate);
+                distanceTravelled = Math.abs(getRightDistanceInInches());
             }
             else
             {
-                driveCartesian(0, Constants.STOPPING_SPEED * driveDirection, rotate);
+                distanceTravelled = Math.abs(getDistaceInInches());
             }
-        }
-        else
-        {
-            driveCartesian(0, 0, 0);
-            isDoneDriving = true;
+
+            if (maxSpeed < 0)
+            {
+                driveDirection = -1;
+            }
+
+            if (distanceTravelled <= inches)
+            {
+                if (distanceTravelled <= startingDistance)
+                {
+                    driveCartesian(0, ((maxSpeed - (Constants.STARTING_SPEED * driveDirection)) / startingDistance)
+                            * distanceTravelled + (Constants.STARTING_SPEED * driveDirection), rotate);
+                }
+                else if (distanceTravelled >= startingDistance && distanceTravelled <= inches - stoppingDistance)
+                {
+                    driveCartesian(0, maxSpeed, rotate);
+                }
+                else
+                {
+                    driveCartesian(0, Constants.STOPPING_SPEED * driveDirection, rotate);
+                }
+            }
+            else
+            {
+                driveCartesian(0, 0, 0);
+                isDoneDriving = true;
+                needToResetEncoder = true;
+            }
+
         }
 
         return isDoneDriving;
@@ -356,8 +417,8 @@ public class Drivetrain extends MecanumDrive
 
         if (isSpinning)
         {
-            
-            if(angleToRotate != 0)
+
+            if (angleToRotate != 0)
             {
                 speed *= angleToRotate / Math.abs(angleToRotate);
             }
@@ -386,8 +447,9 @@ public class Drivetrain extends MecanumDrive
     public String toString()
     {
         return String.format(" FR: %.2f, FL: %.2f, BR: %.2f, BL: %.2f, Yaw: %.2f",
-                 frontRightMotor.getEncoder().getVelocity(), frontLeftMotor.getEncoder().getVelocity(),
-                backRightMotor.getEncoder().getVelocity(), backLeftMotor.getEncoder().getVelocity(), getHeadingInDegrees());
+                frontRightMotor.getEncoder().getVelocity(), frontLeftMotor.getEncoder().getVelocity(),
+                backRightMotor.getEncoder().getVelocity(), backLeftMotor.getEncoder().getVelocity(),
+                getHeadingInDegrees());
     }
 
     public static class Constants
