@@ -39,7 +39,8 @@ public class Drivetrain extends MecanumDrive
 
     private static Servo leftServo = new Servo(Constants.LEFT_SERVO_PORT);
     private static Servo rightServo = new Servo(Constants.RIGHT_SERVO_PORT);
-    private double servoPosition = 0.5;
+    private double leftServoPosition = 0.3;
+    private double rightServoPosition = 0.225;
     private boolean omniWheelUp = true;
 
     // TODO: find actual values for encoders channel A and B
@@ -142,25 +143,44 @@ public class Drivetrain extends MecanumDrive
     {
         if (omniWheelUp)
         {
-            servoPosition = 1.5;
-            leftServo.set(servoPosition);
-            rightServo.set(servoPosition);
+            leftServoPosition = .225;
+            rightServoPosition = .3;
+            leftServo.set(leftServoPosition);
+            rightServo.set(rightServoPosition);
 
             omniWheelUp = false;
         }
         else
         {
-            servoPosition = 1.5 + (1.0 / 8.5) * 1.5;
-            leftServo.set(servoPosition);
-            rightServo.set(servoPosition);
+            leftServoPosition = .3;
+            rightServoPosition = .225;
+            leftServo.set(leftServoPosition);
+            rightServo.set(rightServoPosition);
 
             omniWheelUp = true;
         }
     }
 
+    // public void moveOmniWheelUp()
+    // {
+    //     leftServoPosition = leftServoPosition + .05;
+    //     leftServo.set(leftServoPosition);
+    // }
+
+    // public void moveOmniWheelDown()
+    // {
+    //     leftServoPosition = leftServoPosition - .05;
+    //     leftServo.set(leftServoPosition);
+    // }
+
     public double getLeftServo()
     {
         return leftServo.get();
+    }
+
+    public double getLeftServoPosition()
+    {
+        return leftServoPosition;
     }
 
     public double getRightServo()
@@ -170,12 +190,14 @@ public class Drivetrain extends MecanumDrive
 
     public void resetLeftServo()
     {
-        leftServo.set(0.00);
+        leftServoPosition = 0.3;
+        leftServo.set(leftServoPosition);
     }
 
     public void resetRightServo()
     {
-        rightServo.set(0.00);
+        rightServoPosition = 0.3;
+        rightServo.set(rightServoPosition);
     }
 
     // public void driveFieldOriented(double leftXAxis, double leftYAxis, double rightXAxis)
@@ -251,7 +273,7 @@ public class Drivetrain extends MecanumDrive
         int driveDirection = 1;
         double angleToRotate = getAngleToRotate(bearing);
 
-        double rotate = angleToRotate / 30.0;
+        double rotate = -angleToRotate / 30.0;
 
         if (encoder == OmniEncoder.kLeft)
         {
@@ -389,8 +411,8 @@ public class Drivetrain extends MecanumDrive
         public static final double STOPPING_SPEED = 0.175;
         public static final int ROTATE_THRESHOLD = 10;
 
-        public static final int LEFT_SERVO_PORT = 0;
-        public static final int RIGHT_SERVO_PORT = 1;
+        public static final int LEFT_SERVO_PORT = 1;
+        public static final int RIGHT_SERVO_PORT = 0;
 
         public static final double ENCODER_TICKS_PER_INCH = (360.0 * 4.0) / (3.25 * Math.PI);
 

@@ -57,8 +57,13 @@ public class Teleop
 
     public void teleop()
     {
-        boolean cargoInButton = buttonBoard.getRawButton(ButtonBoard.Constants.SLOW_SPEED_BUTTON);
-        boolean cargoOutButton = buttonBoard.getRawButton(ButtonBoard.Constants.FAST_SPEED_BUTTON);
+        boolean armButton = buttonBoard.getRawButton(ButtonBoard.Constants.ARM_BUTTON);
+        boolean armButtonReleased = buttonBoard.getRawButtonReleased(ButtonBoard.Constants.ARM_BUTTON);
+        boolean elevatorButton = buttonBoard.getRawButton(ButtonBoard.Constants.ELEVATOR_BUTTON);
+        boolean elevatorButtonReleased = buttonBoard.getRawButtonReleased(ButtonBoard.Constants.ELEVATOR_BUTTON);
+        double buttonBoardYAxis = buttonBoard.getRawAxis(ButtonBoard.Constants.Y_AXIS);
+        double buttonBoardXAxis = buttonBoard.getRawAxis(ButtonBoard.Constants.X_AXIS);
+
 
         boolean floorButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.FLOOR_BUTTON);
         boolean cargoShipPortButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CARGO_SHIP_CARGO_BUTTON);
@@ -78,42 +83,94 @@ public class Teleop
         boolean rightBumper = driverXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER); // Hold button in order to
                                                                                            // access climbing
 
-        boolean operatorLeftBumper = operatorXbox.getRawButton(Xbox.Constants.LEFT_BUMPER);
-        boolean operatorRightBumper = operatorXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER);
+        boolean operatorLeftBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);
+        boolean operatorRightBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER);
         boolean operatorXButton = operatorXbox.getRawButton(Xbox.Constants.X_BUTTON);
-        boolean operatorAButton = operatorXbox.getRawButton(Xbox.Constants.A_BUTTON);
+        boolean operatorAButton = operatorXbox.getRawButtonPressed(Xbox.Constants.A_BUTTON);
         boolean operatorYButton = operatorXbox.getRawButton(Xbox.Constants.Y_BUTTON);
         boolean operatorYButtonReleased = operatorXbox.getRawButtonReleased(Xbox.Constants.Y_BUTTON);
 
-        if (operatorYButton)
-        {
-            if (operatorLeftBumper)
-            {
-                elevator.lowerElevator();
-            }
-            else if (operatorRightBumper)
-            {
-                elevator.raiseElevator();
-            }
-            else
-            {
-                elevator.stopElevator();
-            }
-            if (operatorXButton)
-            {
-                arm.moveArmUp();
-            }
-            else if (operatorAButton)
-            {
-                arm.moveArmDown();
-            }
-            else
-            {
-                arm.stopArm();
-            }
+        // if (operatorYButton)
+        // {
+        //     if (operatorLeftBumper)
+        //     {
+        //         elevator.lowerElevator();
+        //     }
+        //     else if (operatorRightBumper)
+        //     {
+        //         elevator.raiseElevator();
+        //     }
+        //     else
+        //     {
+        //         elevator.stopElevator();
+        //     }
+        //     if (operatorXButton)
+        //     {
+        //         arm.moveArmUp();
+        //     }
+        //     else if (operatorAButton)
+        //     {
+        //         arm.moveArmDown();
+        //     }
+        //     else
+        //     {
+        //         arm.stopArm();
+        //     }
 
-            System.out.println(arm);
-            //System.out.println(arm);
+        //     System.out.println(arm);
+        //     //System.out.println(arm);
+        // }
+        if(armButton || elevatorButton)
+        {
+            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
+            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
+
+            if(armButton)
+            {
+                if(buttonBoardYAxis == 1)
+                {
+                    arm.moveArmUp(0.35);
+                }
+                else if(buttonBoardYAxis == -1)
+                {
+                    arm.moveArmDown(-0.35);
+                }
+                else if(buttonBoardXAxis == 1)
+                {
+                    arm.moveArmUp(0.8);
+                }
+                else if(buttonBoardXAxis == -1)
+                {
+                    arm.moveArmDown(-0.8);
+                }
+                else
+                {
+                    arm.stopArm();
+                }
+            }
+            if(elevatorButton)
+            {
+                if(buttonBoardYAxis == 1)
+                {
+                    elevator.raiseElevator(0.35);
+                }
+                else if(buttonBoardYAxis == -1)
+                {
+                    elevator.lowerElevator(-0.35);
+                }
+                else if(buttonBoardXAxis == 1)
+                {
+                    elevator.raiseElevator(0.8);
+                }
+                else if(buttonBoardXAxis == -1)
+                {
+                    elevator.lowerElevator(-0.8);
+                }
+                else
+                {
+                    elevator.stopElevator();
+                }
+            }
         }
         else
         {
@@ -162,23 +219,28 @@ public class Teleop
             elevatorAndArm.moveTo();
         }
 
-        if (operatorYButtonReleased)
+        if (elevatorButtonReleased)
         {
             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
             elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
             elevator.stopElevator();
+        }
+        if (armButtonReleased)
+        {
+            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
+            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
             arm.stopArm();
         }
 
-        if (cargoInButton)
-        {
-            arm.ejectCargo(0.5);
-        }
+        // if (cargoInButton)
+        // {
+        //     arm.ejectCargo(0.5);
+        // }
 
-        else if (cargoOutButton)
-        {
-            arm.intakeCargo(0.5);
-        }
+        // else if (cargoOutButton)
+        // {
+        //     arm.intakeCargo(0.5);
+        // }
 
         else
         {
@@ -219,25 +281,25 @@ public class Teleop
         // System.out.println("X Axis:" + leftXAxis);
         // System.out.println("Y Axis:" + -leftYAxis);
 
-        if (driverXbox.getRawButtonPressed(Xbox.Constants.START_BUTTON))
-        {
-            drivetrain.toggleDriveInFieldOriented();
-            System.out.println(drivetrain.getDriveInFieldOriented());
-        }
+        // if (driverXbox.getRawButtonPressed(Xbox.Constants.START_BUTTON))
+        // {
+        //     drivetrain.toggleDriveInFieldOriented();
+        //     System.out.println(drivetrain.getDriveInFieldOriented());
+        // }
 
-        if (drivetrain.getDriveInFieldOriented())
-        {
-            drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis, drivetrain.getFieldOrientedHeading());
-        }
-        else
-        {
-            drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
-        }
+        // if (drivetrain.getDriveInFieldOriented())
+        // {
+        //     drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis, drivetrain.getFieldOrientedHeading());
+        // }
+        // else
+        // {
+        //     drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
+        // }
 
-        if (driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON))
-        {
-            drivetrain.resetNavX();
-        }
+        // if (driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON))
+        // {
+        //     drivetrain.resetNavX();
+        // }
 
         // System.out.println(elevator);
 
@@ -245,6 +307,18 @@ public class Teleop
         {
             // omniwheel up/down
         }
+
+        if(operatorRightBumper)
+        {
+            drivetrain.moveOmniWheel();
+        }
+        else if(operatorAButton)
+        {
+            drivetrain.resetLeftServo();
+        }
+
+
+        System.out.println(drivetrain.getLeftServo() + "     " + drivetrain.getLeftServoPosition());
     }
 
     public static class Constants

@@ -28,6 +28,19 @@ public class ButtonBoard extends Joystick
         System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
+    @Override
+    public double getRawAxis(int axis)
+    {
+        if(axis == 1)
+        {
+            return -super.getRawAxis(axis);
+        }
+        else
+        {
+            return super.getRawAxis(axis);
+        }
+    }
+
     public static class Constants
     {        
         public static final int FLOOR_BUTTON = 1;
@@ -41,11 +54,11 @@ public class ButtonBoard extends Joystick
         public static final int CENTER_CARGO_BUTTON = 4;
         public static final int TOP_CARGO_BUTTON = 5;
         
-        public static final int SLOW_SPEED_BUTTON = 12;
-        public static final int FAST_SPEED_BUTTON = 11;
+        public static final int ELEVATOR_BUTTON = 12;
+        public static final int ARM_BUTTON = 11;
 
-        public static final double X_AXIS = 0;
-        public static final double Y_AXIS = 1;
+        public static final int X_AXIS = 0;
+        public static final int Y_AXIS = 1;
 
         public static final int PORT = 1;
     }

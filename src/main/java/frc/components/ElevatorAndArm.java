@@ -20,7 +20,7 @@ public class ElevatorAndArm
     private int armPotValue;
     private Elevator.Constants.ElevatorPosition targetElevatorPosition = Elevator.Constants.ElevatorPosition.kNone;
     private Arm.Constants.Position targetArmPosition = Arm.Constants.Position.kNone;
-    private static int initialElevatorPosition = 100;
+    private static int floorElevatorPosition = 100;
     private static int horizontalArmPosition = 100;
 
     private Arm arm = Arm.getInstance();
@@ -73,10 +73,10 @@ public class ElevatorAndArm
     {
         elevatorPotValue = elevator.getPotValue();
         //System.out.println(elevator + "Target Elevator: " + targetElevatorPosition);
-        System.out.println(arm + "Arm Elevator: " + targetArmPosition);
+        //System.out.println(arm + "Arm Elevator: " + targetArmPosition);
         armPotValue = arm.getPotValue();
-        horizontalArmPosition = arm.getHorizontalArmPosition();
-        initialElevatorPosition = elevator.getInitialElevatorPosition();
+        horizontalArmPosition = arm.getArmPositionPotValue(1);
+        floorElevatorPosition = elevator.getElevatorPositionPotValues(2);
 
         if(targetElevatorPosition != Elevator.Constants.ElevatorPosition.kNone)
         {

@@ -7,20 +7,20 @@
 
 package frc.components;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import frc.components.Arm.Constants.Position;
-import frc.components.Arm.Constants.WristPosition;
 import frc.robot.SlabShuffleboard;
 
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.ctre.phoenix.ParamEnum;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import edu.wpi.first.wpilibj.Timer;
+
 
 /**
  * Add your docs here.
@@ -44,7 +44,16 @@ public class Arm
     private boolean isWristMoving;
     private boolean isArmMoving;
 
-    private static int horizontalArmPosition = 0;
+    /**
+     * Returns the pot value of the given position
+     * 
+     * <p> 0: Floor
+     * <p> 1: Horizontal
+     * <p> 2: Middle
+     * <p> 3: Top
+     * 
+     */
+    private static int[] armPositionPotValues = {1671, 1758, 1900, 1965};;
 
     private static Arm instance = new Arm();
 
@@ -64,8 +73,9 @@ public class Arm
         armMotor.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled);
         armMotor.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled);
  
+        armMotor.configSetParameter(ParamEnum.eFeedbackNotContinuous, 1, 0, 0, 0);
 
-        armMotor.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.Analog, 0, 0);
+        armMotor.configSelectedFeedbackSensor(FeedbackDevice.Analog);
     
         System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
@@ -89,11 +99,30 @@ public class Arm
     }
 
     /**
+     * moves arm up at given speed
+     * @param speed
+     */
+    public void moveArmUp(double speed)
+    {
+        armMotor.set(Math.abs(speed));
+    }
+
+    /**
      * this function moves the arm down at a speed of -.5
      */
     public void moveArmDown()
     {
         armMotor.set(-.25);
+    }
+
+
+     /**
+     * moves arm down at given speed
+     * @param speed
+     */
+    public void moveArmDown(double speed)
+    {
+        armMotor.set(-Math.abs(speed));
     }
 
     /**
@@ -218,16 +247,29 @@ public class Arm
      */
 
 
+    /**
+     * gets the wrist position
+     * @param position
+     * @return position of the wrist
+     */
     public Constants.WristPosition getWristPosition(Constants.Position position)
     {
         return position.wristPosition;
     }
 
+    /**
+     * gets the target position for the arm
+     * @param position
+     * @return the target arm position
+     */
     public int getTargetPositionArmPositionValue(Constants.Position position)
     {
         return position.armPosition.armPosition;
     }
 
+    /**
+     * sets the position for the wrist in the position enum
+     */
     public Constants.Position setWristPosition(Constants.Position position, Constants.WristPosition wristPosition)
     {
         position.wristPosition = wristPosition;
@@ -235,53 +277,90 @@ public class Arm
         return position;
     }
 
+    /**
+     * sets the robot we are using (competition or practice)
+     * @param robotType
+     */
     public void setRobotType(SlabShuffleboard.RobotType robotType)
     {
         if (robotType == SlabShuffleboard.RobotType.kCompetition)
         {
-            horizontalArmPosition = Constants.COMPETITION_HORIZONTAL_ARM_POSITION;
+            armPositionPotValues = Constants.COMPETITION_ARM_POSITION_POT_VALUES;
         }
         else
         {
-            horizontalArmPosition = Constants.PRACTICE_HORIZONTAL_ARM_POSITION;
+            armPositionPotValues = Constants.PRACTICE_ARM_POSITION_POT_VALUES;
         }
     }
 
-    public int getHorizontalArmPosition()
+    /**
+     * Returns the pot value of the given position
+     * 
+     * @param position which position to return:
+     * <p> 0: Floor
+     * <p> 1: Horizontal
+     * <p> 2: Middle
+     * <p> 3: Top
+     * 
+     * @return pot value of the selected position
+     */
+    public int getArmPositionPotValue(int position)
     {
-        return horizontalArmPosition;
+        return armPositionPotValues[position];
     }
 
+    /**
+     * checks if the wrist is moving
+     */
     public boolean isWristMoving()
     {
         return isWristMoving;
     }
 
+    /**
+     * sets if the wrist is moving
+     */
     public void setIsWristMoving(boolean isWristMoving)
     {
         this.isWristMoving = isWristMoving;
     }
 
+    /**
+     * checks if the arm is moving
+     */
     public boolean isArmMoving()
     {
         return isArmMoving;
     }
 
+    /**
+     * sets if the arm is moving
+     */
     public void setIsArmMoving(boolean isArmMoving)
     {
         this.isArmMoving = isArmMoving;
     }
 
+    /**
+     * checks if the wrist is down
+     */
     public boolean isWristDown()
     {
         return armMotor.getSensorCollection().isRevLimitSwitchClosed();
     }
 
+    /**
+     * checks if the wrist is up
+     */
     public boolean isWristUp()
     {
         return armMotor.getSensorCollection().isFwdLimitSwitchClosed();
     }
 
+    @Deprecated
+    /**
+     * converts angle value to pot ticks (bad math by darryl)
+     */
     private static int angleToTicks(double angle)
     {
         return (int)((500.0 * angle / 360.0) / (1000.0 + (500.0 * angle / 360.0)) * 1024.0);
@@ -303,10 +382,10 @@ public class Arm
     {
         public static enum ArmPosition
         {
-            kFloorArmPosition(horizontalArmPosition + HORIZONTAL_TO_FLOOR, "Floor Arm Position"), 
-            kHorizontalArmPosition(horizontalArmPosition, "Horizontal Arm Position"), 
-            kMiddleArmPosition(horizontalArmPosition + HORIZONTAL_TO_MIDDLE, "Middle Arm Position"),
-            kTopArmPosition(horizontalArmPosition + HORIZONTAL_TO_TOP, "Top Arm Position"),
+            kFloorArmPosition(armPositionPotValues[0], "Floor Arm Position"), 
+            kHorizontalArmPosition(armPositionPotValues[1], "Horizontal Arm Position"), 
+            kMiddleArmPosition(armPositionPotValues[2], "Middle Arm Position"),
+            kTopArmPosition(armPositionPotValues[3], "Top Arm Position"),
             kArmNone(-1, "Arm to None");
 
             private int armPosition;
@@ -391,8 +470,13 @@ public class Arm
 
         public static final int ARM_THRESHOLD = 5;
 
-        public static final int COMPETITION_HORIZONTAL_ARM_POSITION = 0;
-        public static final int PRACTICE_HORIZONTAL_ARM_POSITION = 0;
+
+        // 0: Floor
+        // 1: Horizontal
+        // 2: Middle
+        // 3: Top
+        public static final int[] COMPETITION_ARM_POSITION_POT_VALUES = {1671, 1758, 1900, 1965};
+        public static final int[] PRACTICE_ARM_POSITION_POT_VALUES = {1671, 1758, 1900, 1965};
 
 
     }

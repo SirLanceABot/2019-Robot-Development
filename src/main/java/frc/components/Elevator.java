@@ -7,14 +7,14 @@
 
 package frc.components;
 
+import frc.robot.SlabShuffleboard;
 import frc.components.Elevator.Constants.ElevatorPosition;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-
-import frc.robot.SlabShuffleboard;
-
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
 /**
  * Add your docs here.
@@ -26,7 +26,22 @@ public class Elevator
 
 
     private boolean isMoving = false;
-    private static int initialElevatorPosition = 0;
+
+    /**
+     * Returns the pot value of the given position
+     * 
+     * <p> 0: Min Height
+     * <p> 1: Max Height
+     * <p> 2: Floor
+     * <p> 3: Cargo Ship Cargo
+     * <p> 4: Bottom Hatch
+     * <p> 5: Center Hatch
+     * <p> 6: Top Hatch
+     * <p> 7: Bottom Cargo
+     * <p> 8: Center Cargo
+     * <p> 9: Top Cargo
+     */
+    private static int[] elevatorPositionPotValues = {111, 876, 111, 360, 111, 406, 744, 283, 636, 876};
 
    
     private static Elevator instance = new Elevator();
@@ -46,17 +61,17 @@ public class Elevator
         masterElevatorMotor.setNeutralMode(NeutralMode.Brake);
         slaveElevatorMotor.setNeutralMode(NeutralMode.Brake);
 
-        masterElevatorMotor.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.Analog, 0, 0);
+        masterElevatorMotor.configSelectedFeedbackSensor(FeedbackDevice.Analog);
 
         masterElevatorMotor.setSensorPhase(true);
         masterElevatorMotor.setInverted(InvertType.InvertMotorOutput);
         slaveElevatorMotor.setInverted(InvertType.InvertMotorOutput);
 
-        masterElevatorMotor.configReverseSoftLimitThreshold(Constants.ElevatorPosition.kMinHeight.position, 0);
-        masterElevatorMotor.configForwardSoftLimitThreshold(Constants.ElevatorPosition.kMaxHeight.position, 0);
+        masterElevatorMotor.configReverseSoftLimitThreshold(Constants.ElevatorPosition.kMinHeight.position);
+        masterElevatorMotor.configForwardSoftLimitThreshold(Constants.ElevatorPosition.kMaxHeight.position);
         
-        masterElevatorMotor.configForwardSoftLimitEnable(true, 0);
-        masterElevatorMotor.configReverseSoftLimitEnable(true, 0);
+        masterElevatorMotor.configForwardSoftLimitEnable(true);
+        masterElevatorMotor.configReverseSoftLimitEnable(true);
 
         masterElevatorMotor.configPeakCurrentLimit(Constants.PEAK_CURRENT_LIMIT);
         masterElevatorMotor.configPeakCurrentDuration(Constants.PEAK_CURRENT_DURATION);
@@ -78,11 +93,27 @@ public class Elevator
     }
 
     /**
+     * Raises the Elevator at a given speed
+     */
+    public void raiseElevator(double speed)
+    {
+        masterElevatorMotor.set(Math.abs(speed));
+    }
+
+    /**
      * Lowers the Elevator at a constant speed
      */
     public void lowerElevator()
     {
         masterElevatorMotor.set(-Constants.ELEVATOR_SPEED);
+    }
+
+    /**
+     * lowers the Elevator at a given speed
+     */
+    public void lowerElevator(double speed)
+    {
+        masterElevatorMotor.set(-Math.abs(speed));
     }
 
     /**
@@ -113,33 +144,63 @@ public class Elevator
         return isMoving;
     }
 
+    /**
+     * sets if the elevator is moving
+     */
     public void setIsMoving(boolean isMoving)
     {
         this.isMoving = isMoving;
     }
 
+    /**
+    * gets the position value of the elevator
+     */
     public int getPositionValue(ElevatorPosition position)
     {
         return position.position;
     }
 
+    /**
+     * sets the type of robot being used (competition or practice)
+     */
     public void setRobotType(SlabShuffleboard.RobotType robotType)
     {
         if(robotType == SlabShuffleboard.RobotType.kCompetition)
         {
-            initialElevatorPosition = Constants.COMPETITION_INITIAL_ELEVATOR_POSITION;
+            elevatorPositionPotValues = Constants.COMPETITION_ELEVATOR_POSITION_POT_VALUES;
         }
         else
         {
-            initialElevatorPosition = Constants.PRACTICE_INITIAL_ELEVATOR_POSITION;
+            elevatorPositionPotValues = Constants.PRACTICE_ELEVATOR_POSITION_POT_VALUES;
         }
     }
 
-    public int getInitialElevatorPosition()
+    /**
+     * Returns the pot value of the given position
+     * 
+     * @param position which position to return:
+     * <p> 0: Min Height
+     * <p> 1: Max Height
+     * <p> 2: Floor
+     * <p> 3: Cargo Ship Cargo
+     * <p> 4: Bottom Hatch
+     * <p> 5: Center Hatch
+     * <p> 6: Top Hatch
+     * <p> 7: Bottom Cargo
+     * <p> 8: Center Cargo
+     * <p> 9: Top Cargo
+     * 
+     * @return pot value of the selected position
+     */
+    public int getElevatorPositionPotValues(int position)
     {
-        return initialElevatorPosition;
+        return elevatorPositionPotValues[position];
     }
 
+    @Deprecated
+    /**
+     * converts inches to pot ticks (bad math by darryl)
+     */
     private static int inchesToTicks(double inches)
     {
         return (int)((1.00/8.3) * inches * 100); 
@@ -156,20 +217,19 @@ public class Elevator
     {
         public static enum ElevatorPosition
 		{
-            kInitialHeight(initialElevatorPosition, "Initial Height"),
-            kMinHeight(initialElevatorPosition + INITIAL_HEIGHT_TO_MIN_HEIGHT, "Min Height"),
-            kMaxHeight(initialElevatorPosition + INITIAL_HEIGHT_TO_MAX_HEIGHT, "Max Height"),
-            kFloor(initialElevatorPosition + INITIAL_HEIGHT_TO_FLOOR, "Floor"),
-            kCargoShipCargo(initialElevatorPosition + INITIAL_HEIGHT_TO_CARGO_SHIP_CARGO, "Cargo Ship Cargo"),
+            kMinHeight(elevatorPositionPotValues[0], "Min Height"),
+            kMaxHeight(elevatorPositionPotValues[1], "Max Height"),
+            kFloor(elevatorPositionPotValues[2], "Floor"),
+            kCargoShipCargo(elevatorPositionPotValues[3], "Cargo Ship Cargo"),
             kThreshold(5, "Threshold"),
 
-            kBottomHatch(initialElevatorPosition + INITIAL_HEIGHT_TO_BOTTOM_HATCH, "Bottom Hatch"),      // 1 ft 7 inches to center
-            kCenterHatch(initialElevatorPosition + INITIAL_HEIGHT_TO_CENTER_HATCH, "Center Hatch"),      // 3 ft 11 inches to center
-            kTopHatch(initialElevatorPosition + INITIAL_HEIGHT_TO_TOP_HATCH, "Top Hatch"),         // 6 ft 3 inches to center
+            kBottomHatch(elevatorPositionPotValues[4], "Bottom Hatch"),      // 1 ft 7 inches to center
+            kCenterHatch(elevatorPositionPotValues[5], "Center Hatch"),      // 3 ft 11 inches to center
+            kTopHatch(elevatorPositionPotValues[6], "Top Hatch"),         // 6 ft 3 inches to center
 
-            kBottomCargo(initialElevatorPosition + INITIAL_HEIGHT_TO_BOTTOM_CARGO, "Bottom Cargo"),       // 2 ft 3.5 inches to center
-            kCenterCargo(initialElevatorPosition + INITIAL_HEIGHT_TO_CENTER_CARGO, "Center Cargo"),       // 4 ft 7.5 inches to center
-            kTopCargo(initialElevatorPosition + INITIAL_HEIGHT_TO_TOP_CARGO, "Top Cargo"),          // 6 ft 11.5 inches to center
+            kBottomCargo(elevatorPositionPotValues[7], "Bottom Cargo"),       // 2 ft 3.5 inches to center
+            kCenterCargo(elevatorPositionPotValues[8], "Center Cargo"),       // 4 ft 7.5 inches to center
+            kTopCargo(elevatorPositionPotValues[9], "Top Cargo"),          // 6 ft 11.5 inches to center
             kNone(-1, "None");
 
             
@@ -188,6 +248,19 @@ public class Elevator
                 return name;
             }
         }
+
+        // 0: Min Height
+        // 1: Max Height
+        // 2: Floor
+        // 3: Cargo Ship Cargo
+        // 4: Bottom Hatch
+        // 5: Center Hatch
+        // 6: Top Hatch
+        // 7: Bottom Cargo
+        // 8: Center Cargo
+        // 9: Top Cargo
+        public static final int[] COMPETITION_ELEVATOR_POSITION_POT_VALUES = {111, 876, 111, 360, 111, 406, 744, 283, 636, 876};
+        public static final int[] PRACTICE_ELEVATOR_POSITION_POT_VALUES = {111, 876, 111, 360, 111, 406, 744, 283, 636, 876};
     
         public static final int INITIAL_HEIGHT_TO_MIN_HEIGHT = 111;//inchesToTicks(-10);
         public static final int INITIAL_HEIGHT_TO_MAX_HEIGHT = 876;//inchesToTicks(85);
@@ -210,7 +283,6 @@ public class Elevator
         public static final int CONTINOUS_CURRENT_LIMIT = 20;   // In Amps
         public static final double OPEN_LOOP_RAMP = 0.05;       // In seconds
 
-        public static final int COMPETITION_INITIAL_ELEVATOR_POSITION = 0;
-        public static final int PRACTICE_INITIAL_ELEVATOR_POSITION = 0;
+        
     }
 }
