@@ -67,8 +67,11 @@ public class Arm
         armMotor.setNeutralMode(NeutralMode.Brake);
         masterIntakeRoller.setNeutralMode(NeutralMode.Brake);
 
-        armMotor.setSensorPhase(true);
-        armMotor.setInverted(InvertType.InvertMotorOutput);
+        armMotor.configPeakCurrentLimit(35);
+        masterIntakeRoller.configPeakCurrentLimit(35);
+
+        // armMotor.setSensorPhase(true);
+        // armMotor.setInverted(InvertType.InvertMotorOutput);
 
         armMotor.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled);
         armMotor.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled);

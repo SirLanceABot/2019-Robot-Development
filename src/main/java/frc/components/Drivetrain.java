@@ -1,24 +1,20 @@
 package frc.components;
 
-import frc.control.Xbox;
 import frc.components.Drivetrain.Constants.OmniEncoder;
-import frc.control.DriverXbox;
 
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
-// import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Servo;
 
-// import javax.lang.model.util.ElementScanner6;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANSparkMaxLowLevel.ConfigParameter;
-// import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-// import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
+
+import javax.lang.model.util.ElementScanner6;
+
 import com.kauailabs.navx.frc.AHRS;
 
 /**
@@ -40,13 +36,13 @@ public class Drivetrain extends MecanumDrive
 
     private static Servo leftServo = new Servo(Constants.LEFT_SERVO_PORT);
     private static Servo rightServo = new Servo(Constants.RIGHT_SERVO_PORT);
-    private double leftServoPosition = 0.3;
-    private double rightServoPosition = 0.225;
-    private boolean omniWheelUp = true;
+    private double leftServoPosition = 0.225;
+    private double rightServoPosition = 0.3;
+    private boolean omniWheelUp = false;
 
     // TODO: find actual values for encoders channel A and B
-    private Encoder leftEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
-    private Encoder rightEncoder = new Encoder(2, 3, false, Encoder.EncodingType.k4X);
+    private Encoder leftEncoder = new Encoder(Constants.LEFT_ENCODER_CHANEL_A, Constants.LEFT_ENCODER_CHANEL_B, false, Encoder.EncodingType.k4X);
+    private Encoder rightEncoder = new Encoder(Constants.RIGHT_ENCODER_CHANEL_A, Constants.RIGHT_ENCODER_CHANEL_B, false, Encoder.EncodingType.k4X);
     private boolean needToResetEncoder = true;
     private boolean isEncoderResetting = false;
 
@@ -56,6 +52,10 @@ public class Drivetrain extends MecanumDrive
     private boolean driveInFieldOriented = true;
     private boolean navXIsCalibrated = false;
     private Timer navXTimer = new Timer();
+    private boolean needToResetStartingHeading = true;
+    private double startingHeading = -999;
+    private double startingAngleToRotate = -999;
+    
 
     private Timer timer = new Timer();
 
@@ -74,8 +74,7 @@ public class Drivetrain extends MecanumDrive
 
         System.out.println(this.getClass().getName() + ": Started Constructing");
 
-        // TODO: bring this back in
-        // setSafetyEnabled(false);
+        setSafetyEnabled(false);
 
         frontRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
         // frontRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
@@ -176,8 +175,8 @@ public class Drivetrain extends MecanumDrive
     {
         if (omniWheelUp)
         {
-            leftServoPosition = .225;
-            rightServoPosition = .3;
+            leftServoPosition = 0.225;
+            rightServoPosition = 0.3;
             leftServo.set(leftServoPosition);
             rightServo.set(rightServoPosition);
 
@@ -185,8 +184,8 @@ public class Drivetrain extends MecanumDrive
         }
         else
         {
-            leftServoPosition = .3;
-            rightServoPosition = .225;
+            leftServoPosition = 0.3;
+            rightServoPosition = 0.225;
             leftServo.set(leftServoPosition);
             rightServo.set(rightServoPosition);
 
@@ -223,7 +222,7 @@ public class Drivetrain extends MecanumDrive
 
     public void resetLeftServo()
     {
-        leftServoPosition = 0.3;
+        leftServoPosition = 0.225;
         leftServo.set(leftServoPosition);
     }
 
@@ -232,12 +231,6 @@ public class Drivetrain extends MecanumDrive
         rightServoPosition = 0.3;
         rightServo.set(rightServoPosition);
     }
-
-    // public void driveFieldOriented(double leftXAxis, double leftYAxis, double
-    // rightXAxis)
-    // {
-    // driveCartesian(leftXAxis, leftYAxis, rightXAxis, getHeadingFieldOriented());
-    // }
 
     public double getFieldOrientedHeading()
     {
@@ -328,7 +321,7 @@ public class Drivetrain extends MecanumDrive
             inches = Math.abs(inches);
             double startingDistance = maxSpeed * 12.0;
             double distanceTravelled;
-            int driveDirection = 1;
+            int driveDirection = maxSpeed < 0 ? -1 : 1;
             double angleToRotate = getAngleToRotate(bearing);
 
             double rotate = angleToRotate / 30.0;
@@ -344,12 +337,7 @@ public class Drivetrain extends MecanumDrive
             else
             {
                 distanceTravelled = Math.abs(getDistaceInInches());
-            }
-
-            if (maxSpeed < 0)
-            {
-                driveDirection = -1;
-            }
+            } 
 
             if (distanceTravelled <= inches)
             {
@@ -391,14 +379,27 @@ public class Drivetrain extends MecanumDrive
 
     public boolean spinToBearing(int bearing, double speed)
     {
+        speed = Math.abs(speed);
         boolean doneSpinning = false;
         boolean isSpinning = true;
         double angleToRotate = getAngleToRotate(bearing);
+        double direction = Math.signum(angleToRotate);
 
-        // TODO: reset timer, make speed proportional to angleToRotate
+        if(needToResetStartingHeading)
+        {
+            startingHeading = getHeadingInDegrees();
+            startingAngleToRotate = angleToRotate;
+            needToResetStartingHeading = false;
+            timer.reset();
+            timer.start();
+        }
+        double angleTravelled = Math.abs(startingHeading - getHeadingInDegrees());
+        double startingAngle = startingAngleToRotate >= 90 ? 30 : speed * 0.3 * startingAngleToRotate;
+        double stoppingAngle = startingAngleToRotate >= 90 ? 20 : speed * 0.2 * startingAngleToRotate;
 
         double heading = getHeadingInDegrees();
 
+        //check out navX.getUpdateCounter
         if (timer.get() >= 0.2)
         {
             if (previousNavXValue == heading)
@@ -408,6 +409,8 @@ public class Drivetrain extends MecanumDrive
             else
             {
                 previousNavXValue = heading;
+                timer.reset();
+                timer.start();
             }
         }
         else
@@ -417,20 +420,30 @@ public class Drivetrain extends MecanumDrive
 
         if (isSpinning)
         {
-
-            if (angleToRotate != 0)
-            {
-                speed *= angleToRotate / Math.abs(angleToRotate);
-            }
+            speed *= direction;
 
             if (Math.abs(angleToRotate) >= Constants.ROTATE_THRESHOLD)
             {
-                driveCartesian(0, 0, speed);
+                if(angleTravelled <= startingAngle)
+                {
+                    driveCartesian(0, 0, ((speed - Constants.STARTING_SPEED) * direction / startingAngle)
+                        * angleTravelled + Constants.STARTING_SPEED * direction);
+                }
+                else if(angleTravelled > startingAngle && angleTravelled < startingAngleToRotate - stoppingAngle)
+                {
+                    driveCartesian(0, 0, speed);
+                }
+                else
+                {
+                    driveCartesian(0, 0, Constants.STOPPING_SPEED * direction);
+                }
+
             }
             else
             {
                 driveCartesian(0, 0, 0);
                 doneSpinning = true;
+                needToResetStartingHeading = true;
             }
         }
         else
@@ -438,6 +451,8 @@ public class Drivetrain extends MecanumDrive
             abortAutonomous = true;
             System.out.println("\nNAVX REPEATED VALUES.\n");
             driveCartesian(0, 0, 0);
+            doneSpinning = true;
+            needToResetStartingHeading = true;
         }
 
         return doneSpinning;
@@ -477,6 +492,11 @@ public class Drivetrain extends MecanumDrive
 
         public static final int LEFT_SERVO_PORT = 1;
         public static final int RIGHT_SERVO_PORT = 0;
+
+        public static final int LEFT_ENCODER_CHANEL_A = 16;
+        public static final int LEFT_ENCODER_CHANEL_B = 18;
+        public static final int RIGHT_ENCODER_CHANEL_A = 14;
+        public static final int RIGHT_ENCODER_CHANEL_B = 15;
 
         public static final double ENCODER_TICKS_PER_INCH = (360.0 * 4.0) / (3.25 * Math.PI);
 
