@@ -74,7 +74,7 @@ public class Elevator
         masterElevatorMotor.configForwardSoftLimitEnable(true);
         masterElevatorMotor.configReverseSoftLimitEnable(true);
 
-        masterElevatorMotor.configPeakCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.kNeoMotor, 0.3));
+        masterElevatorMotor.configPeakCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.kRedLine, 0.3));
         masterElevatorMotor.configPeakCurrentDuration(MotorConstants.Constants.PEAK_CURRENT_DURATION);
         masterElevatorMotor.configContinuousCurrentLimit(MotorConstants.Constants.CONTINOUS_CURRENT_LIMIT);
         masterElevatorMotor.configOpenloopRamp(MotorConstants.Constants.OPEN_LOOP_RAMP);

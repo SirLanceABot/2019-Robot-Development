@@ -8,17 +8,17 @@ public class MotorConstants
         
         switch(motorType)
         {
-            case kBagMotor: currentLimit = multiplier * Constants.BAG_MOTOR_STALL_CURRENT;
+            case kBagMotor: currentLimit = multiplier * (Constants.BAG_MOTOR_STALL_CURRENT - Constants.BAG_MOTOR_FREE_CURRENT) + Constants.BAG_MOTOR_FREE_CURRENT;
                     break;
-            case kCimMotor: currentLimit = multiplier * Constants.CIM_MOTOR_STALL_CURRENT;
+            case kCimMotor: currentLimit = multiplier * (Constants.CIM_MOTOR_STALL_CURRENT- Constants.CIM_MOTOR_STALL_CURRENT) + Constants.CIM_MOTOR_STALL_CURRENT;
                     break;
-            case kPro775Motor: currentLimit = multiplier * Constants.PRO_775_MOTOR_STALL_CURRENT;
+            case kPro775Motor: currentLimit = multiplier * (Constants.PRO_775_MOTOR_STALL_CURRENT- Constants.PRO_775_MOTOR_STALL_CURRENT) + Constants.PRO_775_MOTOR_STALL_CURRENT;
                     break;
-            case k9015Motor: currentLimit = multiplier * Constants.MOTOR_9015_STALL_CURRENT;
+            case k9015Motor: currentLimit = multiplier * (Constants.MOTOR_9015_STALL_CURRENT- Constants.MOTOR_9015_STALL_CURRENT) + Constants.MOTOR_9015_STALL_CURRENT;
                     break;
-            case kNeoMotor: currentLimit = multiplier * Constants.NEO_MOTOR_STALL_CURRENT;
+            case kNeoMotor: currentLimit = multiplier * (Constants.NEO_MOTOR_STALL_CURRENT- Constants.NEO_MOTOR_STALL_CURRENT) + Constants.NEO_MOTOR_STALL_CURRENT;
                 break;
-            case kRedLine: currentLimit = multiplier * Constants.REDLINE_MOTOR_STALL_CURRENT;
+            case kRedLine: currentLimit = multiplier * (Constants.REDLINE_MOTOR_STALL_CURRENT- Constants.REDLINE_MOTOR_STALL_CURRENT) + Constants.REDLINE_MOTOR_STALL_CURRENT;
                     break;
             default: currentLimit = 0;
                     break;

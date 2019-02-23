@@ -40,7 +40,7 @@ public class Climber
         masterLegMotor.setNeutralMode(NeutralMode.Brake);
         slaveLegMotor.setNeutralMode(NeutralMode.Brake);
 
-        masterLegMotor.configPeakCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.kNeoMotor, 0.3));
+        masterLegMotor.configPeakCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.kCimMotor, 0.3));
         masterLegMotor.configPeakCurrentDuration(MotorConstants.Constants.PEAK_CURRENT_DURATION);
         masterLegMotor.configContinuousCurrentLimit(MotorConstants.Constants.CONTINOUS_CURRENT_LIMIT);
         masterLegMotor.configOpenloopRamp(MotorConstants.Constants.OPEN_LOOP_RAMP);

@@ -241,16 +241,14 @@ public class Teleop
             arm.stopArm();
         }
 
-        // if (cargoInButton)
-        // {
-        //     arm.ejectCargo(0.5);
-        // }
-
-        // else if (cargoOutButton)
-        // {
-        //     arm.intakeCargo(0.5);
-        // }
-
+        if (operatorLeftBumper) //TODO: Figure out correct button
+        {
+            arm.intakeCargo(0.5);
+        }
+        else if (operatorRightBumper) //TODO: Figure out correct button
+        {
+            arm.ejectCargo(0.5);
+        }
         else
         {
             arm.stopCargo();
