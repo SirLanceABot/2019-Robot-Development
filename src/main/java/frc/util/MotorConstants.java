@@ -2,7 +2,7 @@ package frc.util;
 
 public class MotorConstants
 {
-    public static double getMotorStallCurrent(Constants.MotorType motorType, double multiplier)
+    public static int getMotorStallCurrent(Constants.MotorType motorType, double multiplier)
     {
         double currentLimit = 0;
         
@@ -12,7 +12,7 @@ public class MotorConstants
                     break;
             case kCimMotor: currentLimit = multiplier * Constants.CIM_MOTOR_STALL_CURRENT;
                     break;
-            case k775Motor: currentLimit = multiplier * Constants.PRO_775_MOTOR_STALL_CURRENT;
+            case kPro775Motor: currentLimit = multiplier * Constants.PRO_775_MOTOR_STALL_CURRENT;
                     break;
             case k9015Motor: currentLimit = multiplier * Constants.MOTOR_9015_STALL_CURRENT;
                     break;
@@ -23,7 +23,7 @@ public class MotorConstants
             default: currentLimit = 0;
                     break;
         }
-        return currentLimit;
+        return (int)currentLimit;
     }
 
     public static double getMotorFreeCurrent(Constants.MotorType motorType)
@@ -36,7 +36,7 @@ public class MotorConstants
                     break;
             case kCimMotor: freeCurrent = Constants.CIM_MOTOR_FREE_CURRENT;
                     break;
-            case k775Motor: freeCurrent = Constants.PRO_775_MOTOR_FREE_CURRENT;
+            case kPro775Motor: freeCurrent = Constants.PRO_775_MOTOR_FREE_CURRENT;
                     break;
             case k9015Motor: freeCurrent = Constants.MOTOR_9015_FREE_CURRENT;
                     break;
@@ -56,7 +56,7 @@ public class MotorConstants
     {
         public static enum MotorType
         {
-            kBagMotor, kCimMotor, k775Motor, k9015Motor, kNeoMotor, kRedLine;
+            kBagMotor, kCimMotor, kPro775Motor, k9015Motor, kNeoMotor, kRedLine;
         }
         
         public static final int BAG_MOTOR_STALL_CURRENT = 41;
@@ -73,6 +73,9 @@ public class MotorConstants
         public static final double NEO_MOTOR_FREE_CURRENT = 1.8;
         public static final double REDLINE_MOTOR_FREE_CURRENT = 0.7;
 
-
+        public static final int PEAK_CURRENT_LIMIT = 20;        // In Amps
+        public static final int PEAK_CURRENT_DURATION = 250;    // In milliseconds
+        public static final int CONTINOUS_CURRENT_LIMIT = 20;   // In Amps
+        public static final double OPEN_LOOP_RAMP = 0.05;       // In seconds
     }
 }

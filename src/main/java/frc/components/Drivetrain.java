@@ -12,8 +12,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANSparkMaxLowLevel.ConfigParameter;
 import com.revrobotics.CANSparkMax.IdleMode;
+import frc.util.MotorConstants;
 
-import javax.lang.model.util.ElementScanner6;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -76,7 +76,7 @@ public class Drivetrain extends MecanumDrive
 
         setSafetyEnabled(false);
 
-        frontRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
+        frontRightMotor.setSmartCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.kNeoMotor, 0.3));
         // frontRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
         frontRightMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
         frontRightMotor.setIdleMode(IdleMode.kBrake);
@@ -86,7 +86,7 @@ public class Drivetrain extends MecanumDrive
         frontRightMotor.setParameter(ConfigParameter.kSoftLimitRevEn, false);
         frontRightMotor.setParameter(ConfigParameter.kInputDeadband, Constants.MOTOR_DEADBAND);
 
-        frontLeftMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
+        frontLeftMotor.setSmartCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.kNeoMotor, 0.3));
         // frontLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
         frontLeftMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
         frontLeftMotor.setIdleMode(IdleMode.kBrake);
@@ -96,7 +96,7 @@ public class Drivetrain extends MecanumDrive
         frontLeftMotor.setParameter(ConfigParameter.kSoftLimitRevEn, false);
         frontLeftMotor.setParameter(ConfigParameter.kInputDeadband, 0);
 
-        backRightMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
+        backRightMotor.setSmartCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.kNeoMotor, 0.3));
         // backRightMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
         backRightMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
         backRightMotor.setIdleMode(IdleMode.kBrake);
@@ -106,7 +106,7 @@ public class Drivetrain extends MecanumDrive
         backRightMotor.setParameter(ConfigParameter.kSoftLimitRevEn, false);
         backRightMotor.setParameter(ConfigParameter.kInputDeadband, 0);
 
-        backLeftMotor.setSmartCurrentLimit(Constants.PRIMARY_MOTOR_CURRENT_LIMIT);
+        backLeftMotor.setSmartCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.kNeoMotor, 0.3));
         // backLeftMotor.setSecondaryCurrentLimit(Constants.SECONDARY_MOTOR_CURRENT_LIMIT);
         backLeftMotor.setOpenLoopRampRate(Constants.DRIVE_RAMP_TIME);
         backLeftMotor.setIdleMode(IdleMode.kBrake);

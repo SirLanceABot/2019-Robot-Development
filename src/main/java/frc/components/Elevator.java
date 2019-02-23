@@ -8,6 +8,7 @@
 package frc.components;
 
 import frc.robot.SlabShuffleboard;
+import frc.util.MotorConstants;
 import frc.components.Elevator.Constants.ElevatorPosition;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -63,9 +64,9 @@ public class Elevator
 
         masterElevatorMotor.configSelectedFeedbackSensor(FeedbackDevice.Analog);
 
-        masterElevatorMotor.setSensorPhase(true);
-        masterElevatorMotor.setInverted(InvertType.InvertMotorOutput);
-        slaveElevatorMotor.setInverted(InvertType.InvertMotorOutput);
+        // masterElevatorMotor.setSensorPhase(true);
+        // masterElevatorMotor.setInverted(InvertType.InvertMotorOutput);
+        // slaveElevatorMotor.setInverted(InvertType.InvertMotorOutput);
 
         masterElevatorMotor.configReverseSoftLimitThreshold(Constants.ElevatorPosition.kMinHeight.position);
         masterElevatorMotor.configForwardSoftLimitThreshold(Constants.ElevatorPosition.kMaxHeight.position);
@@ -73,10 +74,10 @@ public class Elevator
         masterElevatorMotor.configForwardSoftLimitEnable(true);
         masterElevatorMotor.configReverseSoftLimitEnable(true);
 
-        masterElevatorMotor.configPeakCurrentLimit(Constants.PEAK_CURRENT_LIMIT);
-        masterElevatorMotor.configPeakCurrentDuration(Constants.PEAK_CURRENT_DURATION);
-        masterElevatorMotor.configContinuousCurrentLimit(Constants.CONTINOUS_CURRENT_LIMIT);
-        masterElevatorMotor.configOpenloopRamp(Constants.OPEN_LOOP_RAMP);
+        masterElevatorMotor.configPeakCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.kNeoMotor, 0.3));
+        masterElevatorMotor.configPeakCurrentDuration(MotorConstants.Constants.PEAK_CURRENT_DURATION);
+        masterElevatorMotor.configContinuousCurrentLimit(MotorConstants.Constants.CONTINOUS_CURRENT_LIMIT);
+        masterElevatorMotor.configOpenloopRamp(MotorConstants.Constants.OPEN_LOOP_RAMP);
         masterElevatorMotor.enableCurrentLimit(true);
         
         slaveElevatorMotor.follow(masterElevatorMotor);
@@ -277,12 +278,5 @@ public class Elevator
         public static final int SLAVE_ELEVATOR_MOTOR_PORT = 11;
 
         public static final double ELEVATOR_SPEED = 0.5;
-
-        public static final int PEAK_CURRENT_LIMIT = 20;        // In Amps
-        public static final int PEAK_CURRENT_DURATION = 250;    // In milliseconds
-        public static final int CONTINOUS_CURRENT_LIMIT = 20;   // In Amps
-        public static final double OPEN_LOOP_RAMP = 0.05;       // In seconds
-
-        
     }
 }

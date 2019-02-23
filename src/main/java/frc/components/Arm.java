@@ -8,7 +8,7 @@
 package frc.components;
 
 import frc.robot.SlabShuffleboard;
-
+import frc.util.MotorConstants;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -38,7 +38,7 @@ public class Arm
     private Timer grabberTimer = new Timer();
 
 
-    private WPI_TalonSRX masterIntakeRoller = new WPI_TalonSRX(Constants.ROLLER_TALON_ID);
+    private WPI_TalonSRX intakeRoller = new WPI_TalonSRX(Constants.ROLLER_TALON_ID);
 
     private boolean isGrabberMoving = false;
     private boolean isWristMoving;
@@ -60,15 +60,24 @@ public class Arm
     private Arm()
     {
         System.out.println(this.getClass().getName() + ": Started Constructing");
-        masterIntakeRoller.configFactoryDefault();
+        intakeRoller.configFactoryDefault();
 
         armMotor.configFactoryDefault();
 
         armMotor.setNeutralMode(NeutralMode.Brake);
-        masterIntakeRoller.setNeutralMode(NeutralMode.Brake);
+        intakeRoller.setNeutralMode(NeutralMode.Brake);
 
-        armMotor.configPeakCurrentLimit(35);
-        masterIntakeRoller.configPeakCurrentLimit(35);
+        armMotor.configPeakCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.k9015Motor, 0.3));
+        intakeRoller.configPeakCurrentDuration(MotorConstants.Constants.PEAK_CURRENT_DURATION);
+        intakeRoller.configContinuousCurrentLimit(MotorConstants.Constants.CONTINOUS_CURRENT_LIMIT);
+        intakeRoller.configOpenloopRamp(MotorConstants.Constants.OPEN_LOOP_RAMP);
+        intakeRoller.enableCurrentLimit(true);
+
+        intakeRoller.configPeakCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.kBagMotor, 0.3));
+        intakeRoller.configPeakCurrentDuration(MotorConstants.Constants.PEAK_CURRENT_DURATION);
+        intakeRoller.configContinuousCurrentLimit(MotorConstants.Constants.CONTINOUS_CURRENT_LIMIT);
+        intakeRoller.configOpenloopRamp(MotorConstants.Constants.OPEN_LOOP_RAMP);
+        intakeRoller.enableCurrentLimit(true);
 
         // armMotor.setSensorPhase(true);
         // armMotor.setInverted(InvertType.InvertMotorOutput);
@@ -163,7 +172,7 @@ public class Arm
     public void intakeCargo(double speed)
     {
         speed = Math.abs(speed);
-        masterIntakeRoller.set(speed);
+        intakeRoller.set(speed);
     }
 
     /**
@@ -175,7 +184,7 @@ public class Arm
     public void ejectCargo(double speed)
     {
         speed = -Math.abs(speed);
-        masterIntakeRoller.set(speed);
+        intakeRoller.set(speed);
     }
 
     /**
@@ -184,7 +193,7 @@ public class Arm
      */
     public void stopCargo()
     {
-        masterIntakeRoller.set(0);
+        intakeRoller.set(0);
     }
 
     /**

@@ -9,6 +9,7 @@ package frc.components;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import frc.util.MotorConstants;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
@@ -38,6 +39,12 @@ public class Climber
 
         masterLegMotor.setNeutralMode(NeutralMode.Brake);
         slaveLegMotor.setNeutralMode(NeutralMode.Brake);
+
+        masterLegMotor.configPeakCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.kNeoMotor, 0.3));
+        masterLegMotor.configPeakCurrentDuration(MotorConstants.Constants.PEAK_CURRENT_DURATION);
+        masterLegMotor.configContinuousCurrentLimit(MotorConstants.Constants.CONTINOUS_CURRENT_LIMIT);
+        masterLegMotor.configOpenloopRamp(MotorConstants.Constants.OPEN_LOOP_RAMP);
+        masterLegMotor.enableCurrentLimit(true);
 
         masterLegMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyOpen);
         masterLegMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
