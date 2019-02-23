@@ -96,6 +96,7 @@ public class Teleop
         boolean operatorYButton = operatorXbox.getRawButton(Xbox.Constants.Y_BUTTON);
         boolean operatorYButtonReleased = operatorXbox.getRawButtonReleased(Xbox.Constants.Y_BUTTON);
 
+        double motorCurrent = arm.getIntakeAmperage();
         // if (operatorYButton)
         // {
         //     if (operatorLeftBumper)
@@ -310,30 +311,44 @@ public class Teleop
 
         // System.out.println(elevator);
 
+
+        // if(operatorRightBumper)
+        // {
+        //     drivetrain.moveOmniWheel();
+        // }
+        // else if(operatorAButton)
+        // {
+        //     drivetrain.resetLeftServo();
+        // }
+        if (operatorLeftBumper)
+        {
+          arm.intakeCargo(-1.0);
+        }
+        else if (operatorRightBumper)
+        {
+          arm.intakeCargo(1.0);
+        }
+        else
+        {
+          if (motorCurrent >= Constants.STALL_AMP - 0.5 && motorCurrent <= Constants.STALL_AMP + 0.5)
+          {
+            arm.intakeCargo(0.0);
+          }
+          else
+          {
+            arm.intakeCargo(0.1);
+          }
+        }
+
         if (aButton)
         {
             // omniwheel up/down
         }
 
-        if(operatorRightBumper)
-        {
-            drivetrain.moveOmniWheel();
-        }
-        else if(operatorAButton)
-        {
-            drivetrain.resetLeftServo();
-        }
-
-
-        if (aButton)
-        {
-            // omniwheel up/down
-        }
-
-        if(leftBumper)
-        {
-            whiteLineAlignment();
-        }
+        // if(leftBumper)
+        // {
+        //     whiteLineAlignment();
+        // }
     }
 
     public boolean whiteLineAlignment()
@@ -367,5 +382,6 @@ public class Teleop
     {
         private static final double ROTATION_SPEED = 0.5;
         private static final double STRAFE_SPEED = 0.5;
+        private static final double STALL_AMP = 25.0;
     }
 }

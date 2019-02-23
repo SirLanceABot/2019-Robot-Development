@@ -353,6 +353,11 @@ public class Arm
         this.isArmMoving = isArmMoving;
     }
 
+    public double getIntakeAmperage()
+    {
+        return intakeRoller.getOutputCurrent();
+    }
+
     /**
      * checks if the wrist is down
      */
