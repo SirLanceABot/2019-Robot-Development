@@ -1,6 +1,7 @@
 package frc.components;
 
 import frc.components.Drivetrain.Constants.OmniEncoder;
+import frc.robot.SlabShuffleboard;
 
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.I2C;
@@ -40,7 +41,6 @@ public class Drivetrain extends MecanumDrive
     private double rightServoPosition = 0.3;
     private boolean omniWheelUp = false;
 
-    // TODO: find actual values for encoders channel A and B
     private Encoder leftEncoder = new Encoder(Constants.LEFT_ENCODER_CHANEL_A, Constants.LEFT_ENCODER_CHANEL_B, false, Encoder.EncodingType.k4X);
     private Encoder rightEncoder = new Encoder(Constants.RIGHT_ENCODER_CHANEL_A, Constants.RIGHT_ENCODER_CHANEL_B, false, Encoder.EncodingType.k4X);
     private boolean needToResetEncoder = true;
@@ -56,8 +56,9 @@ public class Drivetrain extends MecanumDrive
     private double startingHeading = -999;
     private double startingAngleToRotate = -999;
     
-
     private Timer timer = new Timer();
+
+    private double speedFactor = 1.0;
 
     private static Drivetrain instance = new Drivetrain();
 
@@ -138,13 +139,14 @@ public class Drivetrain extends MecanumDrive
         System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
+    //returns the instance of the drivetrain
     public static Drivetrain getInstance()
     {
         return instance;
     }
 
     /**
-     * Gets the distance the robot has driven converted to inches.
+     * Gets the distance from the left encoder converted to inches.
      * 
      * @return Distance traveled.
      */
@@ -153,16 +155,31 @@ public class Drivetrain extends MecanumDrive
         return leftEncoder.getRaw() / Constants.ENCODER_TICKS_PER_INCH;
     }
 
+    /**
+     * Gets the distance from the right encoder converted to inches.
+     * 
+     * @return Distance traveled.
+     */
     public double getRightDistanceInInches()
     {
         return rightEncoder.getRaw() / Constants.ENCODER_TICKS_PER_INCH;
     }
 
+    /**
+     * Gets the average distance of the encoders converted to inches.
+     * 
+     * @return Distance traveled.
+     */
     public double getAvgDistanceInInches()
     {
         return (getRightDistanceInInches() + getLeftDistanceInInches()) / 2.0;
     }
 
+    /**
+     * Gets the further distance of the encoders converted to inches.
+     * 
+     * @return Distance traveled.
+     */
     public double getDistaceInInches()
     {
         double rightDistance = getRightDistanceInInches();
@@ -171,6 +188,7 @@ public class Drivetrain extends MecanumDrive
         return rightDistance > leftDistance ? rightDistance : leftDistance;
     }
 
+    //moves the omni wheel up and down
     public void moveOmniWheel()
     {
         if (omniWheelUp)
@@ -205,64 +223,129 @@ public class Drivetrain extends MecanumDrive
     // leftServo.set(leftServoPosition);
     // }
 
+    /**
+     * returns the value of the left servo
+     * @ leftServo.get
+     */
     public double getLeftServo()
     {
         return leftServo.get();
     }
 
+    /**
+     * returns the value of the leftServoPosition variable
+     * @return leftServoPosition
+     */
     public double getLeftServoPosition()
     {
         return leftServoPosition;
     }
 
+    /**
+     * returns the value of the right servo
+     * @return rightServo.get
+     */
     public double getRightServo()
     {
         return rightServo.get();
     }
 
+    /**
+     * returns the value of the rightServoPosition variable
+     * @return rightServoPosition
+     */
+    public double getRightServoPosition()
+    {
+        return rightServoPosition;
+    }
+
+    //resets the left servo to its up position
     public void resetLeftServo()
     {
         leftServoPosition = 0.225;
         leftServo.set(leftServoPosition);
     }
 
+    //resets the right servo to its up position
     public void resetRightServo()
     {
         rightServoPosition = 0.3;
         rightServo.set(rightServoPosition);
     }
 
+    /**
+     * gets the reverse yaw from the navX for field oriented driving 
+     * @return -navX.getYaw
+     */
     public double getFieldOrientedHeading()
     {
         return -navX.getYaw();
     }
 
+    /**
+     * gets the yaw from the navX 
+     * @return navX.getYaw
+     */
     public double getHeadingInDegrees()
     {
         return navX.getYaw();
     }
 
+    //toggles driving in field oriented
     public void toggleDriveInFieldOriented()
     {
         driveInFieldOriented = !driveInFieldOriented;
     }
 
+    /** 
+     * returns wether or not the robot is in field oriented view
+     *  @return driveInFieldOriented 
+     * 
+     */
     public boolean getDriveInFieldOriented()
     {
         return driveInFieldOriented;
     }
 
+    //resets the navX
     public void resetNavX()
     {
         navX.reset();
     }
 
+    //resets both the encoder values
     public void resetBothEncoders()
     {
         leftEncoder.reset();
         rightEncoder.reset();
     }
 
+    public void setMotorSpeedFactor(SlabShuffleboard.MotorSpeed speedFactor)
+    {
+        this.speedFactor = speedFactor.value;
+    }
+
+    @Override
+    public void driveCartesian(double ySpeed, double xSpeed, double zRotation)
+    {
+       this.driveCartesian(ySpeed, xSpeed, zRotation, 0.0);
+    }
+
+    @Override
+    public void driveCartesian(double ySpeed, double xSpeed, double zRotation, double gyroAngle)
+    {
+        ySpeed *= speedFactor;
+        xSpeed *= speedFactor;
+        zRotation *= speedFactor;
+        
+        super.driveCartesian(ySpeed, xSpeed, zRotation, gyroAngle);
+    }
+
+    /**
+     * Calculates the angle to rotate based on bearing and heading
+     * @param bearing
+     * @return angleToRotate
+     */
     public double getAngleToRotate(double bearing)
     {
         // direction: 1 = clockwise, -1 = counter-clockwise
@@ -377,6 +460,12 @@ public class Drivetrain extends MecanumDrive
         return abortAutonomous;
     }
 
+    /**
+     * spins the robot to a given bearing based on navX values
+     * @param bearing
+     * @param speed
+     * @return doneSpinning
+     */
     public boolean spinToBearing(int bearing, double speed)
     {
         speed = Math.abs(speed);
@@ -467,6 +556,7 @@ public class Drivetrain extends MecanumDrive
                 getHeadingInDegrees());
     }
 
+    //constants class for drivetrain
     public static class Constants
     {
         public static enum OmniEncoder
