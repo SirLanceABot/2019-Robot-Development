@@ -19,12 +19,21 @@ import frc.components.ElevatorAndArm;
 import frc.visionForWhiteTape.CameraProcess;
 import frc.visionForWhiteTape.TargetData;
 import frc.visionForWhiteTape.CameraProcess.rotate;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * Add your docs here.
  */
 public class Teleop
 {
+    enum IntakeState
+    {
+        kOff, kIntake, kHold, kEject; // kOff turns either way off, kIntake is intake at 100%, kHold is intake at 10%,
+                                      // kEject is eject at 100%
+    }
+    
+    private IntakeState stateOfIntake = IntakeState.kOff;
+    private final Timer startupTimer = new Timer();
     private Arm arm = Arm.getInstance();
     private Elevator elevator = Elevator.getInstance();
     private ElevatorAndArm elevatorAndArm = ElevatorAndArm.getInstance();
@@ -39,6 +48,7 @@ public class Teleop
 
     private static Teleop instance = new Teleop();
     private TargetData targetData;
+    private boolean firstTimeOverAmpLimit = true;
 
     private Teleop()
     {
@@ -56,6 +66,10 @@ public class Teleop
         SlabShuffleboard.PregameSetupTabData pregame = shuffleboard.getPregameSetupTabData();
         arm.setRobotType(pregame.robotType);
         elevator.setRobotType(pregame.robotType);
+        arm.setMotorSpeedFactor(pregame.motorSpeed);
+        elevator.setMotorSpeedFactor(pregame.motorSpeed);
+        drivetrain.setMotorSpeedFactor(pregame.motorSpeed);
+
         elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
         elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
     }
@@ -242,19 +256,6 @@ public class Teleop
             arm.stopArm();
         }
 
-        if (operatorLeftBumper) //TODO: Figure out correct button
-        {
-            arm.intakeCargo(0.5);
-        }
-        else if (operatorRightBumper) //TODO: Figure out correct button
-        {
-            arm.ejectCargo(0.5);
-        }
-        else
-        {
-            arm.stopCargo();
-        }
-
         if (rightBumper)
         {
             if (xButton && climber.getEncoder() < Climber.Constants.MAX_CLIMBER_HEIGHT)
@@ -289,66 +290,37 @@ public class Teleop
         // System.out.println("X Axis:" + leftXAxis);
         // System.out.println("Y Axis:" + -leftYAxis);
 
-        // if (driverXbox.getRawButtonPressed(Xbox.Constants.START_BUTTON))
-        // {
-        //     drivetrain.toggleDriveInFieldOriented();
-        //     System.out.println(drivetrain.getDriveInFieldOriented());
-        // }
+        if (driverXbox.getRawButtonPressed(Xbox.Constants.START_BUTTON))
+        {
+            drivetrain.toggleDriveInFieldOriented();
+            System.out.println(drivetrain.getDriveInFieldOriented());
+        }
 
-        // if (drivetrain.getDriveInFieldOriented())
-        // {
-        //     drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis, drivetrain.getFieldOrientedHeading());
-        // }
-        // else
-        // {
-        //     drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
-        // }
+        if (drivetrain.getDriveInFieldOriented())
+        {
+            drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis, drivetrain.getFieldOrientedHeading());
+        }
+        else
+        {
+            drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
+        }
 
-        // if (driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON))
-        // {
-        //     drivetrain.resetNavX();
-        // }
+        if (driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON))
+        {
+            drivetrain.resetNavX();
+        }
 
         // System.out.println(elevator);
 
 
-        // if(operatorRightBumper)
-        // {
-        //     drivetrain.moveOmniWheel();
-        // }
-        // else if(operatorAButton)
-        // {
-        //     drivetrain.resetLeftServo();
-        // }
-        if (operatorLeftBumper)
-        {
-          arm.intakeCargo(-1.0);
-        }
-        else if (operatorRightBumper)
-        {
-          arm.intakeCargo(1.0);
-        }
-        else
-        {
-          if (motorCurrent >= Constants.STALL_AMP - 0.5 && motorCurrent <= Constants.STALL_AMP + 0.5)
-          {
-            arm.intakeCargo(0.0);
-          }
-          else
-          {
-            arm.intakeCargo(0.1);
-          }
-        }
+
 
         if (aButton)
         {
             // omniwheel up/down
         }
 
-        // if(leftBumper)
-        // {
-        //     whiteLineAlignment();
-        // }
+        intakeStateMachine();
     }
 
     public boolean whiteLineAlignment()
@@ -378,10 +350,121 @@ public class Teleop
         return false;
     }
 
+    public void intakeStateMachine() {
+        boolean inButtonHeld = driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER);
+        boolean inButtonPressed = driverXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER);
+        boolean outButton = driverXbox.getRawButton(Xbox.Constants.LEFT_BUMPER);
+        double motorCurrent = arm.getArmCurrent();
+    
+        switch (stateOfIntake) 
+        {
+        case kOff:
+    
+          if (inButtonHeld) 
+          {
+            stateOfIntake = IntakeState.kIntake;
+          } 
+          else if (outButton) 
+          {
+            stateOfIntake = IntakeState.kEject;
+          } 
+          else 
+          {
+            stateOfIntake = IntakeState.kOff;
+          }
+          break;
+        case kIntake:
+        if(motorCurrent < Constants.CURRENT_LIMIT)
+        {
+          if(inButtonHeld)
+          {
+            firstTimeOverAmpLimit = true;
+            stateOfIntake = IntakeState.kIntake;
+          }
+          if(!inButtonHeld)
+          {
+            firstTimeOverAmpLimit = true;
+            stateOfIntake = IntakeState.kOff;
+          }
+        }
+        else
+        {
+          if(inButtonHeld && firstTimeOverAmpLimit)
+          {
+            startupTimer.reset();
+            startupTimer.start();
+            firstTimeOverAmpLimit = false;
+            stateOfIntake = IntakeState.kIntake;
+          }
+          else if(inButtonHeld && startupTimer.get() > Constants.BALL_STALL_CURRENT)
+          {
+            firstTimeOverAmpLimit = true;
+            stateOfIntake = IntakeState.kHold;
+          }
+          else if(!inButtonHeld)
+          {
+            firstTimeOverAmpLimit = true;
+            stateOfIntake = IntakeState.kHold;
+          }
+        }
+          break;
+        case kHold:
+          if(outButton)
+          {
+            stateOfIntake = IntakeState.kEject;
+          }
+          else if(inButtonPressed)
+          {
+            stateOfIntake = IntakeState.kIntake;
+          }
+          else if(motorCurrent > Constants.BALL_STALL_CURRENT)
+          {
+            stateOfIntake = IntakeState.kHold;
+          }
+          else if(motorCurrent < Constants.BALL_STALL_CURRENT)
+          {
+            stateOfIntake = IntakeState.kOff;
+          }
+          break;
+        case kEject:
+          if(outButton)
+          {
+            stateOfIntake = IntakeState.kEject;
+          }
+          else if(inButtonHeld)
+          {
+            stateOfIntake = IntakeState.kIntake;
+          }
+          else
+          {
+            stateOfIntake = IntakeState.kOff;
+          }
+          break;
+        }
+     
+      
+      switch(stateOfIntake)
+      {
+        case kOff:
+          arm.stopCargo();
+          break;
+        case kIntake:
+            arm.intakeCargo(1.0);
+          break;
+        case kEject:
+            arm.ejectCargo(1.0);
+          break;
+        case kHold:
+            arm.intakeCargo(0.1);
+          break;
+      }
+    
+    }
     public static class Constants
     {
         private static final double ROTATION_SPEED = 0.5;
         private static final double STRAFE_SPEED = 0.5;
-        private static final double STALL_AMP = 25.0;
+        private static final double BALL_STALL_CURRENT = 0.5;
+        private static final double CURRENT_LIMIT = 15.0;
     }
 }

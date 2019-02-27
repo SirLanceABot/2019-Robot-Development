@@ -41,10 +41,10 @@ public class Autonomous
 {
     private SlabShuffleboard shuffleboard = SlabShuffleboard.getInstance();
     private Drivetrain drivetrain = Drivetrain.getInstance();
-    //private Arm arm = Arm.getInstance();
-    //private Elevator elevator = Elevator.getInstance();
-    //private ElevatorAndArm elevatorAndArm = ElevatorAndArm.getInstance();
-    //private CameraProcess vision = CameraProcess.getInstance();
+    private Arm arm = Arm.getInstance();
+    private Elevator elevator = Elevator.getInstance();
+    private ElevatorAndArm elevatorAndArm = ElevatorAndArm.getInstance();
+    private CameraProcess vision = CameraProcess.getInstance();
     private Timer timer = new Timer();
     private boolean isBackingUp = true;
     private boolean continueToNextTask = false;
@@ -72,6 +72,20 @@ public class Autonomous
     {
         return instance;
     }
+
+    public void autoInit()
+    {
+        SlabShuffleboard.PregameSetupTabData pregame = shuffleboard.getPregameSetupTabData();
+        arm.setRobotType(pregame.robotType);
+        elevator.setRobotType(pregame.robotType);
+        arm.setMotorSpeedFactor(pregame.motorSpeed);
+        elevator.setMotorSpeedFactor(pregame.motorSpeed);
+        drivetrain.setMotorSpeedFactor(pregame.motorSpeed);
+
+        elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
+        elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
+    }
+
     ArrayList<Point> pathing = new ArrayList<Point>();
 
     private PregameSetupTabData pregameSetupTabData;

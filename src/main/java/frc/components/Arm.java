@@ -35,6 +35,7 @@ public class Arm
     private WPI_TalonSRX armMotor = new WPI_TalonSRX(Constants.ARM_MOTOR_ID);
 
 
+    private double speedFactor = 1.0;
     private Timer grabberTimer = new Timer();
 
 
@@ -54,6 +55,8 @@ public class Arm
      * 
      */
     private static int[] armPositionPotValues = {1671, 1758, 1900, 1965};;
+
+    private SlabShuffleboard shuffleboard = SlabShuffleboard.getInstance();
 
     private static Arm instance = new Arm();
 
@@ -88,6 +91,8 @@ public class Arm
         armMotor.configSetParameter(ParamEnum.eFeedbackNotContinuous, 1, 0, 0, 0);
 
         armMotor.configSelectedFeedbackSensor(FeedbackDevice.Analog);
+
+        
     
         System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
@@ -107,7 +112,7 @@ public class Arm
      */
     public void moveArmUp()
     {
-        armMotor.set(.5);
+        armMotor.set(speedFactor * .5);
     }
 
     /**
@@ -116,7 +121,7 @@ public class Arm
      */
     public void moveArmUp(double speed)
     {
-        armMotor.set(Math.abs(speed));
+        armMotor.set(speedFactor * Math.abs(speed));
     }
 
     /**
@@ -124,9 +129,13 @@ public class Arm
      */
     public void moveArmDown()
     {
-        armMotor.set(-.25);
+        armMotor.set(speedFactor * -.25);
     }
 
+    public double getArmCurrent()
+    {
+        return armMotor.getOutputCurrent();
+    }
 
      /**
      * moves arm down at given speed
@@ -134,7 +143,7 @@ public class Arm
      */
     public void moveArmDown(double speed)
     {
-        armMotor.set(-Math.abs(speed));
+        armMotor.set(speedFactor * -Math.abs(speed));
     }
 
     /**
@@ -303,6 +312,11 @@ public class Arm
         {
             armPositionPotValues = Constants.PRACTICE_ARM_POSITION_POT_VALUES;
         }
+    }
+
+    public void setMotorSpeedFactor(SlabShuffleboard.MotorSpeed speedFactor)
+    {
+        this.speedFactor = speedFactor.value;
     }
 
     /**

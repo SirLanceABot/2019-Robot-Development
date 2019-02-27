@@ -25,6 +25,7 @@ public class Elevator
     private WPI_TalonSRX masterElevatorMotor = new WPI_TalonSRX(Constants.MASTER_ELEVATOR_MOTOR_PORT);
     private WPI_VictorSPX slaveElevatorMotor = new WPI_VictorSPX(Constants.SLAVE_ELEVATOR_MOTOR_PORT);
 
+    private double speedFactor = 1.0;
 
     private boolean isMoving = false;
 
@@ -90,7 +91,7 @@ public class Elevator
      */
     public void raiseElevator()
     {
-        masterElevatorMotor.set(Constants.ELEVATOR_SPEED);
+        masterElevatorMotor.set(speedFactor * Constants.ELEVATOR_SPEED);
     }
 
     /**
@@ -98,7 +99,7 @@ public class Elevator
      */
     public void raiseElevator(double speed)
     {
-        masterElevatorMotor.set(Math.abs(speed));
+        masterElevatorMotor.set(speedFactor * Math.abs(speed));
     }
 
     /**
@@ -106,7 +107,7 @@ public class Elevator
      */
     public void lowerElevator()
     {
-        masterElevatorMotor.set(-Constants.ELEVATOR_SPEED);
+        masterElevatorMotor.set(speedFactor * -Constants.ELEVATOR_SPEED);
     }
 
     /**
@@ -114,7 +115,7 @@ public class Elevator
      */
     public void lowerElevator(double speed)
     {
-        masterElevatorMotor.set(-Math.abs(speed));
+        masterElevatorMotor.set(speedFactor * -Math.abs(speed));
     }
 
     /**
@@ -174,6 +175,11 @@ public class Elevator
         {
             elevatorPositionPotValues = Constants.PRACTICE_ELEVATOR_POSITION_POT_VALUES;
         }
+    }
+
+    public void setMotorSpeedFactor(SlabShuffleboard.MotorSpeed speedFactor)
+    {
+        this.speedFactor = speedFactor.value;
     }
 
     /**

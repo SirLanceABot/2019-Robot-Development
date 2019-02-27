@@ -34,11 +34,11 @@ public class SlabShuffleboard
 
     public enum MotorSpeed
     {
-        k25percent(25), k50percent(50), k75percent(75), k100percent(100);
+        k25percent(0.25), k50percent(0.50), k75percent(0.75), k100percent(1.00);
 
-        public int value;
+        public double value;
 
-        private MotorSpeed(int value)
+        private MotorSpeed(double value)
         {
             this.value = value;
         }
@@ -327,4 +327,5 @@ public class SlabShuffleboard
     {
         return maxSpeed.getDouble(0);
     }
+    
 }

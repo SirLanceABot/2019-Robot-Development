@@ -22,6 +22,8 @@ public class ElevatorAndArm
     private Arm.Constants.Position targetArmPosition = Arm.Constants.Position.kNone;
     private static int floorElevatorPosition = 100;
     private static int horizontalArmPosition = 100;
+    private boolean getStartingPosition = true;
+    private double startingPosition;
 
     private Arm arm = Arm.getInstance();
     private Elevator elevator = Elevator.getInstance();
@@ -88,27 +90,27 @@ public class ElevatorAndArm
             //else 
             if(elevatorPotValue < (elevator.getPositionValue(targetElevatorPosition) - elevator.getPositionValue(Elevator.Constants.ElevatorPosition.kThreshold)))
             {
-                elevator.raiseElevator();
+                elevator.raiseElevator(scaleElevatorMovement());
                 elevator.setIsMoving(true);
             }
             else if(elevatorPotValue > (elevator.getPositionValue(targetElevatorPosition) + elevator.getPositionValue(Elevator.Constants.ElevatorPosition.kThreshold)))
             {
                 elevator.setIsMoving(true);
-                elevator.lowerElevator();
+                elevator.lowerElevator(scaleElevatorMovement());
                 // if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristDown)
                 // {
                 //     if(elevatorPotValue > initialElevatorPosition || armPotValue > arm.getHorizontalArmPosition())
                 //     {
-                //         elevator.lowerElevator();
+                //         elevator.lowerElevator(scaleElevatorMovement());
                 //     }
                 //     else
                 //     {
-                //         elevator.stopElevator();
+                //         elevator.stopElevator(scaleElevatorMovement());
                 //     }
                 // }
                 // else
                 // {       
-                //     elevator.lowerElevator();
+                //     elevator.lowerElevator(scaleElevatorMovement());
                 // }
             }
             else
@@ -116,6 +118,7 @@ public class ElevatorAndArm
                 elevator.stopElevator();
                 targetElevatorPosition = Elevator.Constants.ElevatorPosition.kNone;
                 elevator.setIsMoving(false);
+                getStartingPosition = true;
             }
         }
 
@@ -157,19 +160,19 @@ public class ElevatorAndArm
 
             if(armPotValue < arm.getTargetPositionArmPositionValue(targetArmPosition))
             {
-                arm.moveArmUp();
+                arm.moveArmUp(scaleArmMovement());
                 arm.setIsArmMoving(true);
             }
             else if(armPotValue > arm.getTargetPositionArmPositionValue(targetArmPosition))
             {
                 arm.setIsArmMoving(true);
-                arm.moveArmDown();
+                arm.moveArmDown(scaleArmMovement());
 
                 // if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristDown && !arm.isWristDown())
                 // {
                 //     if(elevatorPotValue > initialElevatorPosition || armPotValue > horizontalArmPosition)
                 //     {
-                //         arm.moveArmDown();
+                //         arm.moveArmDown(scaleArmMovement());
                 //     }
                 //     else
                 //     {
@@ -178,7 +181,7 @@ public class ElevatorAndArm
                 // }
                 // else
                 // {
-                //     arm.moveArmDown();
+                //     arm.moveArmDown(scaleArmMovement());
                 // }
 
             }
@@ -186,6 +189,7 @@ public class ElevatorAndArm
             {
                 arm.stopArm();
                 arm.setIsArmMoving(false);
+                getStartingPosition = true;
             }
 
             if(arm.isWristMoving() == false && arm.isArmMoving() == false)
@@ -193,5 +197,69 @@ public class ElevatorAndArm
                 targetArmPosition = Position.kNone;
             }
         }
+    }
+
+    public double scaleElevatorMovement()
+    {
+
+        double currentPotValue = elevator.getPotValue();
+        if(getStartingPosition)
+        {
+            startingPosition = elevator.getPotValue();
+            getStartingPosition = false;
+        }
+        
+        double endingPosition = arm.getTargetPositionArmPositionValue(targetArmPosition);
+        double distanceToTravel = Math.abs(endingPosition - startingPosition);
+        double startingDistance = Math.abs(distanceToTravel / 10.0);
+        double stoppingDistance = distanceToTravel - distanceToTravel / 10.0;
+        double distanceTraveled = Math.abs(startingPosition - currentPotValue);
+
+        if(distanceTraveled < startingDistance)
+        {
+            return 0.3;
+        }
+        if(distanceTraveled > startingDistance && distanceTraveled < stoppingDistance)
+        {
+            return 1.0;
+        }
+        if(distanceTraveled > stoppingDistance)
+        {
+            return 0.3;
+        }
+        else
+            return 0.0;
+    }
+
+    public double scaleArmMovement()
+    {
+
+        double currentPotValue = arm.getPotValue();
+        if(getStartingPosition)
+        {
+            startingPosition = arm.getPotValue();
+            getStartingPosition = false;
+        }
+        
+        double endingPosition = arm.getTargetPositionArmPositionValue(targetArmPosition);
+        double distanceToTravel = Math.abs(endingPosition - startingPosition);
+        double startingDistance = Math.abs(distanceToTravel / 10.0);
+        double stoppingDistance = distanceToTravel - distanceToTravel / 10.0;
+        double distanceTraveled = Math.abs(startingPosition - currentPotValue);
+
+        if(distanceTraveled < startingDistance)
+        {
+            return 0.3;
+        }
+        if(distanceTraveled > startingDistance && distanceTraveled < stoppingDistance)
+        {
+            return 1.0;
+        }
+        if(distanceTraveled > stoppingDistance)
+        {
+            return 0.3;
+        }
+        else
+            return 0.0;
     }
 }

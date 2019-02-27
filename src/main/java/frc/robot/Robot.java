@@ -12,8 +12,7 @@ public class Robot extends TimedRobot
     private Drivetrain drivetrain = Drivetrain.getInstance();
     private DriverXbox driverXbox = DriverXbox.getInstance();
     private Teleop teleop = Teleop.getInstance();
-
-    private boolean isCompetitionBot = true;    // Update Arm and Elevator Constants for Pots
+    private Autonomous autonomous = Autonomous.getInstance();
 
     public Robot()
     {
@@ -24,7 +23,7 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousInit()
     {
-
+        autonomous.autoInit();
     }
 
     @Override
