@@ -113,6 +113,23 @@ public class SlabShuffleboard
         }
     }
 
+    public class MotorsAndSensorsTabData
+    {
+            public String frontLeftMotor = "NA";
+            public String frontRightMotor = "NA";
+            public String backLeftMotor = "NA";
+            public String backRightMotor = "NA";
+            public String omniWheel = "NA";
+            public String elevator = "NA";
+            public String arm = "NA";
+            public String wrist = "NA";
+            public String cargoIntakeRoller = "NA";
+            public String hatchPanelGrabber = "NA";
+            public String climber = "NA";
+            public String lidar = "NA";
+            public String navX = "NA";
+    }
+
     private PregameSetupTabData pregameSetupTabData = new PregameSetupTabData();
 
     // Input boxes on the Autonomous tab
@@ -135,6 +152,32 @@ public class SlabShuffleboard
 
     private SendableChooser<Boolean> sendDataButton = new SendableChooser<>();
 
+    private ShuffleboardTab motorsAndSensorsTab;
+    private MotorsAndSensorsTabData motorsAndSensorsTabData = new MotorsAndSensorsTabData();
+    // Network table entries for the Motors and Sensors Tab
+        // Network table entries for the 4 drivetrain motors
+        private NetworkTableEntry drivetrainFLValuesEntry;
+        private NetworkTableEntry drivetrainFRValuesEntry;
+        private NetworkTableEntry drivetrainBLValuesEntry;
+        private NetworkTableEntry drivetrainBRValuesEntry;
+// Network table entries for the 2 omniwheel servos
+        private NetworkTableEntry omniWheelValuesEntry;
+// Network table entry for the 1 arm motor
+        private NetworkTableEntry armValuesEntry;
+// Network table entry for the 2 elevator motors
+        private NetworkTableEntry elevatorValuesEntry;
+// Network table entry for the wrist pneumatics
+        private NetworkTableEntry wristValuesEntry;
+// Network table entry for the 1 cargo intake roller motor
+        private NetworkTableEntry cargoIntakeRollerMotorEntry;
+// Network table entry for the hatch panel pneumatics
+        private NetworkTableEntry hatchPanelGrabberValuesEntry;
+// Network table entry for the 2 climber motors
+        private NetworkTableEntry climberValuesEntry;
+// Network table entry for the lidar
+        private NetworkTableEntry lidarValuesEntry;
+// Network table entry for the NavX
+        private NetworkTableEntry navXValuesEntry;
     private ShuffleboardTab configurationTab;
     private NetworkTableEntry maxSpeed;
     private SimpleWidget maxSpeedWidget;
@@ -306,6 +349,104 @@ public class SlabShuffleboard
     {
         return sendDataButton.getSelected();
     }
+
+    public void createMotorsAndSensorsTab()
+    {
+        // Create and select the Motors and Sensors tab
+        motorsAndSensorsTab = Shuffleboard.getTab("Motors and Sensors");
+        Shuffleboard.selectTab("Motors and Sensors");
+
+        // TextView for the "Drivetrain FL Motor Values"
+        drivetrainFLValuesEntry = motorsAndSensorsTab.add("Drivetrain Front Left", 0.0).withWidget(BuiltInWidgets.kTextView)
+                .withPosition(0, 0).withSize(6, 1).getEntry();
+
+        // TextView for the "Drivetrain FR Motor Values"
+        drivetrainFRValuesEntry = motorsAndSensorsTab.add("Drivetrain Front Right", 0.0).withWidget(BuiltInWidgets.kTextView)
+                .withPosition(0, 2).withSize(6, 1).getEntry();
+
+        // TextView for the "Drivetrain BL Motor Values"
+        drivetrainBLValuesEntry = motorsAndSensorsTab.add("Drivetrain Back Left", 0.0).withWidget(BuiltInWidgets.kTextView)
+                .withPosition(0, 4).withSize(6, 1).getEntry();
+
+        // TextView for the "Drivetrain BR Motor Values"
+        drivetrainBRValuesEntry = motorsAndSensorsTab.add("Drivetrain Back Right", 0.0).withWidget(BuiltInWidgets.kTextView)
+        .withPosition(0, 6).withSize(6, 1).getEntry();
+
+        // TextView for both of the "Omni Wheels"
+        omniWheelValuesEntry = motorsAndSensorsTab.add("Omni Wheels", 0.0).withWidget(BuiltInWidgets.kTextView)
+                .withPosition(0, 8).withSize(6, 1).getEntry();
+
+        // TextView for the "Elevator"
+        elevatorValuesEntry = motorsAndSensorsTab.add("Elevator", 0.0).withWidget(BuiltInWidgets.kTextView)
+                .withPosition(6, 0).withSize(6, 1).getEntry();
+
+        // TextView for the "Arm"
+        armValuesEntry = motorsAndSensorsTab.add("Arm", 0.0).withWidget(BuiltInWidgets.kTextView)
+                .withPosition(6, 2).withSize(6, 1).getEntry();
+
+        // TextView for the "Wrist"
+        wristValuesEntry = motorsAndSensorsTab.add("Wrist", 0.0).withWidget(BuiltInWidgets.kTextView)
+                .withPosition(6, 4).withSize(6, 1).getEntry();
+
+        // TextView for the "Cargo Intake Roller"
+        cargoIntakeRollerMotorEntry = motorsAndSensorsTab.add("Cargo Intake Roller", 0.0).withWidget(BuiltInWidgets.kTextView)
+                .withPosition(6, 6).withSize(6, 1).getEntry();
+
+        // TextView for the "Hatch Panel Grabber"
+        hatchPanelGrabberValuesEntry = motorsAndSensorsTab.add("Hatch Panel Grabber", 0.0).withWidget(BuiltInWidgets.kTextView)
+                .withPosition(6, 8).withSize(6, 1).getEntry();
+
+        // TextView for the "Climber"
+        climberValuesEntry = motorsAndSensorsTab.add("Climber", 0.0).withWidget(BuiltInWidgets.kTextView)
+                .withPosition(12, 0).withSize(6, 1).getEntry();
+
+        // TextView for the "Lidar"
+        lidarValuesEntry = motorsAndSensorsTab.add("Lidar", 0.0).withWidget(BuiltInWidgets.kTextView)
+                .withPosition(18, 0).withSize(6, 1).getEntry();
+
+        // TextView for the "NavX"
+        navXValuesEntry = motorsAndSensorsTab.add("NavX", 0.0).withWidget(BuiltInWidgets.kTextView)
+                .withPosition(18, 2).withSize(6, 1).getEntry();
+    } // Finished creating the motors and sensors tab
+
+    // Call up Yash's getString() function
+    public MotorsAndSensorsTabData getMotorsAndSensorsTabData() 
+    {
+        motorsAndSensorsTabData.frontLeftMotor = drivetrainFLValuesEntry.getString("NA");
+        motorsAndSensorsTabData.frontRightMotor = drivetrainFRValuesEntry.getString("NA");
+        motorsAndSensorsTabData.backLeftMotor = drivetrainBLValuesEntry.getString("NA");
+        motorsAndSensorsTabData.backRightMotor = drivetrainBRValuesEntry.getString("NA");
+        motorsAndSensorsTabData.omniWheel = omniWheelValuesEntry.getString("NA");
+        motorsAndSensorsTabData.elevator = elevatorValuesEntry.getString("NA");
+        motorsAndSensorsTabData.arm = armValuesEntry.getString("NA");
+        motorsAndSensorsTabData.wrist = wristValuesEntry.getString("NA");
+        motorsAndSensorsTabData.cargoIntakeRoller = cargoIntakeRollerMotorEntry.getString("NA");
+        motorsAndSensorsTabData.hatchPanelGrabber = hatchPanelGrabberValuesEntry.getString("NA");
+        motorsAndSensorsTabData.climber = climberValuesEntry.getString("NA");
+        motorsAndSensorsTabData.lidar = lidarValuesEntry.getString("NA");
+        motorsAndSensorsTabData.navX = navXValuesEntry.getString("NA");
+
+        return motorsAndSensorsTabData;
+    } // Finished getting the motorsAndSensorsTabData
+
+    // Update the Motors and Sensors tab data with the set strings
+    public void updateMotorsAndSensorsTabData()
+    {
+        drivetrainFLValuesEntry.setString(motorsAndSensorsTabData.frontLeftMotor);
+        drivetrainFRValuesEntry.setString(motorsAndSensorsTabData.frontRightMotor);
+        drivetrainBLValuesEntry.setString(motorsAndSensorsTabData.backLeftMotor);
+        drivetrainBRValuesEntry.setString(motorsAndSensorsTabData.backRightMotor);
+        omniWheelValuesEntry.setString(motorsAndSensorsTabData.omniWheel);
+        elevatorValuesEntry.setString(motorsAndSensorsTabData.elevator);
+        armValuesEntry.setString(motorsAndSensorsTabData.arm);
+        wristValuesEntry.setString(motorsAndSensorsTabData.wrist);
+        cargoIntakeRollerMotorEntry.setString(motorsAndSensorsTabData.cargoIntakeRoller);
+        hatchPanelGrabberValuesEntry.setString(motorsAndSensorsTabData.hatchPanelGrabber);
+        climberValuesEntry.setString(motorsAndSensorsTabData.climber);
+        lidarValuesEntry.setString(motorsAndSensorsTabData.lidar);
+        navXValuesEntry.setString(motorsAndSensorsTabData.navX);
+    } // Finished updating the Motors and Sensors tab
+
 
     public void setupConfigurationTab()
     {
