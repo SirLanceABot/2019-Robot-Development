@@ -547,6 +547,39 @@ public class Drivetrain extends MecanumDrive
         return doneSpinning;
     }
 
+    public String getFrontRightMotorData()
+    {
+        return String.format("%6.3f,  %6.0f,  %6.3f,  %5.1f",
+         frontRightMotor.get(), frontRightMotor.getEncoder().getPosition(),
+          frontRightMotor.getOutputCurrent(), (frontRightMotor.getMotorTemperature() * (5 / 9)) + 32);
+    }
+
+    public String getFrontLeftMotorData()
+    {
+        return String.format("%6.3f,  %6.0f,  %6.3f,  %5.1f",
+         frontLeftMotor.get(), frontLeftMotor.getEncoder().getPosition(),
+         frontLeftMotor.getOutputCurrent(), (frontLeftMotor.getMotorTemperature() * (5 / 9)) + 32);
+    }
+
+    public String getBackRightMotorData()
+    {
+        return String.format("%6.3f,  %6.0f,  %6.3f,  %5.1f",
+         backRightMotor.get(), backRightMotor.getEncoder().getPosition(),
+         backRightMotor.getOutputCurrent(), (backRightMotor.getMotorTemperature() * (5 / 9)) + 32);
+    }
+
+    public String getBackLeftMotorData()
+    {
+        return String.format("%6.3f,  %6.0f,  %6.3f,  %5.1f",
+         backLeftMotor.get(), backLeftMotor.getEncoder().getPosition(),
+         backLeftMotor.getOutputCurrent(), (backLeftMotor.getMotorTemperature() * (5 / 9)) + 32);
+    }
+
+    public String getSensorData()
+    {
+        return String.format("%6.0f,  %6.0f, %7.2f", leftEncoder.get(), rightEncoder.get(), navX.getYaw());
+    }
+
     @Override
     public String toString()
     {

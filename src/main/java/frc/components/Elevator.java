@@ -212,6 +212,13 @@ public class Elevator
     {
         return (int)((1.00/8.3) * inches * 100); 
     }
+
+    public String getMasterLegElevatorMotorData()
+    {
+        return String.format("%6.3f,  %6.0i,  %6.3f,  %5.1f",
+         masterElevatorMotor.get(), masterElevatorMotor.getSelectedSensorPosition(),
+         masterElevatorMotor.getOutputCurrent(), masterElevatorMotor.getTemperature());
+    }
     
 
     @Override

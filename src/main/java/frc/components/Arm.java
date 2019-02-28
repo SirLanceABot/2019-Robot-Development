@@ -403,6 +403,30 @@ public class Arm
 
     }
 
+    public String getArmMotorData()
+    {
+        return String.format("%6.3f,  %6.0i,  %6.3f,  %5.1f",
+         armMotor.get(), armMotor.getSelectedSensorPosition(),
+         armMotor.getOutputCurrent(), armMotor.getTemperature());
+    }
+
+    public String getIntakeRollerMotorData()
+    {
+        return String.format("%6.3f,  %6.0i,  %6.3f,  %5.1f",
+         intakeRoller.get(), intakeRoller.getSelectedSensorPosition(),
+         intakeRoller.getOutputCurrent(), intakeRoller.getTemperature());
+    }
+
+    public String getWristSolenoidData()
+    {
+        return wristSolenoid.get().toString();
+    }
+
+    public String getGrabberSolenoidData()
+    {
+        return grabberSolenoid.get().toString();
+    }
+
     @Override
     public String toString()
     {

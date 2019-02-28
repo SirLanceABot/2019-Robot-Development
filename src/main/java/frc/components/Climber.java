@@ -103,6 +103,18 @@ public class Climber
     {
     }
 
+    public String getMasterLegMotorData()
+    {
+        return String.format("%6.3f,  %6.0i,  %6.3f,  %5.1f",
+         masterLegMotor.get(), masterLegMotor.getSelectedSensorPosition(),
+         masterLegMotor.getOutputCurrent(), masterLegMotor.getTemperature());
+    }
+
+    public String getPinSolenoidData()
+    {
+        return pinSolenoid.get().toString();
+    }
+
 
     @Override
     public String toString()
