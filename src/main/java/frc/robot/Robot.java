@@ -41,6 +41,43 @@ public class Robot extends TimedRobot
     @Override
     public void robotPeriodic()
     {
+        getPregameSetupData();
+        updateAllShuffleboardData();
+    }
+
+    @Override
+    public void autonomousInit()
+    {
+        autonomous.autoInit();
+    }
+
+    @Override
+    public void autonomousPeriodic()
+    {
+        //drivetrain.driveCartesian(0, .2, 0);
+        System.out.println(drivetrain);
+    }
+
+    @Override
+    public void teleopInit()
+    {
+        teleop.teleopInit();
+    }
+
+    @Override
+    public void teleopPeriodic()
+    {
+        double[] scaledArray = driverXbox.getScaledAxes(Constants.LEFT_STICK_AXES, Xbox.Constants.PolynomialDrive.kCubicDrive);
+        teleop.teleop();
+        //System.out.println(drivetrain);
+
+        // System.out.printf("X = %5.3f Y = %5.3f X = %5.3f Y = %5.3f \n",
+        //         driverXbox.getRawAxis(Constants.LEFT_STICK_X_AXIS), driverXbox.getRawAxis(Constants.LEFT_STICK_Y_AXIS),
+        //         scaledArray[0], scaledArray[1]);
+    }
+
+    public void getPregameSetupData()
+    {
         if (isAutonomous() && isEnabled())
         {
             isPregame = false;
@@ -70,34 +107,13 @@ public class Robot extends TimedRobot
         }
     }
 
-    @Override
-    public void autonomousInit()
+    public void updateAllShuffleboardData()
     {
-        autonomous.autoInit();
-    }
-
-    @Override
-    public void autonomousPeriodic()
-    {
-        drivetrain.driveCartesian(0, .2, 0);
-        System.out.println(drivetrain);
-    }
-
-    @Override
-    public void teleopInit()
-    {
-        teleop.teleopInit();
-    }
-
-    @Override
-    public void teleopPeriodic()
-    {
-        double[] scaledArray = driverXbox.getScaledAxes(Constants.LEFT_STICK_AXES, Xbox.Constants.PolynomialDrive.kCubicDrive);
-        teleop.teleop();
-        //System.out.println(drivetrain);
-
-        // System.out.printf("X = %5.3f Y = %5.3f X = %5.3f Y = %5.3f \n",
-        //         driverXbox.getRawAxis(Constants.LEFT_STICK_X_AXIS), driverXbox.getRawAxis(Constants.LEFT_STICK_Y_AXIS),
-        //         scaledArray[0], scaledArray[1]);
+        // Motors and Sensors Tab Data
+        motorsAndSensorsTabData.frontLeftMotor = drivetrain.getFrontLeftMotorData();
+        motorsAndSensorsTabData.frontRightMotor = drivetrain.getFrontRightMotorData();
+        motorsAndSensorsTabData.backLeftMotor = drivetrain.getBackLeftMotorData();
+        motorsAndSensorsTabData.backRightMotor = drivetrain.getBackRightMotorData();
+        slabShuffleboard.updateMotorsAndSensorsTabData(motorsAndSensorsTabData);
     }
 }

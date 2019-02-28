@@ -115,72 +115,69 @@ public class SlabShuffleboard
 
     public class MotorsAndSensorsTabData
     {
-            public String frontLeftMotor = "NA";
-            public String frontRightMotor = "NA";
-            public String backLeftMotor = "NA";
-            public String backRightMotor = "NA";
-            public String omniWheel = "NA";
-            public String elevator = "NA";
-            public String arm = "NA";
-            public String wrist = "NA";
-            public String cargoIntakeRoller = "NA";
-            public String hatchPanelGrabber = "NA";
-            public String climber = "NA";
-            public String lidar = "NA";
-            public String navX = "NA";
+        public String frontLeftMotor = "NA";
+        public String frontRightMotor = "NA";
+        public String backLeftMotor = "NA";
+        public String backRightMotor = "NA";
+        public String omniWheel = "NA";
+        public String elevator = "NA";
+        public String arm = "NA";
+        public String wrist = "NA";
+        public String cargoIntakeRoller = "NA";
+        public String hatchPanelGrabber = "NA";
+        public String climber = "NA";
+        public String lidar = "NA";
+        public String navX = "NA";
     }
 
-    private PregameSetupTabData pregameSetupTabData = new PregameSetupTabData();
 
-    // Input boxes on the Autonomous tab
+
+    // PREGAME SETUP TAB
     private ShuffleboardTab pregameSetupTab;
+    private PregameSetupTabData pregameSetupTabData = new PregameSetupTabData();
     private SendableChooser<StartingLocation> startingLocationComboBox = new SendableChooser<>();
     private SendableChooser<RobotType> robotTypeComboBox = new SendableChooser<>();
     private SendableChooser<MotorSpeed> motorSpeedComboBox = new SendableChooser<>();
-
     private SendableChooser<GamePiece> task1GamePieceComboBox = new SendableChooser<>();
     private SendableChooser<Objective> task1ObjectiveComboBox = new SendableChooser<>();
     private SendableChooser<RocketLevel> task1RocketLevelComboBox = new SendableChooser<>();
     private SendableChooser<RocketHatch> task1RocketHatchComboBox = new SendableChooser<>();
     private SendableChooser<CargoShip> task1CargoShipComboBox = new SendableChooser<>();
-
     private SendableChooser<GamePiece> task2GamePieceComboBox = new SendableChooser<>();
     private SendableChooser<Objective> task2ObjectiveComboBox = new SendableChooser<>();
     private SendableChooser<RocketLevel> task2RocketLevelComboBox = new SendableChooser<>();
     private SendableChooser<RocketHatch> task2RocketHatchComboBox = new SendableChooser<>();
     private SendableChooser<CargoShip> task2CargoShipComboBox = new SendableChooser<>();
-
     private SendableChooser<Boolean> sendDataButton = new SendableChooser<>();
 
+    // MOTORS AND SENSORS TAB
     private ShuffleboardTab motorsAndSensorsTab;
     private MotorsAndSensorsTabData motorsAndSensorsTabData = new MotorsAndSensorsTabData();
     // Network table entries for the Motors and Sensors Tab
-        // Network table entries for the 4 drivetrain motors
-        private NetworkTableEntry drivetrainFLValuesEntry;
-        private NetworkTableEntry drivetrainFRValuesEntry;
-        private NetworkTableEntry drivetrainBLValuesEntry;
-        private NetworkTableEntry drivetrainBRValuesEntry;
-// Network table entries for the 2 omniwheel servos
-        private NetworkTableEntry omniWheelValuesEntry;
-// Network table entry for the 1 arm motor
-        private NetworkTableEntry armValuesEntry;
-// Network table entry for the 2 elevator motors
-        private NetworkTableEntry elevatorValuesEntry;
-// Network table entry for the wrist pneumatics
-        private NetworkTableEntry wristValuesEntry;
-// Network table entry for the 1 cargo intake roller motor
-        private NetworkTableEntry cargoIntakeRollerMotorEntry;
-// Network table entry for the hatch panel pneumatics
-        private NetworkTableEntry hatchPanelGrabberValuesEntry;
-// Network table entry for the 2 climber motors
-        private NetworkTableEntry climberValuesEntry;
-// Network table entry for the lidar
-        private NetworkTableEntry lidarValuesEntry;
-// Network table entry for the NavX
-        private NetworkTableEntry navXValuesEntry;
-    private ShuffleboardTab configurationTab;
-    private NetworkTableEntry maxSpeed;
-    private SimpleWidget maxSpeedWidget;
+    // Network table entries for the 4 drivetrain motors
+    private NetworkTableEntry drivetrainFLValuesEntry;
+    private NetworkTableEntry drivetrainFRValuesEntry;
+    private NetworkTableEntry drivetrainBLValuesEntry;
+    private NetworkTableEntry drivetrainBRValuesEntry;
+    // Network table entries for the 2 omniwheel servos
+    private NetworkTableEntry omniWheelValuesEntry;
+    // Network table entry for the 1 arm motor
+    private NetworkTableEntry armValuesEntry;
+    // Network table entry for the 2 elevator motors
+    private NetworkTableEntry elevatorValuesEntry;
+    // Network table entry for the wrist pneumatics
+    private NetworkTableEntry wristValuesEntry;
+    // Network table entry for the 1 cargo intake roller motor
+    private NetworkTableEntry cargoIntakeRollerMotorEntry;
+    // Network table entry for the hatch panel pneumatics
+    private NetworkTableEntry hatchPanelGrabberValuesEntry;
+    // Network table entry for the 2 climber motors
+    private NetworkTableEntry climberValuesEntry;
+    // Network table entry for the lidar
+    private NetworkTableEntry lidarValuesEntry;
+    // Network table entry for the NavX
+    private NetworkTableEntry navXValuesEntry;
+
 
     private static SlabShuffleboard instance = new SlabShuffleboard();
 
@@ -225,16 +222,16 @@ public class SlabShuffleboard
         motorSpeedComboBox.addOption("75%", MotorSpeed.k75percent);
         motorSpeedComboBox.addOption("50%", MotorSpeed.k50percent);
         motorSpeedComboBox.addOption("25%", MotorSpeed.k25percent);
-        pregameSetupTab.add(motorSpeedComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 6).withSize(4,
-                1);
+        pregameSetupTab.add(motorSpeedComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 6)
+                .withSize(4, 1);
 
         // ComboBox for Task 1: Preloaded Game Piece
         task1GamePieceComboBox.setName("Task 1 - Preloaded Game Piece");
         task1GamePieceComboBox.setDefaultOption("None (default)", GamePiece.kNone);
         task1GamePieceComboBox.addOption("Hatch Panel", GamePiece.kHatchPanel);
         task1GamePieceComboBox.addOption("Cargo", GamePiece.kCargo);
-        pregameSetupTab.add(task1GamePieceComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(5, 0).withSize(8,
-                1);
+        pregameSetupTab.add(task1GamePieceComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(5, 0)
+                .withSize(8, 1);
 
         // ComboBox for Task 1: Objective
         task1ObjectiveComboBox.setName("Task 1 - Objective");
@@ -242,7 +239,8 @@ public class SlabShuffleboard
         task1ObjectiveComboBox.addOption("Leave Platform", Objective.kLeaveHabPlatform);
         task1ObjectiveComboBox.addOption("Cargo Ship", Objective.kCargoShip);
         task1ObjectiveComboBox.addOption("Rocket", Objective.kRocket);
-        pregameSetupTab.add(task1ObjectiveComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(5, 3).withSize(8, 1);
+        pregameSetupTab.add(task1ObjectiveComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(5, 3)
+                .withSize(8, 1);
 
         // ComboBox for Task 1: Rocket Level
         task1RocketLevelComboBox.setName("Task 1 - Rocket Level");
@@ -269,16 +267,16 @@ public class SlabShuffleboard
         task1CargoShipComboBox.addOption("Left/Right Side, Near Bay", CargoShip.kSideNear);
         task1CargoShipComboBox.addOption("Left/Right Side, Middle Bay", CargoShip.kSideMiddle);
         task1CargoShipComboBox.addOption("Left/Right Side, Far Bay", CargoShip.kSideFar);
-        pregameSetupTab.add(task1CargoShipComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(9, 6).withSize(4,
-                1);
+        pregameSetupTab.add(task1CargoShipComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(9, 6)
+                .withSize(4, 1);
 
         // ComboBox for Task 2: Game Piece
         task2GamePieceComboBox.setName("Task 2 - Game Piece");
         task2GamePieceComboBox.setDefaultOption("None (default)", GamePiece.kNone);
         task2GamePieceComboBox.addOption("Hatch Panel", GamePiece.kHatchPanel);
         task2GamePieceComboBox.addOption("Cargo", GamePiece.kCargo);
-        pregameSetupTab.add(task2GamePieceComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(14, 0).withSize(8,
-                1);
+        pregameSetupTab.add(task2GamePieceComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(14, 0)
+                .withSize(8, 1);
 
         // ComboBox for Task 2: Objective
         task2ObjectiveComboBox.setName("Task 2 - Objective");
@@ -286,7 +284,8 @@ public class SlabShuffleboard
         task2ObjectiveComboBox.addOption("Leave Platform", Objective.kLeaveHabPlatform);
         task2ObjectiveComboBox.addOption("Cargo Ship", Objective.kCargoShip);
         task2ObjectiveComboBox.addOption("Rocket", Objective.kRocket);
-        pregameSetupTab.add(task2ObjectiveComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(14, 3).withSize(8, 1);
+        pregameSetupTab.add(task2ObjectiveComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(14, 3)
+                .withSize(8, 1);
 
         // ComboBox for Task 2: Rocket Level
         task2RocketLevelComboBox.setName("Task 2 - Rocket Level");
@@ -313,15 +312,15 @@ public class SlabShuffleboard
         task2CargoShipComboBox.addOption("Left/Right Side, Near Bay", CargoShip.kSideNear);
         task2CargoShipComboBox.addOption("Left/Right Side, Middle Bay", CargoShip.kSideMiddle);
         task2CargoShipComboBox.addOption("Left/Right Side, Far Bay", CargoShip.kSideFar);
-        pregameSetupTab.add(task2CargoShipComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(18, 6).withSize(4,
-                1);
+        pregameSetupTab.add(task2CargoShipComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(18, 6)
+                .withSize(4, 1);
 
         // Split Button Chooser
         sendDataButton.setName("Send Data?");
         sendDataButton.setDefaultOption("No", false);
         sendDataButton.addOption("Yes", true);
-        pregameSetupTab.add(sendDataButton).withWidget(BuiltInWidgets.kSplitButtonChooser).withPosition(23, 9).withSize(4,
-                1);
+        pregameSetupTab.add(sendDataButton).withWidget(BuiltInWidgets.kSplitButtonChooser).withPosition(23, 9)
+                .withSize(4, 1);
     }
 
     public PregameSetupTabData getPregameSetupTabData()
@@ -357,20 +356,20 @@ public class SlabShuffleboard
         Shuffleboard.selectTab("Motors and Sensors");
 
         // TextView for the "Drivetrain FL Motor Values"
-        drivetrainFLValuesEntry = motorsAndSensorsTab.add("Drivetrain Front Left", 0.0).withWidget(BuiltInWidgets.kTextView)
-                .withPosition(0, 0).withSize(6, 1).getEntry();
+        drivetrainFLValuesEntry = motorsAndSensorsTab.add("Drivetrain Front Left", 0.0)
+                .withWidget(BuiltInWidgets.kTextView).withPosition(0, 0).withSize(6, 1).getEntry();
 
         // TextView for the "Drivetrain FR Motor Values"
-        drivetrainFRValuesEntry = motorsAndSensorsTab.add("Drivetrain Front Right", 0.0).withWidget(BuiltInWidgets.kTextView)
-                .withPosition(0, 2).withSize(6, 1).getEntry();
+        drivetrainFRValuesEntry = motorsAndSensorsTab.add("Drivetrain Front Right", 0.0)
+                .withWidget(BuiltInWidgets.kTextView).withPosition(0, 2).withSize(6, 1).getEntry();
 
         // TextView for the "Drivetrain BL Motor Values"
-        drivetrainBLValuesEntry = motorsAndSensorsTab.add("Drivetrain Back Left", 0.0).withWidget(BuiltInWidgets.kTextView)
-                .withPosition(0, 4).withSize(6, 1).getEntry();
+        drivetrainBLValuesEntry = motorsAndSensorsTab.add("Drivetrain Back Left", 0.0)
+                .withWidget(BuiltInWidgets.kTextView).withPosition(0, 4).withSize(6, 1).getEntry();
 
         // TextView for the "Drivetrain BR Motor Values"
-        drivetrainBRValuesEntry = motorsAndSensorsTab.add("Drivetrain Back Right", 0.0).withWidget(BuiltInWidgets.kTextView)
-        .withPosition(0, 6).withSize(6, 1).getEntry();
+        drivetrainBRValuesEntry = motorsAndSensorsTab.add("Drivetrain Back Right", 0.0)
+                .withWidget(BuiltInWidgets.kTextView).withPosition(0, 6).withSize(6, 1).getEntry();
 
         // TextView for both of the "Omni Wheels"
         omniWheelValuesEntry = motorsAndSensorsTab.add("Omni Wheels", 0.0).withWidget(BuiltInWidgets.kTextView)
@@ -381,20 +380,20 @@ public class SlabShuffleboard
                 .withPosition(6, 0).withSize(6, 1).getEntry();
 
         // TextView for the "Arm"
-        armValuesEntry = motorsAndSensorsTab.add("Arm", 0.0).withWidget(BuiltInWidgets.kTextView)
-                .withPosition(6, 2).withSize(6, 1).getEntry();
+        armValuesEntry = motorsAndSensorsTab.add("Arm", 0.0).withWidget(BuiltInWidgets.kTextView).withPosition(6, 2)
+                .withSize(6, 1).getEntry();
 
         // TextView for the "Wrist"
-        wristValuesEntry = motorsAndSensorsTab.add("Wrist", 0.0).withWidget(BuiltInWidgets.kTextView)
-                .withPosition(6, 4).withSize(6, 1).getEntry();
+        wristValuesEntry = motorsAndSensorsTab.add("Wrist", 0.0).withWidget(BuiltInWidgets.kTextView).withPosition(6, 4)
+                .withSize(6, 1).getEntry();
 
         // TextView for the "Cargo Intake Roller"
-        cargoIntakeRollerMotorEntry = motorsAndSensorsTab.add("Cargo Intake Roller", 0.0).withWidget(BuiltInWidgets.kTextView)
-                .withPosition(6, 6).withSize(6, 1).getEntry();
+        cargoIntakeRollerMotorEntry = motorsAndSensorsTab.add("Cargo Intake Roller", 0.0)
+                .withWidget(BuiltInWidgets.kTextView).withPosition(6, 6).withSize(6, 1).getEntry();
 
         // TextView for the "Hatch Panel Grabber"
-        hatchPanelGrabberValuesEntry = motorsAndSensorsTab.add("Hatch Panel Grabber", 0.0).withWidget(BuiltInWidgets.kTextView)
-                .withPosition(6, 8).withSize(6, 1).getEntry();
+        hatchPanelGrabberValuesEntry = motorsAndSensorsTab.add("Hatch Panel Grabber", 0.0)
+                .withWidget(BuiltInWidgets.kTextView).withPosition(6, 8).withSize(6, 1).getEntry();
 
         // TextView for the "Climber"
         climberValuesEntry = motorsAndSensorsTab.add("Climber", 0.0).withWidget(BuiltInWidgets.kTextView)
@@ -405,12 +404,12 @@ public class SlabShuffleboard
                 .withPosition(18, 0).withSize(6, 1).getEntry();
 
         // TextView for the "NavX"
-        navXValuesEntry = motorsAndSensorsTab.add("NavX", 0.0).withWidget(BuiltInWidgets.kTextView)
-                .withPosition(18, 2).withSize(6, 1).getEntry();
+        navXValuesEntry = motorsAndSensorsTab.add("NavX", 0.0).withWidget(BuiltInWidgets.kTextView).withPosition(18, 2)
+                .withSize(6, 1).getEntry();
     } // Finished creating the motors and sensors tab
 
     // Call up Yash's getString() function
-    public MotorsAndSensorsTabData getMotorsAndSensorsTabData() 
+    public MotorsAndSensorsTabData getMotorsAndSensorsTabData()
     {
         motorsAndSensorsTabData.frontLeftMotor = drivetrainFLValuesEntry.getString("NA");
         motorsAndSensorsTabData.frontRightMotor = drivetrainFRValuesEntry.getString("NA");
@@ -430,7 +429,7 @@ public class SlabShuffleboard
     } // Finished getting the motorsAndSensorsTabData
 
     // Update the Motors and Sensors tab data with the set strings
-    public void updateMotorsAndSensorsTabData()
+    public void updateMotorsAndSensorsTabData(MotorsAndSensorsTabData motorsAndSensorsTabData)
     {
         drivetrainFLValuesEntry.setString(motorsAndSensorsTabData.frontLeftMotor);
         drivetrainFRValuesEntry.setString(motorsAndSensorsTabData.frontRightMotor);
@@ -446,27 +445,4 @@ public class SlabShuffleboard
         lidarValuesEntry.setString(motorsAndSensorsTabData.lidar);
         navXValuesEntry.setString(motorsAndSensorsTabData.navX);
     } // Finished updating the Motors and Sensors tab
-
-
-    public void setupConfigurationTab()
-    {
-        configurationTab = Shuffleboard.getTab("Configuration");
-        Shuffleboard.selectTab("Configuration");
-
-        Map<String, Object> mapMaxSpeedSlider = new HashMap<String, Object>();
-        mapMaxSpeedSlider.put("Min", 0);
-        mapMaxSpeedSlider.put("Max", 1);
-        mapMaxSpeedSlider.put("Block increment", 0.1);
-
-        maxSpeedWidget = configurationTab.add("Max Speed", 0).withWidget(BuiltInWidgets.kNumberSlider)
-                .withPosition(1, 1).withSize(2, 1).withProperties(mapMaxSpeedSlider);
-
-        maxSpeed = maxSpeedWidget.getEntry();
-    }
-
-    public double getMaxSpeed()
-    {
-        return maxSpeed.getDouble(0);
-    }
-    
 }
