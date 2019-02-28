@@ -2,8 +2,6 @@ package frc.robot;
 
 import frc.components.Drivetrain;
 
-import com.sun.org.apache.bcel.internal.generic.IFGT;
-
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.control.DriverXbox;
 import frc.robot.Teleop;
