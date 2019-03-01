@@ -551,28 +551,28 @@ public class Drivetrain extends MecanumDrive
     {
         return String.format("%6.3f,  %6.0f,  %6.3f,  %5.1f",
          frontRightMotor.get(), frontRightMotor.getEncoder().getPosition(),
-          frontRightMotor.getOutputCurrent(), (frontRightMotor.getMotorTemperature() * (5 / 9)) + 32);
+          frontRightMotor.getOutputCurrent(), (frontRightMotor.getMotorTemperature() * (9.0 / 5.0)) + 32.0);
     }
 
     public String getFrontLeftMotorData()
     {
         return String.format("%6.3f,  %6.0f,  %6.3f,  %5.1f",
          frontLeftMotor.get(), frontLeftMotor.getEncoder().getPosition(),
-         frontLeftMotor.getOutputCurrent(), (frontLeftMotor.getMotorTemperature() * (5 / 9)) + 32);
+         frontLeftMotor.getOutputCurrent(), (frontLeftMotor.getMotorTemperature() * (9.0 / 5.0)) + 32.0);
     }
 
     public String getBackRightMotorData()
     {
         return String.format("%6.3f,  %6.0f,  %6.3f,  %5.1f",
          backRightMotor.get(), backRightMotor.getEncoder().getPosition(),
-         backRightMotor.getOutputCurrent(), (backRightMotor.getMotorTemperature() * (5 / 9)) + 32);
+         backRightMotor.getOutputCurrent(), (backRightMotor.getMotorTemperature() * (9.0 / 5.0)) + 32.0);
     }
 
     public String getBackLeftMotorData()
     {
         return String.format("%6.3f,  %6.0f,  %6.3f,  %5.1f",
          backLeftMotor.get(), backLeftMotor.getEncoder().getPosition(),
-         backLeftMotor.getOutputCurrent(), (backLeftMotor.getMotorTemperature() * (5 / 9)) + 32);
+         backLeftMotor.getOutputCurrent(), (backLeftMotor.getMotorTemperature() * (9.0 / 5.0)) + 32.0);
     }
 
     public String getOmniWheelData()

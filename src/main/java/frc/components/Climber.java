@@ -107,7 +107,7 @@ public class Climber
     {
         return String.format("%6.3f,  %6d,  %6.3f,  %5.1f",
          masterLegMotor.get(), masterLegMotor.getSelectedSensorPosition(),
-         masterLegMotor.getOutputCurrent(), masterLegMotor.getTemperature());
+         masterLegMotor.getOutputCurrent(), masterLegMotor.getTemperature() * (9.0 / 5.0) + 32.0);
     }
 
     public String getPinSolenoidData()

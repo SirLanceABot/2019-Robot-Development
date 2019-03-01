@@ -217,7 +217,7 @@ public class Elevator
     {
         return String.format("%6.3f,  %6d,  %6.3f,  %5.1f",
          masterElevatorMotor.get(), masterElevatorMotor.getSelectedSensorPosition(),
-         masterElevatorMotor.getOutputCurrent(), masterElevatorMotor.getTemperature());
+         masterElevatorMotor.getOutputCurrent(), masterElevatorMotor.getTemperature() * 9.0 / 5.0 + 32.0);
     }
     
 
