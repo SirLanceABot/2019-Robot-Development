@@ -356,55 +356,55 @@ public class SlabShuffleboard
         Shuffleboard.selectTab("Motors and Sensors");
 
         // TextView for the "Drivetrain FL Motor Values"
-        drivetrainFLValuesEntry = motorsAndSensorsTab.add("Drivetrain Front Left", 0.0)
+        drivetrainFLValuesEntry = motorsAndSensorsTab.add("Drivetrain Front Left", "NA")
                 .withWidget(BuiltInWidgets.kTextView).withPosition(0, 0).withSize(6, 1).getEntry();
 
         // TextView for the "Drivetrain FR Motor Values"
-        drivetrainFRValuesEntry = motorsAndSensorsTab.add("Drivetrain Front Right", 0.0)
+        drivetrainFRValuesEntry = motorsAndSensorsTab.add("Drivetrain Front Right", "NA")
                 .withWidget(BuiltInWidgets.kTextView).withPosition(0, 2).withSize(6, 1).getEntry();
 
         // TextView for the "Drivetrain BL Motor Values"
-        drivetrainBLValuesEntry = motorsAndSensorsTab.add("Drivetrain Back Left", 0.0)
+        drivetrainBLValuesEntry = motorsAndSensorsTab.add("Drivetrain Back Left", "NA")
                 .withWidget(BuiltInWidgets.kTextView).withPosition(0, 4).withSize(6, 1).getEntry();
 
         // TextView for the "Drivetrain BR Motor Values"
-        drivetrainBRValuesEntry = motorsAndSensorsTab.add("Drivetrain Back Right", 0.0)
+        drivetrainBRValuesEntry = motorsAndSensorsTab.add("Drivetrain Back Right", "NA")
                 .withWidget(BuiltInWidgets.kTextView).withPosition(0, 6).withSize(6, 1).getEntry();
 
         // TextView for both of the "Omni Wheels"
-        omniWheelValuesEntry = motorsAndSensorsTab.add("Omni Wheels", 0.0).withWidget(BuiltInWidgets.kTextView)
+        omniWheelValuesEntry = motorsAndSensorsTab.add("Omni Wheels", "NA").withWidget(BuiltInWidgets.kTextView)
                 .withPosition(0, 8).withSize(6, 1).getEntry();
 
         // TextView for the "Elevator"
-        elevatorValuesEntry = motorsAndSensorsTab.add("Elevator", 0.0).withWidget(BuiltInWidgets.kTextView)
+        elevatorValuesEntry = motorsAndSensorsTab.add("Elevator", "NA").withWidget(BuiltInWidgets.kTextView)
                 .withPosition(6, 0).withSize(6, 1).getEntry();
 
         // TextView for the "Arm"
-        armValuesEntry = motorsAndSensorsTab.add("Arm", 0.0).withWidget(BuiltInWidgets.kTextView).withPosition(6, 2)
+        armValuesEntry = motorsAndSensorsTab.add("Arm", "NA").withWidget(BuiltInWidgets.kTextView).withPosition(6, 2)
                 .withSize(6, 1).getEntry();
 
         // TextView for the "Wrist"
-        wristValuesEntry = motorsAndSensorsTab.add("Wrist", 0.0).withWidget(BuiltInWidgets.kTextView).withPosition(6, 4)
+        wristValuesEntry = motorsAndSensorsTab.add("Wrist", "NA").withWidget(BuiltInWidgets.kTextView).withPosition(6, 4)
                 .withSize(6, 1).getEntry();
 
         // TextView for the "Cargo Intake Roller"
-        cargoIntakeRollerMotorEntry = motorsAndSensorsTab.add("Cargo Intake Roller", 0.0)
+        cargoIntakeRollerMotorEntry = motorsAndSensorsTab.add("Cargo Intake Roller", "NA")
                 .withWidget(BuiltInWidgets.kTextView).withPosition(6, 6).withSize(6, 1).getEntry();
 
         // TextView for the "Hatch Panel Grabber"
-        hatchPanelGrabberValuesEntry = motorsAndSensorsTab.add("Hatch Panel Grabber", 0.0)
+        hatchPanelGrabberValuesEntry = motorsAndSensorsTab.add("Hatch Panel Grabber", "NA")
                 .withWidget(BuiltInWidgets.kTextView).withPosition(6, 8).withSize(6, 1).getEntry();
 
         // TextView for the "Climber"
-        climberValuesEntry = motorsAndSensorsTab.add("Climber", 0.0).withWidget(BuiltInWidgets.kTextView)
+        climberValuesEntry = motorsAndSensorsTab.add("Climber", "NA").withWidget(BuiltInWidgets.kTextView)
                 .withPosition(12, 0).withSize(6, 1).getEntry();
 
         // TextView for the "Lidar"
-        lidarValuesEntry = motorsAndSensorsTab.add("Lidar", 0.0).withWidget(BuiltInWidgets.kTextView)
+        lidarValuesEntry = motorsAndSensorsTab.add("Lidar", "NA").withWidget(BuiltInWidgets.kTextView)
                 .withPosition(18, 0).withSize(6, 1).getEntry();
 
         // TextView for the "NavX"
-        navXValuesEntry = motorsAndSensorsTab.add("NavX", 0.0).withWidget(BuiltInWidgets.kTextView).withPosition(18, 2)
+        navXValuesEntry = motorsAndSensorsTab.add("NavX", "NA").withWidget(BuiltInWidgets.kTextView).withPosition(18, 2)
                 .withSize(6, 1).getEntry();
     } // Finished creating the motors and sensors tab
 

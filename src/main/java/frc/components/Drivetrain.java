@@ -575,9 +575,14 @@ public class Drivetrain extends MecanumDrive
          backLeftMotor.getOutputCurrent(), (backLeftMotor.getMotorTemperature() * (5 / 9)) + 32);
     }
 
-    public String getSensorData()
+    public String getOmniWheelData()
     {
-        return String.format("%6.0f,  %6.0f, %7.2f", leftEncoder.get(), rightEncoder.get(), navX.getYaw());
+        return String.format("%6.0f,  %6.0f", leftEncoder.get(), rightEncoder.get());
+    }
+
+    public String getNavXData()
+    {
+        return String.format("%7.2f", navX.getYaw());
     }
 
     @Override

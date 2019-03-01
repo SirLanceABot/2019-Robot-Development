@@ -1,7 +1,9 @@
 package frc.robot;
 
+import frc.components.Arm;
+import frc.components.Climber;
 import frc.components.Drivetrain;
-
+import frc.components.Elevator;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.control.DriverXbox;
 import frc.robot.Teleop;
@@ -15,6 +17,9 @@ public class Robot extends TimedRobot
     private Drivetrain drivetrain = Drivetrain.getInstance();
     private DriverXbox driverXbox = DriverXbox.getInstance();
     private Teleop teleop = Teleop.getInstance();
+    private Elevator elevator = Elevator.getInstance();
+    private Arm arm = Arm.getInstance();
+    private Climber climber = Climber.getInstance();
     private Autonomous autonomous = Autonomous.getInstance();
 
     private SlabShuffleboard slabShuffleboard;
@@ -114,6 +119,15 @@ public class Robot extends TimedRobot
         motorsAndSensorsTabData.frontRightMotor = drivetrain.getFrontRightMotorData();
         motorsAndSensorsTabData.backLeftMotor = drivetrain.getBackLeftMotorData();
         motorsAndSensorsTabData.backRightMotor = drivetrain.getBackRightMotorData();
+        motorsAndSensorsTabData.omniWheel = drivetrain.getOmniWheelData();
+        motorsAndSensorsTabData.elevator = elevator.getMasterLegElevatorMotorData();
+        motorsAndSensorsTabData.arm = arm.getArmMotorData();
+        motorsAndSensorsTabData.wrist = arm.getWristSolenoidData();
+        motorsAndSensorsTabData.cargoIntakeRoller = arm.getIntakeRollerMotorData();
+        motorsAndSensorsTabData.hatchPanelGrabber = arm.getGrabberSolenoidData();
+        motorsAndSensorsTabData.climber = climber.getMasterLegMotorData();
+        // motorsAndSensorsTabData.lidar = 
+        motorsAndSensorsTabData.navX = drivetrain.getNavXData();
         slabShuffleboard.updateMotorsAndSensorsTabData(motorsAndSensorsTabData);
     }
 }
