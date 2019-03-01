@@ -126,6 +126,7 @@ public class Robot extends TimedRobot
         motorsAndSensorsTabData.cargoIntakeRoller = arm.getIntakeRollerMotorData();
         motorsAndSensorsTabData.hatchPanelGrabber = arm.getGrabberSolenoidData();
         motorsAndSensorsTabData.climber = climber.getMasterLegMotorData();
+        motorsAndSensorsTabData.climberPinSolenoid = climber.getPinSolenoidData();
         // motorsAndSensorsTabData.lidar = 
         motorsAndSensorsTabData.navX = drivetrain.getNavXData();
         slabShuffleboard.updateMotorsAndSensorsTabData(motorsAndSensorsTabData);

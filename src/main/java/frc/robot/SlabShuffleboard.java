@@ -126,6 +126,7 @@ public class SlabShuffleboard
         public String cargoIntakeRoller = "NA";
         public String hatchPanelGrabber = "NA";
         public String climber = "NA";
+        public String climberPinSolenoid = "NA";
         public String lidar = "NA";
         public String navX = "NA";
     }
@@ -173,6 +174,8 @@ public class SlabShuffleboard
     private NetworkTableEntry hatchPanelGrabberValuesEntry;
     // Network table entry for the 2 climber motors
     private NetworkTableEntry climberValuesEntry;
+    // Network table entry for the 1 climber pin solenoid
+    private NetworkTableEntry climberPinSolenoidValuesEntry;
     // Network table entry for the lidar
     private NetworkTableEntry lidarValuesEntry;
     // Network table entry for the NavX
@@ -399,6 +402,10 @@ public class SlabShuffleboard
         climberValuesEntry = motorsAndSensorsTab.add("Climber", "NA").withWidget(BuiltInWidgets.kTextView)
                 .withPosition(12, 0).withSize(6, 1).getEntry();
 
+        // TextView for the "Climber Pin Solenoid"
+        climberPinSolenoidValuesEntry = motorsAndSensorsTab.add("Climber Pin Solenoid", "NA").withWidget(BuiltInWidgets.kTextView)
+                .withPosition(12, 2).withSize(6, 1).getEntry();
+
         // TextView for the "Lidar"
         lidarValuesEntry = motorsAndSensorsTab.add("Lidar", "NA").withWidget(BuiltInWidgets.kTextView)
                 .withPosition(18, 0).withSize(6, 1).getEntry();
@@ -422,6 +429,7 @@ public class SlabShuffleboard
         motorsAndSensorsTabData.cargoIntakeRoller = cargoIntakeRollerMotorEntry.getString("NA");
         motorsAndSensorsTabData.hatchPanelGrabber = hatchPanelGrabberValuesEntry.getString("NA");
         motorsAndSensorsTabData.climber = climberValuesEntry.getString("NA");
+        motorsAndSensorsTabData.climberPinSolenoid = climberPinSolenoidValuesEntry.getString("NA");
         motorsAndSensorsTabData.lidar = lidarValuesEntry.getString("NA");
         motorsAndSensorsTabData.navX = navXValuesEntry.getString("NA");
 
@@ -442,6 +450,7 @@ public class SlabShuffleboard
         cargoIntakeRollerMotorEntry.setString(motorsAndSensorsTabData.cargoIntakeRoller);
         hatchPanelGrabberValuesEntry.setString(motorsAndSensorsTabData.hatchPanelGrabber);
         climberValuesEntry.setString(motorsAndSensorsTabData.climber);
+        climberPinSolenoidValuesEntry.setString(motorsAndSensorsTabData.climberPinSolenoid);
         lidarValuesEntry.setString(motorsAndSensorsTabData.lidar);
         navXValuesEntry.setString(motorsAndSensorsTabData.navX);
     } // Finished updating the Motors and Sensors tab
