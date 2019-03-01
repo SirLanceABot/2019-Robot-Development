@@ -40,14 +40,14 @@ public class Robot extends TimedRobot
         slabShuffleboard = SlabShuffleboard.getInstance();
 
         pregameSetupTabData = slabShuffleboard.getPregameSetupTabData();
-        motorsAndSensorsTabData = slabShuffleboard.getMotorsAndSensorsTabData();
+        // motorsAndSensorsTabData = slabShuffleboard.getMotorsAndSensorsTabData();
     }
 
     @Override
     public void robotPeriodic()
     {
         getPregameSetupData();
-        updateAllShuffleboardData();
+        // updateAllShuffleboardData();
     }
 
     @Override

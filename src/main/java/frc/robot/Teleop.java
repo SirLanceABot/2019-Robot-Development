@@ -320,7 +320,7 @@ public class Teleop
             // omniwheel up/down
         }
 
-        System.out.println("Encoder value in inches: " + drivetrain.getDistanceInInches());
+        //System.out.println("Encoder value in inches: " + drivetrain.getDistanceInInches());
 
         intakeStateMachine();
     }
