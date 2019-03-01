@@ -256,27 +256,27 @@ public class Teleop
             arm.stopArm();
         }
 
-        if (rightBumper)
-        {
-            if (xButton && climber.getEncoder() < Climber.Constants.MAX_CLIMBER_HEIGHT)
-            {
-                climber.extendLegs(0.5);
-            }
-            else if (yButton && climber.getEncoder() > Climber.Constants.MIN_CLIMBER_HEIGHT)
-            {
-                climber.retractLegs(0.5);
-            }
-            else
-            {
-                climber.stopLegs();
-            }
+        // if (rightBumper)
+        // {
+        //     if (xButton && climber.getEncoder() < Climber.Constants.MAX_CLIMBER_HEIGHT)
+        //     {
+        //         climber.extendLegs(0.5);
+        //     }
+        //     else if (yButton && climber.getEncoder() > Climber.Constants.MIN_CLIMBER_HEIGHT)
+        //     {
+        //         climber.retractLegs(0.5);
+        //     }
+        //     else
+        //     {
+        //         climber.stopLegs();
+        //     }
 
-            if (xButton)
-            {
-                climber.ejectPin();
-            }
-            // have way to reset pin solenoid
-        }
+        //     if (xButton)
+        //     {
+        //         climber.ejectPin();
+        //     }
+        //     // have way to reset pin solenoid
+        // }
 
         double[] rightAxes = driverXbox.getScaledAxes(Xbox.Constants.RIGHT_STICK_AXES,
                 Xbox.Constants.PolynomialDrive.kCubicDrive);
@@ -311,7 +311,7 @@ public class Teleop
         }
 
         // System.out.println(elevator);
-
+        // System.out.println(arm);
 
 
 
@@ -319,6 +319,8 @@ public class Teleop
         {
             // omniwheel up/down
         }
+
+        System.out.println("Encoder value in inches: " + drivetrain.getDistanceInInches());
 
         intakeStateMachine();
     }

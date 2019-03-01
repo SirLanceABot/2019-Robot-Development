@@ -180,7 +180,7 @@ public class Drivetrain extends MecanumDrive
      * 
      * @return Distance traveled.
      */
-    public double getDistaceInInches()
+    public double getDistanceInInches()
     {
         double rightDistance = getRightDistanceInInches();
         double leftDistance = getLeftDistanceInInches();
@@ -419,7 +419,7 @@ public class Drivetrain extends MecanumDrive
             }
             else
             {
-                distanceTravelled = Math.abs(getDistaceInInches());
+                distanceTravelled = Math.abs(getDistanceInInches());
             } 
 
             if (distanceTravelled <= inches)
