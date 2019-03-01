@@ -26,11 +26,11 @@ public class DriverXbox extends Xbox
         if(instance.getRawButton(Xbox.Constants.A_BUTTON))
             a = "A";
         if(instance.getRawButton(Xbox.Constants.B_BUTTON))
-            a = "A";
+            b = "B";
         if(instance.getRawButton(Xbox.Constants.X_BUTTON))
-            a = "A";
+            x = "X";
         if(instance.getRawButton(Xbox.Constants.Y_BUTTON))
-            a = "A";
+            y = "Y";
 
         return a + b + x + y;
     }
