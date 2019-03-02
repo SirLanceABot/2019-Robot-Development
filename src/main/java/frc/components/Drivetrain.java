@@ -41,8 +41,8 @@ public class Drivetrain extends MecanumDrive
     private double rightServoPosition = 0.3;
     private boolean omniWheelUp = false;
 
-    private Encoder leftEncoder = new Encoder(Constants.LEFT_ENCODER_CHANEL_A, Constants.LEFT_ENCODER_CHANEL_B, false, Encoder.EncodingType.k4X);
-    private Encoder rightEncoder = new Encoder(Constants.RIGHT_ENCODER_CHANEL_A, Constants.RIGHT_ENCODER_CHANEL_B, false, Encoder.EncodingType.k4X);
+    private Encoder leftEncoder = new Encoder(Constants.LEFT_ENCODER_CHANNEL_A, Constants.LEFT_ENCODER_CHANNEL_B, false, Encoder.EncodingType.k4X);
+    private Encoder rightEncoder = new Encoder(Constants.RIGHT_ENCODER_CHANNEL_A, Constants.RIGHT_ENCODER_CHANNEL_B, false, Encoder.EncodingType.k4X);
     private boolean needToResetEncoder = true;
     private boolean isEncoderResetting = false;
 
@@ -577,7 +577,7 @@ public class Drivetrain extends MecanumDrive
 
     public String getOmniWheelData()
     {
-        return String.format("%6.0f,  %6.0f", leftEncoder.get(), rightEncoder.get());
+        return String.format("%6d,  %6d", leftEncoder.get(), rightEncoder.get());
     }
 
     public String getNavXData()
@@ -621,10 +621,10 @@ public class Drivetrain extends MecanumDrive
         public static final int LEFT_SERVO_PORT = 1;
         public static final int RIGHT_SERVO_PORT = 0;
 
-        public static final int LEFT_ENCODER_CHANEL_A = 16;
-        public static final int LEFT_ENCODER_CHANEL_B = 18;
-        public static final int RIGHT_ENCODER_CHANEL_A = 14;
-        public static final int RIGHT_ENCODER_CHANEL_B = 15;
+        public static final int LEFT_ENCODER_CHANNEL_A = 18;
+        public static final int LEFT_ENCODER_CHANNEL_B = 16;
+        public static final int RIGHT_ENCODER_CHANNEL_A = 14;
+        public static final int RIGHT_ENCODER_CHANNEL_B = 15;
 
         public static final double ENCODER_TICKS_PER_INCH = (360.0 * 4.0) / (3.25 * Math.PI);
 

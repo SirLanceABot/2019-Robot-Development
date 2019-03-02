@@ -82,8 +82,8 @@ public class Arm
         intakeRoller.configOpenloopRamp(MotorConstants.Constants.OPEN_LOOP_RAMP);
         intakeRoller.enableCurrentLimit(true);
 
-        // armMotor.setSensorPhase(true);
-        // armMotor.setInverted(InvertType.InvertMotorOutput);
+        armMotor.setSensorPhase(true);
+        armMotor.setInverted(InvertType.InvertMotorOutput);
 
         armMotor.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled);
         armMotor.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled);
@@ -516,8 +516,8 @@ public class Arm
         public static final int HORIZONTAL_TO_MIDDLE = angleToTicks(45); // 45 degrees
         public static final int HORIZONTAL_TO_TOP = angleToTicks(90); // 90 degrees
 
-        public static final int WRIST_SOLENOID_PORT_1 = 0;
-        public static final int WRIST_SOLENOID_PORT_2 = 1;
+        public static final int WRIST_SOLENOID_PORT_1 = 4;
+        public static final int WRIST_SOLENOID_PORT_2 = 5;
         public static final int GRABBER_SOLENOID_PORT_1 = 2;
         public static final int GRABBER_SOLENOID_PORT_2 = 3;
         public static final int ROLLER_TALON_ID = 12;

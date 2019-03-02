@@ -141,6 +141,24 @@ public class Teleop
         //     System.out.println(arm);
         //     //System.out.println(arm);
         // }
+
+        // if(operatorLeftBumper)
+        // {
+        //     arm.moveWristDown();
+        // }
+        // else if(operatorRightBumper)
+        // {
+        //     arm.moveWristUp();
+        // }
+        // if(operatorAButton)
+        // {
+        //     arm.grabHatchPanel();
+        // }
+        // else if(operatorXButton)
+        // {
+        //     arm.releaseHatchPanel();
+        // }
+
         if(armButton || elevatorButton)
         {
             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
@@ -311,7 +329,7 @@ public class Teleop
         }
 
         // System.out.println(elevator);
-        // System.out.println(arm);
+        //System.out.println(arm);
 
 
 
@@ -320,7 +338,13 @@ public class Teleop
             // omniwheel up/down
         }
 
-        //System.out.println("Encoder value in inches: " + drivetrain.getDistanceInInches());
+    //   if(operatorAButton)
+    //   {
+    //       drivetrain.moveOmniWheel();
+    //   }
+    //   System.out.println(drivetrain.getLeftServo() + " " + drivetrain.getRightServo());
+
+        //System.out.println(drivetrain.getNavXData());
 
         intakeStateMachine();
     }
@@ -356,7 +380,7 @@ public class Teleop
         boolean inButtonHeld = driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER);
         boolean inButtonPressed = driverXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER);
         boolean outButton = driverXbox.getRawButton(Xbox.Constants.LEFT_BUMPER);
-        double motorCurrent = arm.getArmCurrent();
+        double motorCurrent = arm.getIntakeAmperage();
     
         switch (stateOfIntake) 
         {
@@ -398,7 +422,7 @@ public class Teleop
             firstTimeOverAmpLimit = false;
             stateOfIntake = IntakeState.kIntake;
           }
-          else if(inButtonHeld && startupTimer.get() > Constants.BALL_STALL_CURRENT)
+          else if(inButtonHeld && startupTimer.get() > Constants.RUN_TIME)
           {
             firstTimeOverAmpLimit = true;
             stateOfIntake = IntakeState.kHold;
@@ -461,6 +485,7 @@ public class Teleop
           break;
       }
     
+      // System.out.println("Current: " + motorCurrent + "   State: " + stateOfIntake);
     }
     public static class Constants
     {
@@ -468,5 +493,7 @@ public class Teleop
         private static final double STRAFE_SPEED = 0.5;
         private static final double BALL_STALL_CURRENT = 0.5;
         private static final double CURRENT_LIMIT = 15.0;
+        private static final double RUN_TIME = 0.5;
+
     }
 }
