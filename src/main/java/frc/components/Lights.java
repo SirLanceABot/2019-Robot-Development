@@ -1,12 +1,12 @@
 package frc.components;
 
-import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.Relay;
 
 /**
  * Class to represent a Light Ring on the robot.
  * Used for illuminating either the floor or a vision target.
  */
-public class Lights extends DigitalOutput
+public class Lights extends Relay
 {
 
     private static Lights instance = new Lights(Constants.LIGHT_PORT);
@@ -32,7 +32,7 @@ public class Lights extends DigitalOutput
      */
     public void turnLightsOn()
     {
-        set(true);
+        set(Relay.Value.kForward);
     }
 
     /**
@@ -40,7 +40,7 @@ public class Lights extends DigitalOutput
      */
     public void turnLightsOff()
     {
-        set(false);
+        set(Relay.Value.kOff);
     }
 
     public static class Constants

@@ -152,7 +152,7 @@ public class Drivetrain extends MecanumDrive
      */
     public double getLeftDistanceInInches()
     {
-        return leftEncoder.getRaw() / Constants.ENCODER_TICKS_PER_INCH;
+        return -leftEncoder.getRaw() / Constants.ENCODER_TICKS_PER_INCH;
     }
 
     /**
@@ -551,33 +551,33 @@ public class Drivetrain extends MecanumDrive
     {
         return String.format("%6.3f,  %6.0f,  %6.3f,  %5.1f",
          frontRightMotor.get(), frontRightMotor.getEncoder().getPosition(),
-          frontRightMotor.getOutputCurrent(), (frontRightMotor.getMotorTemperature() * (9.0 / 5.0)) + 32.0);
+          frontRightMotor.getOutputCurrent(), frontRightMotor.getEncoder().getVelocity());
     }
 
     public String getFrontLeftMotorData()
     {
         return String.format("%6.3f,  %6.0f,  %6.3f,  %5.1f",
          frontLeftMotor.get(), frontLeftMotor.getEncoder().getPosition(),
-         frontLeftMotor.getOutputCurrent(), (frontLeftMotor.getMotorTemperature() * (9.0 / 5.0)) + 32.0);
+         frontLeftMotor.getOutputCurrent(), frontLeftMotor.getEncoder().getVelocity());
     }
 
     public String getBackRightMotorData()
     {
         return String.format("%6.3f,  %6.0f,  %6.3f,  %5.1f",
          backRightMotor.get(), backRightMotor.getEncoder().getPosition(),
-         backRightMotor.getOutputCurrent(), (backRightMotor.getMotorTemperature() * (9.0 / 5.0)) + 32.0);
+         backRightMotor.getOutputCurrent(), backRightMotor.getEncoder().getVelocity());
     }
 
     public String getBackLeftMotorData()
     {
         return String.format("%6.3f,  %6.0f,  %6.3f,  %5.1f",
          backLeftMotor.get(), backLeftMotor.getEncoder().getPosition(),
-         backLeftMotor.getOutputCurrent(), (backLeftMotor.getMotorTemperature() * (9.0 / 5.0)) + 32.0);
+         backLeftMotor.getOutputCurrent(), backLeftMotor.getEncoder().getVelocity());
     }
 
     public String getOmniWheelData()
     {
-        return String.format("%6d,  %6d", leftEncoder.get(), rightEncoder.get());
+        return String.format("%6d,  %8.2f,  %6d,  %8.2f", -leftEncoder.get(), getLeftDistanceInInches(), rightEncoder.get(), getRightDistanceInInches());
     }
 
     public String getNavXData()

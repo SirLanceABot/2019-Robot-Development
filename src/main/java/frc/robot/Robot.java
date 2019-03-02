@@ -12,6 +12,8 @@ import frc.robot.SlabShuffleboard.PregameSetupTabData;
 import frc.control.Xbox;
 import frc.control.Xbox.Constants;
 
+import edu.wpi.first.wpilibj.Timer;
+
 public class Robot extends TimedRobot
 {
     private Drivetrain drivetrain = Drivetrain.getInstance();
@@ -29,6 +31,8 @@ public class Robot extends TimedRobot
     private boolean hasTeleopRun = false;
     private boolean isPregame = true;
     private boolean isNewPregameData = true;
+
+    private int shuffleboardPrintCounter = 0;
 
     public Robot()
     {
@@ -48,8 +52,21 @@ public class Robot extends TimedRobot
     @Override
     public void robotPeriodic()
     {
-        getPregameSetupData();
+        // double time1 = Timer.getFPGATimestamp();
         updateAllShuffleboardData();
+        // System.out.println(Timer.getFPGATimestamp() - time1);
+    }
+
+    @Override
+    public void disabledInit()
+    {
+
+    }
+
+    @Override
+    public void disabledPeriodic()
+    {
+        getPregameSetupData();
     }
 
     @Override
@@ -133,20 +150,57 @@ public class Robot extends TimedRobot
     public void updateAllShuffleboardData()
     {
         // Motors and Sensors Tab Data
-        motorsAndSensorsTabData.frontLeftMotor = drivetrain.getFrontLeftMotorData();
-        motorsAndSensorsTabData.frontRightMotor = drivetrain.getFrontRightMotorData();
-        motorsAndSensorsTabData.backLeftMotor = drivetrain.getBackLeftMotorData();
-        motorsAndSensorsTabData.backRightMotor = drivetrain.getBackRightMotorData();
-        motorsAndSensorsTabData.omniWheel = drivetrain.getOmniWheelData();
-        motorsAndSensorsTabData.elevator = elevator.getMasterLegElevatorMotorData();
-        motorsAndSensorsTabData.arm = arm.getArmMotorData();
-        motorsAndSensorsTabData.wrist = arm.getWristSolenoidData();
-        motorsAndSensorsTabData.cargoIntakeRoller = arm.getIntakeRollerMotorData();
-        motorsAndSensorsTabData.hatchPanelGrabber = arm.getGrabberSolenoidData();
-        motorsAndSensorsTabData.climber = climber.getMasterLegMotorData();
-        motorsAndSensorsTabData.climberPinSolenoid = climber.getPinSolenoidData();
-        // motorsAndSensorsTabData.lidar = 
-        motorsAndSensorsTabData.navX = drivetrain.getNavXData();
-        slabShuffleboard.updateMotorsAndSensorsTabData(motorsAndSensorsTabData);
+        switch (shuffleboardPrintCounter)
+        {
+        case 10:
+            motorsAndSensorsTabData.frontLeftMotor = drivetrain.getFrontLeftMotorData();
+            break;
+        case 20:
+            motorsAndSensorsTabData.frontRightMotor = drivetrain.getFrontRightMotorData();
+            break;
+        case 30:
+            motorsAndSensorsTabData.backLeftMotor = drivetrain.getBackLeftMotorData();
+            break;
+        case 40:
+            motorsAndSensorsTabData.backRightMotor = drivetrain.getBackRightMotorData();
+            break;
+        case 50:
+            motorsAndSensorsTabData.omniWheel = drivetrain.getOmniWheelData();
+            break;
+        case 60:
+            motorsAndSensorsTabData.elevator = elevator.getMasterLegElevatorMotorData();
+            break;
+        case 70:
+            motorsAndSensorsTabData.arm = arm.getArmMotorData();
+            break;
+        case 80:
+            motorsAndSensorsTabData.wrist = arm.getWristSolenoidData();
+            break;
+        case 90:
+            motorsAndSensorsTabData.cargoIntakeRoller = arm.getIntakeRollerMotorData();
+            break;
+        case 100:
+            motorsAndSensorsTabData.hatchPanelGrabber = arm.getGrabberSolenoidData();
+            break;
+        case 110:
+            motorsAndSensorsTabData.climber = climber.getMasterLegMotorData();
+            break;
+        case 120:
+            motorsAndSensorsTabData.climberPinSolenoid = climber.getPinSolenoidData();
+            break;
+        case 130:
+            // motorsAndSensorsTabData.lidar = 
+            break;
+        case 140:
+            motorsAndSensorsTabData.navX = drivetrain.getNavXData();
+            break;
+        case 150:
+            slabShuffleboard.updateMotorsAndSensorsTabData(motorsAndSensorsTabData);
+            shuffleboardPrintCounter = 0;
+            break;
+        default:
+            break;
+        }
+        shuffleboardPrintCounter += 10;
     }
 }

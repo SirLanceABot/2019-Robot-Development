@@ -16,9 +16,13 @@ import frc.control.DriverXbox;
 import frc.control.OperatorXbox;
 import frc.control.ButtonBoard;
 import frc.components.ElevatorAndArm;
+import frc.components.Lights;
 import frc.visionForWhiteTape.CameraProcess;
 import frc.visionForWhiteTape.TargetData;
 import frc.visionForWhiteTape.CameraProcess.rotate;
+
+import javax.lang.model.util.ElementScanner6;
+
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -45,6 +49,7 @@ public class Teleop
     private Climber climber = Climber.getInstance();
     private SlabShuffleboard shuffleboard = SlabShuffleboard.getInstance();
     private Drivetrain drivetrain = Drivetrain.getInstance();
+    private Lights lights = Lights.getInstance();
 
     private static Teleop instance = new Teleop();
     private TargetData targetData;
@@ -95,7 +100,8 @@ public class Teleop
         boolean centerCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_CARGO_BUTTON);
         boolean topCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_CARGO_BUTTON);
 
-        boolean aButton = driverXbox.getRawButton(Xbox.Constants.A_BUTTON); // Extend climber elevator
+        //need to change the buttons to pressed not holds
+        boolean aButtonPressed = driverXbox.getRawButtonPressed(Xbox.Constants.A_BUTTON); // Extend climber elevator
         boolean bButton = driverXbox.getRawButton(Xbox.Constants.B_BUTTON); // Retract climber elevator
         boolean xButton = driverXbox.getRawButtonPressed(Xbox.Constants.X_BUTTON); // Release pin solenoid
         boolean yButton = driverXbox.getRawButtonPressed(Xbox.Constants.Y_BUTTON); // Retract pin solenoid
@@ -106,7 +112,7 @@ public class Teleop
         boolean operatorLeftBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);
         boolean operatorRightBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER);
         boolean operatorXButton = operatorXbox.getRawButton(Xbox.Constants.X_BUTTON);
-        boolean operatorAButton = operatorXbox.getRawButtonPressed(Xbox.Constants.A_BUTTON);
+        boolean operatorAButton = operatorXbox.getRawButton(Xbox.Constants.A_BUTTON);
         boolean operatorYButton = operatorXbox.getRawButton(Xbox.Constants.Y_BUTTON);
         boolean operatorYButtonReleased = operatorXbox.getRawButtonReleased(Xbox.Constants.Y_BUTTON);
 
@@ -142,14 +148,14 @@ public class Teleop
         //     //System.out.println(arm);
         // }
 
-        // if(operatorLeftBumper)
-        // {
-        //     arm.moveWristDown();
-        // }
-        // else if(operatorRightBumper)
-        // {
-        //     arm.moveWristUp();
-        // }
+        if(operatorLeftBumper)
+        {
+            arm.moveWristDown();
+        }
+        else if(operatorRightBumper)
+        {
+            arm.moveWristUp();
+        }
         // if(operatorAButton)
         // {
         //     arm.grabHatchPanel();
@@ -211,7 +217,7 @@ public class Teleop
                 }
             }
 
-            System.out.println(arm);
+            //System.out.println(arm);
             // System.out.println(arm);
         }
         else
@@ -332,16 +338,32 @@ public class Teleop
         //System.out.println(arm);
 
 
+        // if(operatorXButton)
+        // {
+        //     drivetrain.driveCartesian(-0.25, 0, 0);
+        // }
+        // else if(operatorYButton)
+        // {
+        //     drivetrain.driveCartesian(0.25, 0, 0);
+        // }
+        // else
+        // {
+        //     drivetrain.driveCartesian(0, 0, 0);
+        // }    
 
-        if (aButton)
+        if(operatorAButton)
         {
-            // omniwheel up/down
+            lights.turnLightsOn();
+        }
+        else
+        {
+            lights.turnLightsOff();
         }
 
-    //   if(operatorAButton)
-    //   {
-    //       drivetrain.moveOmniWheel();
-    //   }
+        if (aButtonPressed)
+        {
+            drivetrain.moveOmniWheel();
+        }
     //   System.out.println(drivetrain.getLeftServo() + " " + drivetrain.getRightServo());
 
         //System.out.println(drivetrain.getNavXData());
