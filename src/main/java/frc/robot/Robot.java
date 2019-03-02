@@ -25,6 +25,8 @@ public class Robot extends TimedRobot
     private SlabShuffleboard slabShuffleboard;
     private PregameSetupTabData pregameSetupTabData;
     private MotorsAndSensorsTabData motorsAndSensorsTabData;
+    private boolean isRecording = false;
+    private boolean hasTeleopRun = false;
     private boolean isPregame = true;
     private boolean isNewPregameData = true;
 
@@ -53,6 +55,11 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousInit()
     {
+        if (isRecording)
+        {
+            slabShuffleboard.startRecording();
+        }
+        
         autonomous.autoInit();
     }
 
@@ -67,6 +74,8 @@ public class Robot extends TimedRobot
     public void teleopInit()
     {
         teleop.teleopInit();
+
+        hasTeleopRun = true;
     }
 
     @Override
@@ -79,6 +88,15 @@ public class Robot extends TimedRobot
         // System.out.printf("X = %5.3f Y = %5.3f X = %5.3f Y = %5.3f \n",
         //         driverXbox.getRawAxis(Constants.LEFT_STICK_X_AXIS), driverXbox.getRawAxis(Constants.LEFT_STICK_Y_AXIS),
         //         scaledArray[0], scaledArray[1]);
+    }
+
+    @Override
+    public void disabledInit()
+    {
+        if (isRecording && hasTeleopRun)
+        {
+            slabShuffleboard.stopRecording();
+        }
     }
 
     public void getPregameSetupData()

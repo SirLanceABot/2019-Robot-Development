@@ -199,6 +199,16 @@ public class SlabShuffleboard
         return instance;
     }
 
+    public void startRecording()
+    {
+        Shuffleboard.startRecording();
+    }
+
+    public void stopRecording()
+    {
+        Shuffleboard.stopRecording();
+    }
+
     private void createPregameSetupTab()
     {
         pregameSetupTab = Shuffleboard.getTab("Pregame Setup");
