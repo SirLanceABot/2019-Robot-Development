@@ -530,8 +530,8 @@ public class Arm
         // 1: Horizontal
         // 2: Middle
         // 3: Top
-        public static final int[] COMPETITION_ARM_POSITION_POT_VALUES = {1671, 1758, 1900, 1965};
-        public static final int[] PRACTICE_ARM_POSITION_POT_VALUES = {1671, 1758, 1900, 1965};
+        public static final int[] COMPETITION_ARM_POSITION_POT_VALUES = {670, 597, 502, 283};
+        public static final int[] PRACTICE_ARM_POSITION_POT_VALUES = {628, 572, 452, 212};
 
 
     }

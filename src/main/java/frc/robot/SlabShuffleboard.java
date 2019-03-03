@@ -250,7 +250,7 @@ public class SlabShuffleboard
         recordingComboBox.setDefaultOption("Entire Match (default)", Recording.kEntireMatch);
         recordingComboBox.addOption("This Mode Only", Recording.kThisModeOnly);
         recordingComboBox.addOption("Do Not Record", Recording.kDoNotRecord);
-        pregameSetupTab.add(motorSpeedComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 9)
+        pregameSetupTab.add(recordingComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 9)
                 .withSize(4, 1);
 
         // ComboBox for Task 1: Preloaded Game Piece

@@ -82,7 +82,7 @@ public class ElevatorAndArm
 
         if(targetElevatorPosition != Elevator.Constants.ElevatorPosition.kNone)
         {
-            // if(armPotValue < horizontalArmPosition + 200)
+            // if(armPotValue > horizontalArmPosition + 200)
             // {
             //     elevator.stopElevator();
             //     elevator.setIsMoving(true);
@@ -99,7 +99,7 @@ public class ElevatorAndArm
                 elevator.lowerElevator(scaleElevatorMovement());
                 // if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristDown)
                 // {
-                //     if(elevatorPotValue > initialElevatorPosition || armPotValue > arm.getHorizontalArmPosition())
+                //     if(elevatorPotValue > initialElevatorPosition || armPotValue < arm.getHorizontalArmPosition())
                 //     {
                 //         elevator.lowerElevator(scaleElevatorMovement());
                 //     }
@@ -146,7 +146,7 @@ public class ElevatorAndArm
                     arm.setIsWristMoving(false);
                 }
                 // if (elevatorPotValue > initialElevatorPosition - 50
-                //      && armPotValue > horizontalArmPosition - 50)
+                //      && armPotValue < horizontalArmPosition + 50) // Check logic
                 // {
                 //     arm.moveWristUp();
 
@@ -158,19 +158,19 @@ public class ElevatorAndArm
                 // }
             }
 
-            if(armPotValue < arm.getTargetPositionArmPositionValue(targetArmPosition))
+            if(armPotValue > arm.getTargetPositionArmPositionValue(targetArmPosition) + 5)
             {
                 arm.moveArmUp(scaleArmMovement());
                 arm.setIsArmMoving(true);
             }
-            else if(armPotValue > arm.getTargetPositionArmPositionValue(targetArmPosition))
+            else if(armPotValue < arm.getTargetPositionArmPositionValue(targetArmPosition) - 5)
             {
                 arm.setIsArmMoving(true);
                 arm.moveArmDown(scaleArmMovement());
 
                 // if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristDown && !arm.isWristDown())
                 // {
-                //     if(elevatorPotValue > initialElevatorPosition || armPotValue > horizontalArmPosition)
+                //     if(elevatorPotValue > initialElevatorPosition || armPotValue < horizontalArmPosition)
                 //     {
                 //         arm.moveArmDown(scaleArmMovement());
                 //     }

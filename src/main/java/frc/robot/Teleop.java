@@ -112,7 +112,8 @@ public class Teleop
         boolean operatorLeftBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);
         boolean operatorRightBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER);
         boolean operatorXButton = operatorXbox.getRawButton(Xbox.Constants.X_BUTTON);
-        boolean operatorAButton = operatorXbox.getRawButton(Xbox.Constants.A_BUTTON);
+        boolean operatorAButtonPressed = operatorXbox.getRawButtonPressed(Xbox.Constants.A_BUTTON);
+        boolean operatorBButtonPressed = operatorXbox.getRawButtonPressed(Xbox.Constants.B_BUTTON);
         boolean operatorYButton = operatorXbox.getRawButton(Xbox.Constants.Y_BUTTON);
         boolean operatorYButtonReleased = operatorXbox.getRawButtonReleased(Xbox.Constants.Y_BUTTON);
 
@@ -156,14 +157,14 @@ public class Teleop
         {
             arm.moveWristUp();
         }
-        // if(operatorAButton)
-        // {
-        //     arm.grabHatchPanel();
-        // }
-        // else if(operatorXButton)
-        // {
-        //     arm.releaseHatchPanel();
-        // }
+        if(operatorAButtonPressed)
+        {
+            arm.grabHatchPanel();
+        }
+        else if(operatorBButtonPressed)
+        {
+            arm.releaseHatchPanel();
+        }
 
         if(armButton || elevatorButton)
         {
@@ -335,23 +336,9 @@ public class Teleop
         }
 
         // System.out.println(elevator);
-        //System.out.println(arm);
+        //System.out.println(arm);  
 
-
-        // if(operatorXButton)
-        // {
-        //     drivetrain.driveCartesian(-0.25, 0, 0);
-        // }
-        // else if(operatorYButton)
-        // {
-        //     drivetrain.driveCartesian(0.25, 0, 0);
-        // }
-        // else
-        // {
-        //     drivetrain.driveCartesian(0, 0, 0);
-        // }    
-
-        if(operatorAButton)
+        if(operatorXButton)
         {
             lights.turnLightsOn();
         }
