@@ -9,6 +9,7 @@ import frc.control.DriverXbox;
 import frc.robot.Teleop;
 import frc.robot.SlabShuffleboard.MotorsAndSensorsTabData;
 import frc.robot.SlabShuffleboard.PregameSetupTabData;
+import frc.robot.SlabShuffleboard.Recording;
 import frc.control.Xbox;
 import frc.control.Xbox.Constants;
 
@@ -27,7 +28,6 @@ public class Robot extends TimedRobot
     private SlabShuffleboard slabShuffleboard;
     private PregameSetupTabData pregameSetupTabData;
     private MotorsAndSensorsTabData motorsAndSensorsTabData;
-    private boolean isRecording = false;
     private boolean hasTeleopRun = false;
     private boolean isPregame = true;
     private boolean isNewPregameData = true;
@@ -60,10 +60,17 @@ public class Robot extends TimedRobot
     @Override
     public void disabledInit()
     {
-        if (isRecording && hasTeleopRun)
+        if (pregameSetupTabData.recording == Recording.kEntireMatch && hasTeleopRun)
         {
             slabShuffleboard.stopRecording();
         }
+        else if (pregameSetupTabData.recording == Recording.kThisModeOnly)
+        {
+            slabShuffleboard.stopRecording();
+        }
+
+        isPregame = true;
+        hasTeleopRun = false;
     }
 
     @Override
@@ -80,7 +87,7 @@ public class Robot extends TimedRobot
     {
         isPregame = false;
 
-        if (isRecording)
+        if (pregameSetupTabData.recording != Recording.kDoNotRecord)
         {
             slabShuffleboard.startRecording();
         }
@@ -98,6 +105,13 @@ public class Robot extends TimedRobot
     @Override
     public void teleopInit()
     {
+        isPregame = false;
+        
+        if (pregameSetupTabData.recording == Recording.kThisModeOnly)
+        {
+            slabShuffleboard.startRecording();
+        }
+
         teleop.teleopInit();
 
         hasTeleopRun = true;
@@ -119,6 +133,7 @@ public class Robot extends TimedRobot
     public void testInit()
     {
         isPregame = true;
+        hasTeleopRun = false;
     }
 
     @Override

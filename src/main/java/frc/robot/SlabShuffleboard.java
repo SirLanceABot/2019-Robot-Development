@@ -44,9 +44,9 @@ public class SlabShuffleboard
         }
     }
 
-    public enum RecordingOption
+    public enum Recording
     {
-        kRecord, kDoNotRecord;
+        kEntireMatch, kThisModeOnly, kDoNotRecord;
     }
 
     public enum GamePiece
@@ -79,7 +79,7 @@ public class SlabShuffleboard
         public StartingLocation startingLocation = StartingLocation.kNone;
         public RobotType robotType = RobotType.kCompetition;
         public MotorSpeed motorSpeed = MotorSpeed.k100percent;
-        public RecordingOption recordingOption = RecordingOption.kRecord;
+        public Recording recording = Recording.kEntireMatch;
 
         public GamePiece task1GamePiece = GamePiece.kNone;
         public Objective task1Objective = Objective.kNothing;
@@ -102,7 +102,7 @@ public class SlabShuffleboard
             str += String.format("Starting Location: %s\n", startingLocation);
             str += String.format("Robot Type:   %s\n", robotType);
             str += String.format("Motor Speed:  %s\n", motorSpeed);
-            str += String.format("Recording:    %s\n\n", recordingOption);
+            str += String.format("Recording:    %s\n\n", recording);
             str += String.format("***** TASK 1  *****\n");
             str += String.format("Game Piece:   %s\n", task1GamePiece);
             str += String.format("Objective:    %s\n", task1Objective);
@@ -144,7 +144,7 @@ public class SlabShuffleboard
     private SendableChooser<StartingLocation> startingLocationComboBox = new SendableChooser<>();
     private SendableChooser<RobotType> robotTypeComboBox = new SendableChooser<>();
     private SendableChooser<MotorSpeed> motorSpeedComboBox = new SendableChooser<>();
-    private SendableChooser<RecordingOption> recordingOptionComboBox = new SendableChooser<>();
+    private SendableChooser<Recording> recordingComboBox = new SendableChooser<>();
     private SendableChooser<GamePiece> task1GamePieceComboBox = new SendableChooser<>();
     private SendableChooser<Objective> task1ObjectiveComboBox = new SendableChooser<>();
     private SendableChooser<RocketLevel> task1RocketLevelComboBox = new SendableChooser<>();
@@ -246,9 +246,10 @@ public class SlabShuffleboard
                 .withSize(4, 1);
 
         // ComboBox for the Recording Option
-        recordingOptionComboBox.setName("Recording Option");
-        recordingOptionComboBox.setDefaultOption("Record (default)", RecordingOption.kRecord);
-        recordingOptionComboBox.addOption("Do Not Record", RecordingOption.kDoNotRecord);
+        recordingComboBox.setName("Recording Option");
+        recordingComboBox.setDefaultOption("Entire Match (default)", Recording.kEntireMatch);
+        recordingComboBox.addOption("This Mode Only", Recording.kThisModeOnly);
+        recordingComboBox.addOption("Do Not Record", Recording.kDoNotRecord);
         pregameSetupTab.add(motorSpeedComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 9)
                 .withSize(4, 1);
 
@@ -355,7 +356,7 @@ public class SlabShuffleboard
         pregameSetupTabData.startingLocation = startingLocationComboBox.getSelected();
         pregameSetupTabData.robotType = robotTypeComboBox.getSelected();
         pregameSetupTabData.motorSpeed = motorSpeedComboBox.getSelected();
-        pregameSetupTabData.recordingOption = recordingOptionComboBox.getSelected();
+        pregameSetupTabData.recording = recordingComboBox.getSelected();
 
         pregameSetupTabData.task1GamePiece = task1GamePieceComboBox.getSelected();
         pregameSetupTabData.task1Objective = task1ObjectiveComboBox.getSelected();
