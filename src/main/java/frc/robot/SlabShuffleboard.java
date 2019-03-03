@@ -44,6 +44,11 @@ public class SlabShuffleboard
         }
     }
 
+    public enum RecordingOption
+    {
+        kRecord, kDoNotRecord;
+    }
+
     public enum GamePiece
     {
         kNone, kHatchPanel, kCargo;
@@ -71,21 +76,22 @@ public class SlabShuffleboard
 
     public class PregameSetupTabData
     {
-        StartingLocation startingLocation = StartingLocation.kNone;
-        RobotType robotType = RobotType.kCompetition;
-        MotorSpeed motorSpeed = MotorSpeed.k100percent;
+        public StartingLocation startingLocation = StartingLocation.kNone;
+        public RobotType robotType = RobotType.kCompetition;
+        public MotorSpeed motorSpeed = MotorSpeed.k100percent;
+        public RecordingOption recordingOption = RecordingOption.kRecord;
 
-        GamePiece task1GamePiece = GamePiece.kNone;
-        Objective task1Objective = Objective.kNothing;
-        RocketLevel task1RocketLevel = RocketLevel.kNone;
-        RocketHatch task1RocketHatch = RocketHatch.kNone;
-        CargoShip task1CargoShip = CargoShip.kNone;
+        public GamePiece task1GamePiece = GamePiece.kNone;
+        public Objective task1Objective = Objective.kNothing;
+        public RocketLevel task1RocketLevel = RocketLevel.kNone;
+        public RocketHatch task1RocketHatch = RocketHatch.kNone;
+        public CargoShip task1CargoShip = CargoShip.kNone;
 
-        GamePiece task2GamePiece = GamePiece.kNone;
-        Objective task2Objective = Objective.kNothing;
-        RocketLevel task2RocketLevel = RocketLevel.kNone;
-        RocketHatch task2RocketHatch = RocketHatch.kNone;
-        CargoShip task2CargoShip = CargoShip.kNone;
+        public GamePiece task2GamePiece = GamePiece.kNone;
+        public Objective task2Objective = Objective.kNothing;
+        public RocketLevel task2RocketLevel = RocketLevel.kNone;
+        public RocketHatch task2RocketHatch = RocketHatch.kNone;
+        public CargoShip task2CargoShip = CargoShip.kNone;
 
         @Override
         public String toString()
@@ -95,7 +101,8 @@ public class SlabShuffleboard
             str = String.format("\n\n*****  PREGAME SELECTION  *****\n");
             str += String.format("Starting Location: %s\n", startingLocation);
             str += String.format("Robot Type:   %s\n", robotType);
-            str += String.format("Motor Speed:  %s\n\n", motorSpeed);
+            str += String.format("Motor Speed:  %s\n", motorSpeed);
+            str += String.format("Recording:    %s\n\n", recordingOption);
             str += String.format("***** TASK 1  *****\n");
             str += String.format("Game Piece:   %s\n", task1GamePiece);
             str += String.format("Objective:    %s\n", task1Objective);
@@ -131,14 +138,13 @@ public class SlabShuffleboard
         public String navX = "NA";
     }
 
-
-
     // PREGAME SETUP TAB
     private ShuffleboardTab pregameSetupTab;
     private PregameSetupTabData pregameSetupTabData = new PregameSetupTabData();
     private SendableChooser<StartingLocation> startingLocationComboBox = new SendableChooser<>();
     private SendableChooser<RobotType> robotTypeComboBox = new SendableChooser<>();
     private SendableChooser<MotorSpeed> motorSpeedComboBox = new SendableChooser<>();
+    private SendableChooser<RecordingOption> recordingOptionComboBox = new SendableChooser<>();
     private SendableChooser<GamePiece> task1GamePieceComboBox = new SendableChooser<>();
     private SendableChooser<Objective> task1ObjectiveComboBox = new SendableChooser<>();
     private SendableChooser<RocketLevel> task1RocketLevelComboBox = new SendableChooser<>();
@@ -187,10 +193,10 @@ public class SlabShuffleboard
     private SlabShuffleboard()
     {
         System.out.println(this.getClass().getName() + ": Started Constructing");
-        // Shuffleboard.startRecording();
-        // setupConfigurationTab();
+
         createMotorsAndSensorsTab();
         createPregameSetupTab();
+
         System.out.println(this.getClass().getName() + ": Started Constructing");
     }
 
@@ -237,6 +243,13 @@ public class SlabShuffleboard
         motorSpeedComboBox.addOption("50%", MotorSpeed.k50percent);
         motorSpeedComboBox.addOption("25%", MotorSpeed.k25percent);
         pregameSetupTab.add(motorSpeedComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 6)
+                .withSize(4, 1);
+
+        // ComboBox for the Recording Option
+        recordingOptionComboBox.setName("Recording Option");
+        recordingOptionComboBox.setDefaultOption("Record (default)", RecordingOption.kRecord);
+        recordingOptionComboBox.addOption("Do Not Record", RecordingOption.kDoNotRecord);
+        pregameSetupTab.add(motorSpeedComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 9)
                 .withSize(4, 1);
 
         // ComboBox for Task 1: Preloaded Game Piece
@@ -342,6 +355,7 @@ public class SlabShuffleboard
         pregameSetupTabData.startingLocation = startingLocationComboBox.getSelected();
         pregameSetupTabData.robotType = robotTypeComboBox.getSelected();
         pregameSetupTabData.motorSpeed = motorSpeedComboBox.getSelected();
+        pregameSetupTabData.recordingOption = recordingOptionComboBox.getSelected();
 
         pregameSetupTabData.task1GamePiece = task1GamePieceComboBox.getSelected();
         pregameSetupTabData.task1Objective = task1ObjectiveComboBox.getSelected();

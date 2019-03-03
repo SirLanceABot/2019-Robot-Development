@@ -60,18 +60,26 @@ public class Robot extends TimedRobot
     @Override
     public void disabledInit()
     {
-
+        if (isRecording && hasTeleopRun)
+        {
+            slabShuffleboard.stopRecording();
+        }
     }
 
     @Override
     public void disabledPeriodic()
     {
-        getPregameSetupData();
+        if (isPregame)
+        {
+            getPregameSetupData();
+        }
     }
 
     @Override
     public void autonomousInit()
     {
+        isPregame = false;
+
         if (isRecording)
         {
             slabShuffleboard.startRecording();
@@ -108,42 +116,31 @@ public class Robot extends TimedRobot
     }
 
     @Override
-    public void disabledInit()
+    public void testInit()
     {
-        if (isRecording && hasTeleopRun)
-        {
-            slabShuffleboard.stopRecording();
-        }
+        isPregame = true;
+    }
+
+    @Override
+    public void testPeriodic()
+    {
+
     }
 
     public void getPregameSetupData()
     {
-        if (isAutonomous() && isEnabled())
+        if (slabShuffleboard.getSendData() && isNewPregameData)
         {
-            isPregame = false;
+            pregameSetupTabData = slabShuffleboard.getPregameSetupTabData();
+            System.out.println(pregameSetupTabData);
+            isNewPregameData = false;
+
+            // TODO: Maxwell needs to create a set function to set the pregame data
+            // autonomous.setPregameSetupData(pregameSetupTabData);
         }
-
-        if (isTest() && isEnabled())
+        else if (!slabShuffleboard.getSendData() && !isNewPregameData)
         {
-            isPregame = true;
-        }
-
-        if (isPregame)
-        {
-            if (slabShuffleboard.getSendData() && isNewPregameData)
-            {
-                pregameSetupTabData = slabShuffleboard.getPregameSetupTabData();
-                System.out.println(pregameSetupTabData);
-                isNewPregameData = false;
-
-                // TODO: Maxwell needs to create a set function to set the pregame data
-                // autonomous.setPregameSetupData(pregameSetupTabData);
-            }
-
-            if (!slabShuffleboard.getSendData() && !isNewPregameData)
-            {
-                isNewPregameData = true;
-            }
+            isNewPregameData = true;
         }
     }
 
