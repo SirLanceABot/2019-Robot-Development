@@ -28,9 +28,10 @@ public class Robot extends TimedRobot
     private SlabShuffleboard slabShuffleboard;
     private PregameSetupTabData pregameSetupTabData;
     private MotorsAndSensorsTabData motorsAndSensorsTabData;
+    private boolean hasAutoRun = false;
     private boolean hasTeleopRun = false;
-    private boolean isPregame = true;
-    private boolean isNewPregameData = true;
+    // private boolean isPregame = true;
+    private boolean isNewPregameDataAvailable = true;
 
     private int shuffleboardPrintCounter = 0;
 
@@ -60,39 +61,49 @@ public class Robot extends TimedRobot
     @Override
     public void disabledInit()
     {
-        if (pregameSetupTabData.recording == Recording.kEntireMatch && hasTeleopRun)
+        if (pregameSetupTabData.recording == Recording.kEntireMatch && hasAutoRun && hasTeleopRun)
         {
             slabShuffleboard.stopRecording();
+            hasAutoRun = false;
+            hasTeleopRun = false;
         }
-        else if (pregameSetupTabData.recording == Recording.kThisModeOnly)
+        else if (pregameSetupTabData.recording == Recording.kAutoOnly && hasAutoRun)
         {
             slabShuffleboard.stopRecording();
+            hasAutoRun = false;
         }
+        else if (pregameSetupTabData.recording == Recording.kTeleopOnly && hasTeleopRun)
+        {
+            slabShuffleboard.stopRecording();
+            hasTeleopRun = false;
+        }        
 
-        isPregame = true;
-        hasTeleopRun = false;
+        // isPregame = true;
     }
 
     @Override
     public void disabledPeriodic()
     {
-        if (isPregame)
-        {
+        // if (isPregame)
+        // {
             getPregameSetupData();
-        }
+        // }
     }
 
     @Override
     public void autonomousInit()
     {
-        isPregame = false;
+        // isPregame = false;
 
-        if (pregameSetupTabData.recording != Recording.kDoNotRecord)
+        if (pregameSetupTabData.recording == Recording.kEntireMatch ||
+                pregameSetupTabData.recording == Recording.kAutoOnly)
         {
             slabShuffleboard.startRecording();
         }
         
         autonomous.autoInit();
+
+        hasAutoRun = true;
     }
 
     @Override
@@ -105,9 +116,10 @@ public class Robot extends TimedRobot
     @Override
     public void teleopInit()
     {
-        isPregame = false;
+        // isPregame = false;
         
-        if (pregameSetupTabData.recording == Recording.kThisModeOnly)
+        if (pregameSetupTabData.recording == Recording.kEntireMatch ||
+                pregameSetupTabData.recording == Recording.kTeleopOnly)
         {
             slabShuffleboard.startRecording();
         }
@@ -120,7 +132,7 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
-        double[] scaledArray = driverXbox.getScaledAxes(Constants.LEFT_STICK_AXES, Xbox.Constants.PolynomialDrive.kCubicDrive);
+        // double[] scaledArray = driverXbox.getScaledAxes(Constants.LEFT_STICK_AXES, Xbox.Constants.PolynomialDrive.kCubicDrive);
         teleop.teleop();
         //System.out.println(drivetrain);
 
@@ -132,7 +144,11 @@ public class Robot extends TimedRobot
     @Override
     public void testInit()
     {
-        isPregame = true;
+        System.out.println("*** Resetting setup values ***");
+
+        // isPregame = true;
+        isNewPregameDataAvailable = true;
+        hasAutoRun = false;
         hasTeleopRun = false;
     }
 
@@ -144,75 +160,77 @@ public class Robot extends TimedRobot
 
     public void getPregameSetupData()
     {
-        if (slabShuffleboard.getSendData() && isNewPregameData)
+        if (slabShuffleboard.getSendData() && isNewPregameDataAvailable)
         {
             pregameSetupTabData = slabShuffleboard.getPregameSetupTabData();
             System.out.println(pregameSetupTabData);
-            isNewPregameData = false;
+            isNewPregameDataAvailable = false;
 
             // TODO: Maxwell needs to create a set function to set the pregame data
             // autonomous.setPregameSetupData(pregameSetupTabData);
         }
-        else if (!slabShuffleboard.getSendData() && !isNewPregameData)
+        else if (!slabShuffleboard.getSendData() && !isNewPregameDataAvailable)
         {
-            isNewPregameData = true;
+            isNewPregameDataAvailable = true;
         }
     }
 
     public void updateAllShuffleboardData()
     {
+        shuffleboardPrintCounter++;
+
         // Motors and Sensors Tab Data
         switch (shuffleboardPrintCounter)
         {
-        case 10:
+        case 1:
             motorsAndSensorsTabData.frontLeftMotor = drivetrain.getFrontLeftMotorData();
             break;
-        case 20:
+        case 2:
             motorsAndSensorsTabData.frontRightMotor = drivetrain.getFrontRightMotorData();
             break;
-        case 30:
+        case 3:
             motorsAndSensorsTabData.backLeftMotor = drivetrain.getBackLeftMotorData();
             break;
-        case 40:
+        case 4:
             motorsAndSensorsTabData.backRightMotor = drivetrain.getBackRightMotorData();
             break;
-        case 50:
+        case 5:
             motorsAndSensorsTabData.omniWheel = drivetrain.getOmniWheelData();
             break;
-        case 60:
+        case 6:
             motorsAndSensorsTabData.elevator = elevator.getMasterLegElevatorMotorData();
             break;
-        case 70:
+        case 7:
             motorsAndSensorsTabData.arm = arm.getArmMotorData();
             break;
-        case 80:
+        case 8:
             motorsAndSensorsTabData.wrist = arm.getWristSolenoidData();
             break;
-        case 90:
+        case 9:
             motorsAndSensorsTabData.cargoIntakeRoller = arm.getIntakeRollerMotorData();
             break;
-        case 100:
+        case 10:
             motorsAndSensorsTabData.hatchPanelGrabber = arm.getGrabberSolenoidData();
             break;
-        case 110:
+        case 11:
             motorsAndSensorsTabData.climber = climber.getMasterLegMotorData();
             break;
-        case 120:
+        case 12:
             motorsAndSensorsTabData.climberPinSolenoid = climber.getPinSolenoidData();
             break;
-        case 130:
+        case 13:
             // motorsAndSensorsTabData.lidar = 
             break;
-        case 140:
+        case 14:
             motorsAndSensorsTabData.navX = drivetrain.getNavXData();
             break;
-        case 150:
+        case 15:
             slabShuffleboard.updateMotorsAndSensorsTabData(motorsAndSensorsTabData);
             shuffleboardPrintCounter = 0;
             break;
         default:
+            shuffleboardPrintCounter = 0;
             break;
         }
-        shuffleboardPrintCounter += 10;
     }
 }

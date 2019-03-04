@@ -46,7 +46,7 @@ public class SlabShuffleboard
 
     public enum Recording
     {
-        kEntireMatch, kThisModeOnly, kDoNotRecord;
+        kEntireMatch, kAutoOnly, kTeleopOnly, kDoNotRecord;
     }
 
     public enum GamePiece
@@ -248,7 +248,8 @@ public class SlabShuffleboard
         // ComboBox for the Recording Option
         recordingComboBox.setName("Recording Option");
         recordingComboBox.setDefaultOption("Entire Match (default)", Recording.kEntireMatch);
-        recordingComboBox.addOption("This Mode Only", Recording.kThisModeOnly);
+        recordingComboBox.addOption("Autonomous Only", Recording.kAutoOnly);
+        recordingComboBox.addOption("Teleop Only", Recording.kTeleopOnly);
         recordingComboBox.addOption("Do Not Record", Recording.kDoNotRecord);
         pregameSetupTab.add(recordingComboBox).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 9)
                 .withSize(4, 1);
