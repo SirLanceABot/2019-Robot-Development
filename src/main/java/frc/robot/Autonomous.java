@@ -26,16 +26,7 @@ import javax.xml.stream.util.StreamReaderDelegate;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
- * TODO: methodize some driving stuff for reuse move some variables to the top - done
- * as instance variables - done
- * 
- * create function to use the vision code - done
- * 
- * Need to add the timer to the placement of cargo or HP make the drivetopoint- done
-
- * function more of a state machine - done
- * 
- * add variable motor speeds
+ * TODO: add variable motor speeds
  */
 public class Autonomous
 {

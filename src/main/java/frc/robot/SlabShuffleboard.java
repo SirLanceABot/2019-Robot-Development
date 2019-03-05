@@ -7,8 +7,8 @@
 
 package frc.robot;
 
-//import java.util.HashMap;
-//import java.util.Map;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -138,6 +138,45 @@ public class SlabShuffleboard
         public String navX = "NA";
     }
 
+    public class ControllersTabData
+    {
+        // Booleans for Xbox Controller buttons    
+        public boolean driverXboxAButton = false;
+        public boolean driverXboxBButton = false;
+        public boolean driverXboxXButton = false;
+        public boolean driverXboxYButton = false;
+        public boolean driverXboxRightBumperButton = false;
+        public boolean driverXboxLeftBumperButton = false;
+        public boolean driverXboxBackButton = false;
+        public boolean driverXboxStartButton = false;
+        public boolean driverXboxLeftStickButton = false;
+        public boolean driverXboxRightStickButton = false;
+
+        // Doubles for all axes on xbox controller
+        public double driverXboxLeftXAxis = 0.0;
+        public double driverXboxLeftYAxis = 0.0;
+        public double driverXboxRightXAxis = 0.0;
+        public double driverXboxRightYAxis = 0.0;
+        public double driverXboxLeftTriggerAxis = 0.0;
+        public double driverXboxRightTriggerAxis = 0.0;
+        public double driverXboxDpadAxis = 0.0;
+
+        // Double for the Joystick axis on button board
+        public double operatorButtonBoardJoystickXAxis = 0.0;
+        public double operatorButtonBoardJoystickYAxis = 0.0;
+        // Boolean for the buttons on button board
+        public boolean operatorButtonBoardButton1 = false;
+        public boolean operatorButtonBoardButton2 = false;
+        public boolean operatorButtonBoardButton3 = false;
+        public boolean operatorButtonBoardButton4 = false;
+        public boolean operatorButtonBoardButton5 = false;
+        public boolean operatorButtonBoardButton6 = false;
+        public boolean operatorButtonBoardButton7 = false;
+        public boolean operatorButtonBoardButton8 = false;
+        public boolean operatorButtonBoardButton9 = false;
+        public boolean operatorButtonBoardButton10 = false;
+    }
+
     // PREGAME SETUP TAB
     private ShuffleboardTab pregameSetupTab;
     private PregameSetupTabData pregameSetupTabData = new PregameSetupTabData();
@@ -188,6 +227,48 @@ public class SlabShuffleboard
     private NetworkTableEntry navXValuesEntry;
 
 
+    // Controllers Tab boxes
+    private ShuffleboardTab controllersTab;
+    private ControllersTabData controllersTabData = new ControllersTabData();
+    
+    // Button Network Table Entries
+    private NetworkTableEntry driverXboxAButtonEntry;
+    private NetworkTableEntry driverXboxBButtonEntry;
+    private NetworkTableEntry driverXboxXButtonEntry;
+    private NetworkTableEntry driverXboxYButtonEntry;
+    private NetworkTableEntry driverXboxLeftBumperEntry;
+    private NetworkTableEntry driverXboxRightBumperEntry;
+    private NetworkTableEntry driverXboxStartButtonEntry;
+    private NetworkTableEntry driverXboxBackButtonEntry;
+    private NetworkTableEntry driverXboxLeftStickButtonEntry;
+    private NetworkTableEntry driverXboxRightStickButtonEntry;
+
+    // Axes Network Table Entries
+    private NetworkTableEntry driverXboxLeftXAxisEntry;
+    private NetworkTableEntry driverXboxLeftYAxisEntry;
+    private NetworkTableEntry driverXboxRightXAxisEntry;
+    private NetworkTableEntry driverXboxRightYAxisEntry;
+    private NetworkTableEntry driverXboxLeftTriggerAxisEntry;
+    private NetworkTableEntry driverXboxRightTriggerAxisEntry;
+
+    // Dpad Network Table Entry
+    private NetworkTableEntry driverXboxDpadEntry;
+    
+    // Network Table Entries for the Operator Button Board
+    private NetworkTableEntry operatorButtonBoardJoystickXAxisEntry;
+    private NetworkTableEntry operatorButtonBoardJoystickYAxisEntry;
+    private NetworkTableEntry operatorButtonBoardButton1Entry;
+    private NetworkTableEntry operatorButtonBoardButton2Entry;
+    private NetworkTableEntry operatorButtonBoardButton3Entry;
+    private NetworkTableEntry operatorButtonBoardButton4Entry;
+    private NetworkTableEntry operatorButtonBoardButton5Entry;
+    private NetworkTableEntry operatorButtonBoardButton6Entry;
+    private NetworkTableEntry operatorButtonBoardButton7Entry;
+    private NetworkTableEntry operatorButtonBoardButton8Entry;
+    private NetworkTableEntry operatorButtonBoardButton9Entry;
+    private NetworkTableEntry operatorButtonBoardButton10Entry;
+
+
     private static SlabShuffleboard instance = new SlabShuffleboard();
 
     private SlabShuffleboard()
@@ -196,6 +277,7 @@ public class SlabShuffleboard
 
         createMotorsAndSensorsTab();
         createPregameSetupTab();
+        createControllersTab();
 
         System.out.println(this.getClass().getName() + ": Started Constructing");
     }
@@ -481,4 +563,275 @@ public class SlabShuffleboard
         lidarValuesEntry.setString(motorsAndSensorsTabData.lidar);
         navXValuesEntry.setString(motorsAndSensorsTabData.navX);
     } // Finished updating the Motors and Sensors tab
+
+    private void createControllersTab()
+    {
+        controllersTab = Shuffleboard.getTab("Controllers");
+        Shuffleboard.selectTab("Controllers");
+
+        // All of the Text View Boxes and Boolean Boxes for the Xbox Controller. -Mikey and Annika
+        
+        // Xbox A button
+        Map<String, Object> mapAButtonColor = new HashMap<String,Object>();
+        mapAButtonColor.put("Color when true", "#FF4500");        
+        mapAButtonColor.put("Color when false", "#00FF00");
+        driverXboxAButtonEntry = controllersTab.add("A Button", false).withWidget(BuiltInWidgets.kBooleanBox)
+            .withPosition(11, 8).withSize(3, 1).withProperties(mapAButtonColor).getEntry();
+        
+        // Xbox B button
+        Map<String, Object> mapBButtonColor = new HashMap<String,Object>();
+        mapBButtonColor.put("Color when true", "#321ACE");        
+        mapBButtonColor.put("Color when false", "#FF0000");    
+        driverXboxBButtonEntry = controllersTab.add("B Button", false).withWidget(BuiltInWidgets.kBooleanBox)
+            .withPosition(13, 6).withSize(3, 1).withProperties(mapBButtonColor).getEntry();
+        
+        // Xbox X button
+        Map<String, Object> mapXButtonColor = new HashMap<String,Object>();
+        mapXButtonColor.put("Color when true", "#DC143C");        
+        mapXButtonColor.put("Color when false", "#321ACE");    
+        driverXboxXButtonEntry = controllersTab.add("X Button", false).withWidget(BuiltInWidgets.kBooleanBox)
+            .withPosition(9, 6).withSize(3, 1).withProperties(mapXButtonColor).getEntry();
+        
+        // Xbox Y button
+        Map<String, Object> mapYButtonColor = new HashMap<String,Object>();
+        mapYButtonColor.put("Color when true", "#8B008B");        
+        mapYButtonColor.put("Color when false", "#FFD700");    
+        driverXboxYButtonEntry = controllersTab.add("Y Button", false).withWidget(BuiltInWidgets.kBooleanBox)
+            .withPosition(11, 4).withSize(3, 1).withProperties(mapYButtonColor).getEntry();
+            
+        // Xbox Left X Axis 
+        driverXboxLeftXAxisEntry = controllersTab.add("Left X Axis", 0.0).withWidget(BuiltInWidgets.kTextView)
+            .withPosition(0, 8).withSize(3, 1).getEntry();
+
+        // Xbox Left Y Axis 
+        driverXboxLeftYAxisEntry = controllersTab.add("Left Y Axis", 0.0).withWidget(BuiltInWidgets.kTextView)
+            .withPosition(0, 10).withSize(3, 1).getEntry();
+
+        // Xbox Right X Axis 
+        driverXboxRightXAxisEntry = controllersTab.add("Right X Axis", 0.0).withWidget(BuiltInWidgets.kTextView)
+            .withPosition(9, 12).withSize(3, 1).getEntry();
+
+        // Xbox Right Y Axis
+        driverXboxRightYAxisEntry = controllersTab.add("Right Y Axis", 0.0).withWidget(BuiltInWidgets.kTextView)
+            .withPosition(9, 14).withSize(3, 1).getEntry();
+        
+        // Xbox Left Bumper button
+        Map<String, Object> mapLeftBumperColor = new HashMap<String,Object>();
+        mapLeftBumperColor.put("Color when true", "#00BFFF");        
+        mapLeftBumperColor.put("Color when false", "#000000");
+        driverXboxLeftBumperEntry = controllersTab.add("Left Bumper", false).withWidget(BuiltInWidgets.kBooleanBox)
+            .withPosition(0, 2).withSize(3, 1).withProperties(mapLeftBumperColor).getEntry();
+            
+        // Xbox Right Bumper button
+        Map<String, Object> mapRightBumperColor = new HashMap<String,Object>();
+            mapRightBumperColor.put("Color when true", "#00BFFF");        
+            mapRightBumperColor.put("Color when false", "#000000");    
+        driverXboxRightBumperEntry = controllersTab.add("Right Bumper", false).withWidget(BuiltInWidgets.kBooleanBox)
+            .withPosition(11, 2).withSize(3, 1).withProperties(mapRightBumperColor).getEntry();
+        
+        // Xbox Left Trigger Axis
+        driverXboxLeftTriggerAxisEntry = controllersTab.add("Left Trigger Axis", 0).withWidget(BuiltInWidgets.kTextView)
+            .withPosition(0, 0).withSize(3, 1).getEntry();
+        
+        // Xbox Right Trigger Axis
+        driverXboxRightTriggerAxisEntry = controllersTab.add("Right Trigger Axis", 0).withWidget(BuiltInWidgets.kTextView)
+            .withPosition(11, 0).withSize(3, 1).getEntry();
+        
+        // Xbox Start button
+        Map<String, Object> mapStartButtonColor = new HashMap<String,Object>();
+        mapStartButtonColor.put("Color when true", "#3CB371");        
+        mapStartButtonColor.put("Color when false", "#000000");    
+        driverXboxStartButtonEntry = controllersTab.add("Start Button", false).withWidget(BuiltInWidgets.kBooleanBox)
+            .withPosition(6, 6).withSize(3, 1).withProperties(mapStartButtonColor).getEntry();
+        
+        // Xbox Back button
+        Map<String, Object> mapBackButtonColor = new HashMap<String,Object>();
+        mapBackButtonColor.put("Color when true", "#3CB371");        
+        mapBackButtonColor.put("Color when false", "#000000"); 
+        driverXboxBackButtonEntry = controllersTab.add("Back Button", false).withWidget(BuiltInWidgets.kBooleanBox)
+            .withPosition(3, 6).withSize(3, 1).withProperties(mapBackButtonColor).getEntry();
+        
+        // Xbox Left Stick button
+        Map<String, Object> mapLeftStickColor = new HashMap<String,Object>();
+        mapLeftStickColor.put("Color when true", "#FF1493");        
+        mapLeftStickColor.put("Color when false", "#40E0D0");    
+        driverXboxLeftStickButtonEntry = controllersTab.add("Left Stick", false).withWidget(BuiltInWidgets.kBooleanBox)
+            .withPosition(0, 6).withSize(3, 1).withProperties(mapLeftStickColor).getEntry();
+        
+        // Xbox Right Stick button
+        Map<String, Object> mapRightStickColor = new HashMap<String,Object>();
+        mapRightStickColor.put("Color when true", "#FF1493");        
+        mapRightStickColor.put("Color when false", "#40E0D0");    
+        driverXboxRightStickButtonEntry = controllersTab.add("Right Stick", false).withWidget(BuiltInWidgets.kBooleanBox)
+            .withPosition(9, 10).withSize(3, 1).withProperties(mapRightStickColor).getEntry();
+        
+        // Xbox Dpad Value
+        driverXboxDpadEntry = controllersTab.add("Dpad Value", -1).withWidget(BuiltInWidgets.kTextView).withPosition(3, 13)
+            .withSize(3, 1).getEntry();
+
+
+        
+        // Text View Boxes and Boolean Boxes for the Button Board. -Mikey and Annika
+
+
+        // Button Board Floor button
+        Map<String, Object> mapFloorButtonColor = new HashMap<String,Object>();
+        mapFloorButtonColor.put("Color when true", "#FF0000");        
+        mapFloorButtonColor.put("Color when false", "#0000FF");
+        operatorButtonBoardButton1Entry = controllersTab.add("Floor Button", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(23, 7)
+            .withSize(3, 1).withProperties(mapFloorButtonColor).getEntry();
+        
+        // Button Board Cargo Ship Cargo button
+        Map<String, Object> mapCargoShipCargoButtonColor = new HashMap<String,Object>();
+        mapCargoShipCargoButtonColor.put("Color when true", "#FF0000");        
+        mapCargoShipCargoButtonColor.put("Color when false", "#0000FF");    
+        operatorButtonBoardButton2Entry = controllersTab.add("Cargo Ship Cargo", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(23, 5)
+            .withSize(3, 1).withProperties(mapCargoShipCargoButtonColor).getEntry();
+        
+        // Button Board Bottom Cargo button
+        Map<String, Object> mapBottomCargoButtonColor = new HashMap<String,Object>();
+        mapBottomCargoButtonColor.put("Color when true", "#191970");        
+        mapBottomCargoButtonColor.put("Color when false", "#FFD700");     
+        operatorButtonBoardButton3Entry = controllersTab.add("Bottom Cargo", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(28, 6)
+            .withSize(3, 1).withProperties(mapBottomCargoButtonColor).getEntry();
+        
+        // Button Board Center Cargo button
+        Map<String, Object> mapCenterCargoButtonColor = new HashMap<String,Object>();
+        mapCenterCargoButtonColor.put("Color when true", "#191970");        
+        mapCenterCargoButtonColor.put("Color when false", "#FFD700");
+        operatorButtonBoardButton4Entry = controllersTab.add("Center Cargo", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(28, 4)
+            .withSize(3, 1).withProperties(mapCenterCargoButtonColor).getEntry();
+        
+        // Button Board Top Cargo button
+        Map<String, Object> mapTopCargoButtonColor = new HashMap<String,Object>();
+        mapTopCargoButtonColor.put("Color when true", "#191970");        
+        mapTopCargoButtonColor.put("Color when false", "#FFD700");
+        operatorButtonBoardButton5Entry = controllersTab.add("Top Cargo", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(28, 2)
+            .withSize(3, 1).withProperties(mapTopCargoButtonColor).getEntry();
+        
+        // Button Board Bottom Hatch button
+        Map<String, Object> mapBottomHatchButtonColor = new HashMap<String,Object>();
+        mapBottomHatchButtonColor.put("Color when true", "#008B8B");        
+        mapBottomHatchButtonColor.put("Color when false", "#FF0000");
+        operatorButtonBoardButton6Entry = controllersTab.add("Bottom Hatch", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(18, 6)
+            .withSize(3, 1).withProperties(mapBottomHatchButtonColor).getEntry();
+        
+        // Button Board Center Hatch button
+        Map<String, Object> mapMiddleHatchButtonColor = new HashMap<String,Object>();
+        mapMiddleHatchButtonColor.put("Color when true", "#008B8B");        
+        mapMiddleHatchButtonColor.put("Color when false", "#FF0000");
+        operatorButtonBoardButton7Entry = controllersTab.add("Center Hatch", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(18, 4)
+            .withSize(3, 1).withProperties(mapMiddleHatchButtonColor).getEntry();
+        
+        // Button Board Top Hatch button
+        Map<String, Object> mapTopHatchButtonColor = new HashMap<String,Object>();
+        mapTopHatchButtonColor.put("Color when true", "#008B8B");        
+        mapTopHatchButtonColor.put("Color when false", "#FF0000");    
+        operatorButtonBoardButton8Entry = controllersTab.add("Top Hatch     ", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(18, 2)
+            .withSize(3, 1).withProperties(mapTopHatchButtonColor).getEntry();
+        
+        // Button Board Arm Manual Override button
+        Map<String, Object> mapArmOverrideButtonColor = new HashMap<String,Object>();
+        mapArmOverrideButtonColor.put("Color when true", "#000000");        
+        mapArmOverrideButtonColor.put("Color when false", "#FFFFFF");
+        operatorButtonBoardButton9Entry = controllersTab.add("Arm Override", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(25, 0)
+            .withSize(3, 1).withProperties(mapArmOverrideButtonColor).getEntry();
+        
+        // Button Board Elevator Manual Override button
+        Map<String, Object> mapElevatorOverrideButtonColor = new HashMap<String,Object>();
+        mapElevatorOverrideButtonColor.put("Color when true", "#000000");        
+        mapElevatorOverrideButtonColor.put("Color when false", "#FFFFFF");
+        operatorButtonBoardButton10Entry = controllersTab.add("Elevator Override", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(21, 0)
+            .withSize(3, 1).withProperties(mapElevatorOverrideButtonColor).getEntry();
+            
+        // Button Board Button Board X Axis button
+        operatorButtonBoardJoystickXAxisEntry = controllersTab.add("Joystick X Axis", 0.0).withWidget(BuiltInWidgets.kTextView).withPosition(32, 2)
+            .withSize(3, 1).getEntry();
+
+        // Button Board Y Axis button
+        operatorButtonBoardJoystickYAxisEntry = controllersTab.add("Joystick Y Axis", 0.0).withWidget(BuiltInWidgets.kTextView).withPosition(32, 4)
+            .withSize(3, 1).getEntry();
+
+    }    
+    
+    public void setControllersTabData(ControllersTabData controllersTabData)
+    {
+        // The set booleans for Xbox Controller buttons.    
+        driverXboxAButtonEntry.setBoolean(controllersTabData.driverXboxAButton);
+        driverXboxBButtonEntry.setBoolean(controllersTabData.driverXboxBButton);
+        driverXboxXButtonEntry.setBoolean(controllersTabData.driverXboxXButton);
+        driverXboxYButtonEntry.setBoolean(controllersTabData.driverXboxYButton);
+        driverXboxLeftBumperEntry.setBoolean(controllersTabData.driverXboxLeftBumperButton);
+        driverXboxRightBumperEntry.setBoolean(controllersTabData.driverXboxRightBumperButton);
+        driverXboxLeftStickButtonEntry.setBoolean(controllersTabData.driverXboxLeftStickButton);
+        driverXboxRightStickButtonEntry.setBoolean(controllersTabData.driverXboxRightStickButton);
+        driverXboxStartButtonEntry.setBoolean(controllersTabData.driverXboxStartButton);
+        driverXboxBackButtonEntry.setBoolean(controllersTabData.driverXboxBackButton);
+        
+        // Set booleans for the Button Board buttons.
+        operatorButtonBoardButton1Entry.setBoolean(controllersTabData.operatorButtonBoardButton1);
+        operatorButtonBoardButton2Entry.setBoolean(controllersTabData.operatorButtonBoardButton2);
+        operatorButtonBoardButton3Entry.setBoolean(controllersTabData.operatorButtonBoardButton3);
+        operatorButtonBoardButton4Entry.setBoolean(controllersTabData.operatorButtonBoardButton4);
+        operatorButtonBoardButton5Entry.setBoolean(controllersTabData.operatorButtonBoardButton5);
+        operatorButtonBoardButton6Entry.setBoolean(controllersTabData.operatorButtonBoardButton6);
+        operatorButtonBoardButton7Entry.setBoolean(controllersTabData.operatorButtonBoardButton7);
+        operatorButtonBoardButton8Entry.setBoolean(controllersTabData.operatorButtonBoardButton8);
+        operatorButtonBoardButton9Entry.setBoolean(controllersTabData.operatorButtonBoardButton9);
+        operatorButtonBoardButton10Entry.setBoolean(controllersTabData.operatorButtonBoardButton10);
+
+        // Having all of the axes rounded so we don't get crazy long decimals.
+        driverXboxLeftXAxisEntry.setDouble(Math.round(controllersTabData.driverXboxLeftXAxis * 1000.0) / 1000.0);
+        driverXboxLeftYAxisEntry.setDouble(Math.round(controllersTabData.driverXboxLeftYAxis * 1000.0) / 1000.0);
+        driverXboxRightXAxisEntry.setDouble(Math.round(controllersTabData.driverXboxRightXAxis * 1000.0) / 1000.0);
+        driverXboxRightYAxisEntry.setDouble(Math.round(controllersTabData.driverXboxRightYAxis * 1000.0) / 1000.0);
+        driverXboxLeftTriggerAxisEntry.setDouble(Math.round(controllersTabData.driverXboxLeftTriggerAxis * 1000.0) / 1000.0);
+        driverXboxRightTriggerAxisEntry.setDouble(Math.round(controllersTabData.driverXboxRightTriggerAxis * 1000.0) / 1000.0);
+        driverXboxDpadEntry.setDouble(Math.round(controllersTabData.driverXboxDpadAxis * 1000.0) / 1000.0);
+        
+        operatorButtonBoardJoystickXAxisEntry.setDouble(Math.round(controllersTabData.operatorButtonBoardJoystickXAxis * 1000.0) / 1000.0);
+        operatorButtonBoardJoystickYAxisEntry.setDouble(Math.round(controllersTabData.operatorButtonBoardJoystickYAxis * 1000.0) / 1000.0);
+    }
+
+    public ControllersTabData getControllersTabData()
+    {
+        // Get Booleans for buttons on Xbox Controller.
+        controllersTabData.driverXboxAButton = driverXboxAButtonEntry.getBoolean(false);
+        controllersTabData.driverXboxBButton = driverXboxBButtonEntry.getBoolean(false);
+        controllersTabData.driverXboxXButton = driverXboxXButtonEntry.getBoolean(false);
+        controllersTabData.driverXboxYButton = driverXboxYButtonEntry.getBoolean(false);
+        controllersTabData.driverXboxLeftBumperButton = driverXboxLeftBumperEntry.getBoolean(false);
+        controllersTabData.driverXboxRightBumperButton = driverXboxRightBumperEntry.getBoolean(false);
+        controllersTabData.driverXboxLeftStickButton = driverXboxLeftStickButtonEntry.getBoolean(false);
+        controllersTabData.driverXboxRightStickButton = driverXboxRightStickButtonEntry.getBoolean(false);
+        controllersTabData.driverXboxStartButton = driverXboxStartButtonEntry.getBoolean(false);
+        controllersTabData.driverXboxBackButton = driverXboxBackButtonEntry.getBoolean(false);
+
+        // Get the Axes for the Xbox controller.
+        controllersTabData.driverXboxLeftXAxis = driverXboxLeftXAxisEntry.getDouble(0.0);
+        controllersTabData.driverXboxLeftYAxis = driverXboxLeftYAxisEntry.getDouble(0.0);
+        controllersTabData.driverXboxLeftTriggerAxis = driverXboxLeftTriggerAxisEntry.getDouble(0.0);
+        controllersTabData.driverXboxRightTriggerAxis = driverXboxRightTriggerAxisEntry.getDouble(0.0);
+        controllersTabData.driverXboxRightXAxis = driverXboxRightXAxisEntry.getDouble(0.0);
+        controllersTabData.driverXboxRightYAxis = driverXboxRightYAxisEntry.getDouble(0.0);
+        controllersTabData.driverXboxDpadAxis = driverXboxDpadEntry.getDouble(-1);
+
+        // Get Booleans for buttons on button board.
+        controllersTabData.operatorButtonBoardButton1 = operatorButtonBoardButton1Entry.getBoolean(false);
+        controllersTabData.operatorButtonBoardButton2 = operatorButtonBoardButton2Entry.getBoolean(false);
+        controllersTabData.operatorButtonBoardButton3 = operatorButtonBoardButton3Entry.getBoolean(false);
+        controllersTabData.operatorButtonBoardButton4 = operatorButtonBoardButton4Entry.getBoolean(false);
+        controllersTabData.operatorButtonBoardButton5 = operatorButtonBoardButton5Entry.getBoolean(false);
+        controllersTabData.operatorButtonBoardButton6 = operatorButtonBoardButton6Entry.getBoolean(false);
+        controllersTabData.operatorButtonBoardButton7 = operatorButtonBoardButton7Entry.getBoolean(false);
+        controllersTabData.operatorButtonBoardButton8 = operatorButtonBoardButton8Entry.getBoolean(false);
+        controllersTabData.operatorButtonBoardButton9 = operatorButtonBoardButton9Entry.getBoolean(false);
+        controllersTabData.operatorButtonBoardButton10 = operatorButtonBoardButton10Entry.getBoolean(false);
+
+        // Get Doubles for the Button Board joystick axes
+        controllersTabData.operatorButtonBoardJoystickXAxis = operatorButtonBoardJoystickXAxisEntry.getDouble(0.0);
+        controllersTabData.operatorButtonBoardJoystickYAxis = operatorButtonBoardJoystickYAxisEntry.getDouble(-0.0);
+        
+        return controllersTabData;
+    }
 }
