@@ -12,6 +12,7 @@ import java.util.Map;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -196,6 +197,14 @@ public class SlabShuffleboard
     private SendableChooser<CargoShip> task2CargoShipComboBox = new SendableChooser<>();
     private SendableChooser<Boolean> sendDataButton = new SendableChooser<>();
 
+    
+    // Camera Tab
+    private ShuffleboardTab cameraTab;
+
+    private NetworkTableEntry timeEllapsedEntry;
+    private NetworkTableEntry matchEntry;
+    private NetworkTableEntry startingFieldPositionEntry;
+
     // MOTORS AND SENSORS TAB
     private ShuffleboardTab motorsAndSensorsTab;
     private MotorsAndSensorsTabData motorsAndSensorsTabData = new MotorsAndSensorsTabData();
@@ -270,12 +279,14 @@ public class SlabShuffleboard
 
 
     private static SlabShuffleboard instance = new SlabShuffleboard();
+    private static DriverStation dStation = DriverStation.getInstance();
 
     private SlabShuffleboard()
     {
         System.out.println(this.getClass().getName() + ": Started Constructing");
 
         createMotorsAndSensorsTab();
+        createCameraTab();
         createPregameSetupTab();
         createControllersTab();
 
@@ -461,11 +472,43 @@ public class SlabShuffleboard
         return sendDataButton.getSelected();
     }
 
+    public void createCameraTab()
+    {
+        // Create and select the Motors and Sensors tab
+        cameraTab = Shuffleboard.getTab("Camera");
+
+        // Camera widgets created on Rasp Pi
+
+        timeEllapsedEntry = motorsAndSensorsTab.add("Time Ellapsed", "NA")
+                .withWidget(BuiltInWidgets.kTextView).withPosition(9, 0).withSize(8, 2).getEntry();
+                
+        matchEntry = motorsAndSensorsTab.add("Match", "NA")
+                .withWidget(BuiltInWidgets.kTextView).withPosition(9, 2).withSize(8, 2).getEntry();
+        
+        startingFieldPositionEntry = motorsAndSensorsTab.add("Starting Field Position", "NA")
+                .withWidget(BuiltInWidgets.kTextView).withPosition(9, 4).withSize(8, 2).getEntry();
+    }
+
+    public void updateCameraTab()
+    {
+        String timeEllapsedString;
+        String matchString;
+        String startingFieldPositionString;
+
+        timeEllapsedString = "Time Ellapsed: " + dStation.getMatchTime();
+        matchString = "Match Type: " + dStation.getMatchType() + ", Match #: " + dStation.getMatchNumber();
+        startingFieldPositionString = "Alliance: " + dStation + ", Location: " + dStation.getLocation();
+
+        timeEllapsedEntry.setString(timeEllapsedString);
+        matchEntry.setString(matchString);
+        startingFieldPositionEntry.setString(startingFieldPositionString);
+    }
+
     public void createMotorsAndSensorsTab()
     {
         // Create and select the Motors and Sensors tab
         motorsAndSensorsTab = Shuffleboard.getTab("Motors and Sensors");
-        Shuffleboard.selectTab("Motors and Sensors");
+        // Shuffleboard.selectTab("Motors and Sensors");
 
         // TextView for the "Drivetrain FL Motor Values"
         drivetrainFLValuesEntry = motorsAndSensorsTab.add("Drivetrain Front Left", "NA")
