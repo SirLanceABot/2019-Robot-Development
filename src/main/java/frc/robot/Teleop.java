@@ -214,7 +214,8 @@ public class Teleop
                 }
                 else
                 {
-                    elevator.stopElevator();
+                    //elevator.stopElevator();
+                    elevator.raiseElevator(0.05);
                 }
             }
 
@@ -252,7 +253,6 @@ public class Teleop
             {
                 elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kBottomCargo);
                 elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kBottomCargo);
-                System.out.println("Bottom Cargo Button");
             }
             else if (centerCargoButton)
             {
@@ -272,7 +272,8 @@ public class Teleop
         {
             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
             elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
-            elevator.stopElevator();
+            //elevator.stopElevator();
+            elevator.raiseElevator(0.05);
         }
         if (armButtonReleased)
         {

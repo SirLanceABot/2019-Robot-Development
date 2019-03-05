@@ -115,7 +115,8 @@ public class ElevatorAndArm
             }
             else
             {
-                elevator.stopElevator();
+                //elevator.stopElevator();
+                elevator.raiseElevator(0.05);
                 targetElevatorPosition = Elevator.Constants.ElevatorPosition.kNone;
                 elevator.setIsMoving(false);
                 getStartingPosition = true;
@@ -237,7 +238,7 @@ public class ElevatorAndArm
         double currentPotValue = arm.getPotValue();
         if(getStartingPosition)
         {
-            startingPosition = arm.getPotValue();
+            startingPosition = currentPotValue;
             getStartingPosition = false;
         }
         

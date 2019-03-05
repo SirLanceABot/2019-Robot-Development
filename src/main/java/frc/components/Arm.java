@@ -112,7 +112,7 @@ public class Arm
      */
     public void moveArmUp()
     {
-        armMotor.set(speedFactor * .5);
+        armMotor.set(speedFactor * 0.5);
     }
 
     /**
@@ -129,7 +129,7 @@ public class Arm
      */
     public void moveArmDown()
     {
-        armMotor.set(speedFactor * -.25);
+        armMotor.set(speedFactor * -0.25);
     }
 
     public double getArmCurrent()
@@ -214,7 +214,7 @@ public class Arm
         {
             grabberTimer.reset();
             grabberTimer.start();
-            grabberSolenoid.set(Value.kForward);
+            grabberSolenoid.set(Value.kReverse);
             isGrabberMoving = true;
         }
         
@@ -233,7 +233,7 @@ public class Arm
         {
             grabberTimer.reset();
             grabberTimer.start();
-            grabberSolenoid.set(Value.kReverse);
+            grabberSolenoid.set(Value.kForward);
             isGrabberMoving = true;
         }
         
@@ -531,7 +531,7 @@ public class Arm
         // 2: Middle
         // 3: Top
         public static final int[] COMPETITION_ARM_POSITION_POT_VALUES = {670, 597, 502, 283};
-        public static final int[] PRACTICE_ARM_POSITION_POT_VALUES = {628, 572, 452, 212};
+        public static final int[] PRACTICE_ARM_POSITION_POT_VALUES = {633, 572, 480, 212};
 
 
     }

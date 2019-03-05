@@ -274,7 +274,7 @@ public class Elevator
         // 8: Center Cargo
         // 9: Top Cargo
         public static final int[] COMPETITION_ELEVATOR_POSITION_POT_VALUES = {111, 876, 111, 360, 111, 406, 744, 283, 636, 876};
-        public static final int[] PRACTICE_ELEVATOR_POSITION_POT_VALUES = {111, 876, 111, 360, 111, 406, 744, 283, 636, 876};
+        public static final int[] PRACTICE_ELEVATOR_POSITION_POT_VALUES = {90, 830, 90, 337, 100, 337, 615, 245, 571, 820};
     
         public static final int INITIAL_HEIGHT_TO_MIN_HEIGHT = 111;//inchesToTicks(-10);
         public static final int INITIAL_HEIGHT_TO_MAX_HEIGHT = 876;//inchesToTicks(85);
