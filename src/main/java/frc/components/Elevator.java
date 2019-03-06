@@ -13,7 +13,7 @@ import frc.components.Elevator.Constants.ElevatorPosition;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.ctre.phoenix.motorcontrol.InvertType;
+// import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
@@ -45,7 +45,6 @@ public class Elevator
      */
     private static int[] elevatorPositionPotValues = Constants.PRACTICE_ELEVATOR_POSITION_POT_VALUES;
 
-   
     private static Elevator instance = new Elevator();
 
     public static Elevator getInstance()
@@ -91,7 +90,8 @@ public class Elevator
      */
     public void raiseElevator()
     {
-        masterElevatorMotor.set(speedFactor * Constants.ELEVATOR_SPEED);
+        // masterElevatorMotor.set(speedFactor * Constants.ELEVATOR_SPEED);
+        raiseElevator(Constants.ELEVATOR_SPEED);
     }
 
     /**
@@ -107,7 +107,8 @@ public class Elevator
      */
     public void lowerElevator()
     {
-        masterElevatorMotor.set(speedFactor * -Constants.ELEVATOR_SPEED);
+        // masterElevatorMotor.set(speedFactor * -Constants.ELEVATOR_SPEED);
+        lowerElevator(-Constants.ELEVATOR_SPEED);
     }
 
     /**
@@ -163,10 +164,12 @@ public class Elevator
         if(robotType == SlabShuffleboard.RobotType.kCompetition)
         {
             elevatorPositionPotValues = Constants.COMPETITION_ELEVATOR_POSITION_POT_VALUES;
+            System.out.println(this.getClass().getName() + ": elevatorPositionPotValues = " + elevatorPositionPotValues);
         }
         else
         {
             elevatorPositionPotValues = Constants.PRACTICE_ELEVATOR_POSITION_POT_VALUES;
+            System.out.println(this.getClass().getName() + ": elevatorPositionPotValues = " + elevatorPositionPotValues);
         }
 
         masterElevatorMotor.configReverseSoftLimitThreshold(getElevatorPositionPotValues(Constants.ElevatorPosition.kMinHeight));

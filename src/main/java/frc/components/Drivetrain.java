@@ -41,7 +41,7 @@ public class Drivetrain extends MecanumDrive
     private double rightServoPosition = 0.3;
     private boolean omniWheelUp = false;
 
-    private Encoder leftEncoder = new Encoder(Constants.LEFT_ENCODER_CHANNEL_A, Constants.LEFT_ENCODER_CHANNEL_B, false, Encoder.EncodingType.k4X);
+    private Encoder leftEncoder = new Encoder(Constants.LEFT_ENCODER_CHANNEL_A, Constants.LEFT_ENCODER_CHANNEL_B, true, Encoder.EncodingType.k4X);
     private Encoder rightEncoder = new Encoder(Constants.RIGHT_ENCODER_CHANNEL_A, Constants.RIGHT_ENCODER_CHANNEL_B, false, Encoder.EncodingType.k4X);
     private boolean needToResetEncoder = true;
     private boolean isEncoderResetting = false;
@@ -152,7 +152,7 @@ public class Drivetrain extends MecanumDrive
      */
     public double getLeftDistanceInInches()
     {
-        return -leftEncoder.getRaw() / Constants.ENCODER_TICKS_PER_INCH;
+        return leftEncoder.getRaw() / Constants.ENCODER_TICKS_PER_INCH;
     }
 
     /**
@@ -577,7 +577,7 @@ public class Drivetrain extends MecanumDrive
 
     public String getOmniWheelData()
     {
-        return String.format("%6d,  %8.2f,  %6d,  %8.2f", -leftEncoder.get(), getLeftDistanceInInches(), rightEncoder.get(), getRightDistanceInInches());
+        return String.format("%6d,  %8.2f,  %6d,  %8.2f", leftEncoder.get(), getLeftDistanceInInches(), rightEncoder.get(), getRightDistanceInInches());
     }
 
     public String getNavXData()

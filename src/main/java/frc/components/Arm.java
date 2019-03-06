@@ -16,11 +16,11 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.ParamEnum;
+// import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+// import com.ctre.phoenix.motorcontrol.InvertType;
+// import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+// import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 
@@ -58,7 +58,7 @@ public class Arm
      */
     private static int[] armPositionPotValues = Constants.PRACTICE_ARM_POSITION_POT_VALUES;
 
-    private SlabShuffleboard shuffleboard = SlabShuffleboard.getInstance();
+    // private SlabShuffleboard shuffleboard = SlabShuffleboard.getInstance();
 
     private static Arm instance = new Arm();
 
@@ -72,16 +72,11 @@ public class Arm
         armMotor.setNeutralMode(NeutralMode.Brake);
         intakeRoller.setNeutralMode(NeutralMode.Brake);
 
-        armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kTopArmPosition));
-        armMotor.configForwardSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kFloorArmPosition));
-        armMotor.configForwardSoftLimitEnable(true);
-        armMotor.configReverseSoftLimitEnable(true);
-
         armMotor.configPeakCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.k9015Motor, 0.3));
-        intakeRoller.configPeakCurrentDuration(MotorConstants.Constants.PEAK_CURRENT_DURATION);
-        intakeRoller.configContinuousCurrentLimit(MotorConstants.Constants.CONTINOUS_CURRENT_LIMIT);
-        intakeRoller.configOpenloopRamp(MotorConstants.Constants.OPEN_LOOP_RAMP);
-        intakeRoller.enableCurrentLimit(true);
+        armMotor.configPeakCurrentDuration(MotorConstants.Constants.PEAK_CURRENT_DURATION);
+        armMotor.configContinuousCurrentLimit(MotorConstants.Constants.CONTINOUS_CURRENT_LIMIT);
+        armMotor.configOpenloopRamp(MotorConstants.Constants.OPEN_LOOP_RAMP);
+        armMotor.enableCurrentLimit(true);
 
         intakeRoller.configPeakCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.kBagMotor, 0.3));
         intakeRoller.configPeakCurrentDuration(MotorConstants.Constants.PEAK_CURRENT_DURATION);
@@ -89,18 +84,20 @@ public class Arm
         intakeRoller.configOpenloopRamp(MotorConstants.Constants.OPEN_LOOP_RAMP);
         intakeRoller.enableCurrentLimit(true);
 
+        armMotor.configSelectedFeedbackSensor(FeedbackDevice.Analog);
         armMotor.setSensorPhase(false);
+        armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kTopArmPosition));
+        armMotor.configForwardSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kFloorArmPosition));
+        armMotor.configForwardSoftLimitEnable(true);
+        armMotor.configReverseSoftLimitEnable(true);
+
         // armMotor.setInverted(InvertType.InvertMotorOutput);
 
+        // Used for a Limit Switch that is attached to a Talon but is not controlling the Talon output
         // armMotor.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled);
         // armMotor.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled);
- 
         // armMotor.configSetParameter(ParamEnum.eFeedbackNotContinuous, 1, 0, 0, 0);
 
-        armMotor.configSelectedFeedbackSensor(FeedbackDevice.Analog);
-
-        
-    
         System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
@@ -119,7 +116,8 @@ public class Arm
      */
     public void moveArmUp()
     {
-        armMotor.set(speedFactor * -0.5);
+        // armMotor.set(speedFactor * -0.5);
+        moveArmUp(-0.5);
     }
 
     /**
@@ -136,12 +134,8 @@ public class Arm
      */
     public void moveArmDown()
     {
-        armMotor.set(speedFactor * 0.25);
-    }
-
-    public double getArmCurrent()
-    {
-        return armMotor.getOutputCurrent();
+        // armMotor.set(speedFactor * 0.25);
+        moveArmDown(0.25);
     }
 
      /**
@@ -159,6 +153,11 @@ public class Arm
     public void stopArm()
     {
         armMotor.set(0);
+    }
+    
+    public double getArmCurrent()
+    {
+        return armMotor.getOutputCurrent();
     }
 
     /**
@@ -304,10 +303,12 @@ public class Arm
         if (robotType == SlabShuffleboard.RobotType.kCompetition)
         {
             armPositionPotValues = Constants.COMPETITION_ARM_POSITION_POT_VALUES;
+            System.out.println(this.getClass().getName() + ": armPositionPotValues = " + armPositionPotValues);
         }
         else
         {
             armPositionPotValues = Constants.PRACTICE_ARM_POSITION_POT_VALUES;
+            System.out.println(this.getClass().getName() + ": armPositionPotValues = " + armPositionPotValues);
         }
 
         armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kTopArmPosition));
@@ -506,7 +507,6 @@ public class Arm
 
         public static final int ARM_THRESHOLD = 5;
 
-
         // 0: Floor
         // 1: Horizontal
         // 2: Middle
@@ -514,8 +514,6 @@ public class Arm
         // 4: Threshold
         public static final int[] COMPETITION_ARM_POSITION_POT_VALUES = {670, 597, 502, 283, 5, -1};
         public static final int[] PRACTICE_ARM_POSITION_POT_VALUES = {628, 572, 480, 230, 5, -1};
-
-
     }
 
 }
