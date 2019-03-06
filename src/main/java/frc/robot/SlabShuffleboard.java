@@ -497,7 +497,7 @@ public class SlabShuffleboard
 
         timeEllapsedString = "Time Ellapsed: " + dStation.getMatchTime();
         matchString = "Match Type:\n" + dStation.getMatchType() + "\nMatch #:\n" + dStation.getMatchNumber();
-        startingFieldPositionString = "Alliance: " + dStation + ", Location: " + dStation.getLocation();
+        startingFieldPositionString = "Alliance: " + dStation.getAlliance() + ", Location: " + dStation.getLocation();
 
         timeEllapsedEntry.setString(timeEllapsedString);
         matchEntry.setString(matchString);
