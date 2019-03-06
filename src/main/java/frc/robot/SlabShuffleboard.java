@@ -285,10 +285,10 @@ public class SlabShuffleboard
     {
         System.out.println(this.getClass().getName() + ": Started Constructing");
 
+        createControllersTab();
         createMotorsAndSensorsTab();
         createCameraTab();
         createPregameSetupTab();
-        createControllersTab();
 
         System.out.println(this.getClass().getName() + ": Started Constructing");
     }
@@ -474,18 +474,18 @@ public class SlabShuffleboard
 
     public void createCameraTab()
     {
-        // Create and select the Motors and Sensors tab
+        // Create the Camera tab
         cameraTab = Shuffleboard.getTab("Camera");
 
         // Camera widgets created on Rasp Pi
 
-        timeEllapsedEntry = motorsAndSensorsTab.add("Time Ellapsed", "NA")
+        timeEllapsedEntry = cameraTab.add("Time Ellapsed", "NA")
                 .withWidget(BuiltInWidgets.kTextView).withPosition(9, 0).withSize(8, 2).getEntry();
                 
-        matchEntry = motorsAndSensorsTab.add("Match", "NA")
+        matchEntry = cameraTab.add("Match", "NA")
                 .withWidget(BuiltInWidgets.kTextView).withPosition(9, 2).withSize(8, 2).getEntry();
         
-        startingFieldPositionEntry = motorsAndSensorsTab.add("Starting Field Position", "NA")
+        startingFieldPositionEntry = cameraTab.add("Starting Field Position", "NA")
                 .withWidget(BuiltInWidgets.kTextView).withPosition(9, 4).withSize(8, 2).getEntry();
     }
 
@@ -496,7 +496,7 @@ public class SlabShuffleboard
         String startingFieldPositionString;
 
         timeEllapsedString = "Time Ellapsed: " + dStation.getMatchTime();
-        matchString = "Match Type: " + dStation.getMatchType() + ", Match #: " + dStation.getMatchNumber();
+        matchString = "Match Type:\n" + dStation.getMatchType() + "\nMatch #:\n" + dStation.getMatchNumber();
         startingFieldPositionString = "Alliance: " + dStation + ", Location: " + dStation.getLocation();
 
         timeEllapsedEntry.setString(timeEllapsedString);
@@ -506,9 +506,8 @@ public class SlabShuffleboard
 
     public void createMotorsAndSensorsTab()
     {
-        // Create and select the Motors and Sensors tab
+        // Create the Motors and Sensors tab
         motorsAndSensorsTab = Shuffleboard.getTab("Motors and Sensors");
-        // Shuffleboard.selectTab("Motors and Sensors");
 
         // TextView for the "Drivetrain FL Motor Values"
         drivetrainFLValuesEntry = motorsAndSensorsTab.add("Drivetrain Front Left", "NA")
@@ -609,8 +608,8 @@ public class SlabShuffleboard
 
     private void createControllersTab()
     {
+        // Create the Controllers tab
         controllersTab = Shuffleboard.getTab("Controllers");
-        Shuffleboard.selectTab("Controllers");
 
         // All of the Text View Boxes and Boolean Boxes for the Xbox Controller. -Mikey and Annika
         
