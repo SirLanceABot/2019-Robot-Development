@@ -72,10 +72,10 @@ public class Arm
         armMotor.setNeutralMode(NeutralMode.Brake);
         intakeRoller.setNeutralMode(NeutralMode.Brake);
 
-        // armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kFloorArmPosition));
-        // armMotor.configForwardSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kTopArmPosition));
-        // armMotor.configForwardSoftLimitEnable(true);
-        // armMotor.configReverseSoftLimitEnable(true);
+        armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kTopArmPosition));
+        armMotor.configForwardSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kFloorArmPosition));
+        armMotor.configForwardSoftLimitEnable(true);
+        armMotor.configReverseSoftLimitEnable(true);
 
         armMotor.configPeakCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.k9015Motor, 0.3));
         intakeRoller.configPeakCurrentDuration(MotorConstants.Constants.PEAK_CURRENT_DURATION);
@@ -89,13 +89,13 @@ public class Arm
         intakeRoller.configOpenloopRamp(MotorConstants.Constants.OPEN_LOOP_RAMP);
         intakeRoller.enableCurrentLimit(true);
 
-        armMotor.setSensorPhase(true);
-        armMotor.setInverted(InvertType.InvertMotorOutput);
+        armMotor.setSensorPhase(false);
+        // armMotor.setInverted(InvertType.InvertMotorOutput);
 
-        armMotor.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled);
-        armMotor.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled);
+        // armMotor.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled);
+        // armMotor.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled);
  
-        armMotor.configSetParameter(ParamEnum.eFeedbackNotContinuous, 1, 0, 0, 0);
+        // armMotor.configSetParameter(ParamEnum.eFeedbackNotContinuous, 1, 0, 0, 0);
 
         armMotor.configSelectedFeedbackSensor(FeedbackDevice.Analog);
 
@@ -119,7 +119,7 @@ public class Arm
      */
     public void moveArmUp()
     {
-        armMotor.set(speedFactor * 0.5);
+        armMotor.set(speedFactor * -0.5);
     }
 
     /**
@@ -128,7 +128,7 @@ public class Arm
      */
     public void moveArmUp(double speed)
     {
-        armMotor.set(speedFactor * Math.abs(speed));
+        armMotor.set(speedFactor * -Math.abs(speed));
     }
 
     /**
@@ -136,7 +136,7 @@ public class Arm
      */
     public void moveArmDown()
     {
-        armMotor.set(speedFactor * -0.25);
+        armMotor.set(speedFactor * 0.25);
     }
 
     public double getArmCurrent()
@@ -150,7 +150,7 @@ public class Arm
      */
     public void moveArmDown(double speed)
     {
-        armMotor.set(speedFactor * -Math.abs(speed));
+        armMotor.set(speedFactor * Math.abs(speed));
     }
 
     /**
@@ -310,8 +310,8 @@ public class Arm
             armPositionPotValues = Constants.PRACTICE_ARM_POSITION_POT_VALUES;
         }
 
-        // armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kFloorArmPosition));
-        // armMotor.configForwardSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kTopArmPosition));
+        armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kTopArmPosition));
+        armMotor.configForwardSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kFloorArmPosition));
     }
 
     public void setMotorSpeedFactor(SlabShuffleboard.MotorSpeed speedFactor)
