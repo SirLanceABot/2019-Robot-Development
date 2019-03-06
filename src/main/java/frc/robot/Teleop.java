@@ -21,7 +21,6 @@ import frc.visionForWhiteTape.CameraProcess;
 import frc.visionForWhiteTape.TargetData;
 import frc.visionForWhiteTape.CameraProcess.rotate;
 
-import javax.lang.model.util.ElementScanner6;
 
 import edu.wpi.first.wpilibj.Timer;
 
@@ -74,6 +73,7 @@ public class Teleop
         arm.setMotorSpeedFactor(pregame.motorSpeed);
         elevator.setMotorSpeedFactor(pregame.motorSpeed);
         drivetrain.setMotorSpeedFactor(pregame.motorSpeed);
+        System.out.println(pregame.robotType);
 
         elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
         elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
@@ -319,7 +319,14 @@ public class Teleop
         if (driverXbox.getRawButtonPressed(Xbox.Constants.START_BUTTON))
         {
             drivetrain.toggleDriveInFieldOriented();
-            System.out.println(drivetrain.getDriveInFieldOriented());
+            if(drivetrain.getDriveInFieldOriented())
+            {
+                System.out.println("Field Oriented");
+            }
+            else
+            {
+                System.out.println("Not Field Oriented");
+            }
         }
 
         if (drivetrain.getDriveInFieldOriented())

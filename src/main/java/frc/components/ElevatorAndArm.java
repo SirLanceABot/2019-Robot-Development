@@ -57,6 +57,7 @@ public class ElevatorAndArm
     }
 
     public void setArmTargetPosition(Arm.Constants.Position targetPosition)
+
     {
         targetArmPosition = targetPosition;
     }
@@ -77,8 +78,8 @@ public class ElevatorAndArm
         //System.out.println(elevator + "Target Elevator: " + targetElevatorPosition);
         //System.out.println(arm + "Arm Elevator: " + targetArmPosition);
         armPotValue = arm.getPotValue();
-        horizontalArmPosition = arm.getArmPositionPotValue(1);
-        floorElevatorPosition = elevator.getElevatorPositionPotValues(2);
+        horizontalArmPosition = arm.getArmPositionPotValue(Arm.Constants.ArmPosition.kHorizontalArmPosition);
+        floorElevatorPosition = elevator.getElevatorPositionPotValues(Elevator.Constants.ElevatorPosition.kFloor);
 
         if(targetElevatorPosition != Elevator.Constants.ElevatorPosition.kNone)
         {
@@ -88,15 +89,17 @@ public class ElevatorAndArm
             //     elevator.setIsMoving(true);
             // }
             //else 
-            if(elevatorPotValue < (elevator.getPositionValue(targetElevatorPosition) - elevator.getPositionValue(Elevator.Constants.ElevatorPosition.kThreshold)))
+            if(elevatorPotValue < (elevator.getElevatorPositionPotValues(targetElevatorPosition) - elevator.getElevatorPositionPotValues(Elevator.Constants.ElevatorPosition.kThreshold)))
             {
                 elevator.raiseElevator(scaleElevatorMovement());
+                // elevator.raiseElevator(0.3);
                 elevator.setIsMoving(true);
             }
-            else if(elevatorPotValue > (elevator.getPositionValue(targetElevatorPosition) + elevator.getPositionValue(Elevator.Constants.ElevatorPosition.kThreshold)))
+            else if(elevatorPotValue > (elevator.getElevatorPositionPotValues(targetElevatorPosition) + elevator.getElevatorPositionPotValues(Elevator.Constants.ElevatorPosition.kThreshold)))
             {
                 elevator.setIsMoving(true);
-                elevator.lowerElevator(scaleElevatorMovement());
+                elevator.lowerElevator(Constants.ELEVATOR_DOWN_SCALE_FACTOR * scaleElevatorMovement());
+                // elevator.lowerElevator(-0.3);
                 // if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristDown)
                 // {
                 //     if(elevatorPotValue > initialElevatorPosition || armPotValue < arm.getHorizontalArmPosition())
@@ -159,15 +162,17 @@ public class ElevatorAndArm
                 // }
             }
 
-            if(armPotValue > arm.getTargetPositionArmPositionValue(targetArmPosition) + 5)
+            if(armPotValue > arm.getArmPositionPotValue(targetArmPosition) + 5)
             {
                 arm.moveArmUp(scaleArmMovement());
                 arm.setIsArmMoving(true);
+                //arm.moveArmUp(0.3);
             }
-            else if(armPotValue < arm.getTargetPositionArmPositionValue(targetArmPosition) - 5)
+            else if(armPotValue < arm.getArmPositionPotValue(targetArmPosition) - 5)
             {
                 arm.setIsArmMoving(true);
-                arm.moveArmDown(scaleArmMovement());
+                arm.moveArmDown(Constants.ARM_DOWN_SCALE_FACTOR * scaleArmMovement());
+                //arm.moveArmDown(0.2);
 
                 // if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristDown && !arm.isWristDown())
                 // {
@@ -210,7 +215,7 @@ public class ElevatorAndArm
             getStartingPosition = false;
         }
         
-        double endingPosition = arm.getTargetPositionArmPositionValue(targetArmPosition);
+        double endingPosition = arm.getArmPositionPotValue(targetArmPosition);
         double distanceToTravel = Math.abs(endingPosition - startingPosition);
         double startingDistance = Math.abs(distanceToTravel / 10.0);
         double stoppingDistance = distanceToTravel - distanceToTravel / 10.0;
@@ -218,15 +223,15 @@ public class ElevatorAndArm
 
         if(distanceTraveled < startingDistance)
         {
-            return 0.3;
+            return ((Constants.ELEVATOR_MAX_SPEED - Constants.ELEVATOR_STARTING_SPEED) / startingDistance) * distanceTraveled + Constants.ELEVATOR_STARTING_SPEED;
         }
-        if(distanceTraveled > startingDistance && distanceTraveled < stoppingDistance)
+        else if(distanceTraveled >= startingDistance && distanceTraveled <= stoppingDistance)
         {
-            return 1.0;
+            return Constants.ELEVATOR_MAX_SPEED;
         }
-        if(distanceTraveled > stoppingDistance)
+        else if(distanceTraveled > stoppingDistance)
         {
-            return 0.3;
+            return ((Constants.ELEVATOR_MAX_SPEED - Constants.ELEVATOR_STARTING_SPEED) / (distanceToTravel - stoppingDistance)) * (distanceToTravel - distanceTraveled) + Constants.ELEVATOR_STARTING_SPEED;
         }
         else
             return 0.0;
@@ -242,7 +247,7 @@ public class ElevatorAndArm
             getStartingPosition = false;
         }
         
-        double endingPosition = arm.getTargetPositionArmPositionValue(targetArmPosition);
+        double endingPosition = arm.getArmPositionPotValue(targetArmPosition);
         double distanceToTravel = Math.abs(endingPosition - startingPosition);
         double startingDistance = Math.abs(distanceToTravel / 10.0);
         double stoppingDistance = distanceToTravel - distanceToTravel / 10.0;
@@ -250,17 +255,29 @@ public class ElevatorAndArm
 
         if(distanceTraveled < startingDistance)
         {
-            return 0.3;
+            return ((Constants.ARM_MAX_SPEED - Constants.ARM_STARTING_SPEED) / startingDistance) * distanceTraveled + Constants.ARM_STARTING_SPEED;
         }
-        if(distanceTraveled > startingDistance && distanceTraveled < stoppingDistance)
+        else if(distanceTraveled >= startingDistance && distanceTraveled <= stoppingDistance)
         {
-            return 1.0;
+            return Constants.ARM_MAX_SPEED;
         }
-        if(distanceTraveled > stoppingDistance)
+        else if(distanceTraveled > stoppingDistance)
         {
-            return 0.3;
+            return ((Constants.ARM_MAX_SPEED - Constants.ARM_STARTING_SPEED) / (distanceToTravel - stoppingDistance)) * (distanceToTravel - distanceTraveled) + Constants.ARM_STARTING_SPEED;
         }
         else
             return 0.0;
+    }
+
+    public static class Constants
+    {
+        public final static double ARM_MAX_SPEED = 1.0;
+        public final static double ARM_STARTING_SPEED = 0.3;
+        public final static double ARM_DOWN_SCALE_FACTOR = 0.5;
+
+        public final static double ELEVATOR_MAX_SPEED = 1.0;
+        public final static double ELEVATOR_STARTING_SPEED = 0.3;
+        public final static double ELEVATOR_DOWN_SCALE_FACTOR = 0.5;
+
     }
 }

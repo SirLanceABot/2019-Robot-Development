@@ -43,7 +43,7 @@ public class Elevator
      * <p> 8: Center Cargo
      * <p> 9: Top Cargo
      */
-    private static int[] elevatorPositionPotValues = {111, 876, 111, 360, 111, 406, 744, 283, 636, 876};
+    private static int[] elevatorPositionPotValues = Constants.PRACTICE_ELEVATOR_POSITION_POT_VALUES;
 
    
     private static Elevator instance = new Elevator();
@@ -69,8 +69,8 @@ public class Elevator
         // masterElevatorMotor.setInverted(InvertType.InvertMotorOutput);
         // slaveElevatorMotor.setInverted(InvertType.InvertMotorOutput);
 
-        masterElevatorMotor.configReverseSoftLimitThreshold(Constants.ElevatorPosition.kMinHeight.position);
-        masterElevatorMotor.configForwardSoftLimitThreshold(Constants.ElevatorPosition.kMaxHeight.position);
+        masterElevatorMotor.configReverseSoftLimitThreshold(getElevatorPositionPotValues(Constants.ElevatorPosition.kMinHeight));
+        masterElevatorMotor.configForwardSoftLimitThreshold(getElevatorPositionPotValues(Constants.ElevatorPosition.kMaxHeight));
         
         masterElevatorMotor.configForwardSoftLimitEnable(true);
         masterElevatorMotor.configReverseSoftLimitEnable(true);
@@ -133,7 +133,7 @@ public class Elevator
      */
     public int getPotValue()
 	{
-		return masterElevatorMotor.getSelectedSensorPosition(0);
+		return masterElevatorMotor.getSelectedSensorPosition();
     }
 
     /**
@@ -154,13 +154,6 @@ public class Elevator
         this.isMoving = isMoving;
     }
 
-    /**
-    * gets the position value of the elevator
-     */
-    public int getPositionValue(ElevatorPosition position)
-    {
-        return position.position;
-    }
 
     /**
      * sets the type of robot being used (competition or practice)
@@ -175,6 +168,9 @@ public class Elevator
         {
             elevatorPositionPotValues = Constants.PRACTICE_ELEVATOR_POSITION_POT_VALUES;
         }
+
+        masterElevatorMotor.configReverseSoftLimitThreshold(getElevatorPositionPotValues(Constants.ElevatorPosition.kMinHeight));
+        masterElevatorMotor.configForwardSoftLimitThreshold(getElevatorPositionPotValues(Constants.ElevatorPosition.kMaxHeight));
     }
 
     public void setMotorSpeedFactor(SlabShuffleboard.MotorSpeed speedFactor)
@@ -199,9 +195,9 @@ public class Elevator
      * 
      * @return pot value of the selected position
      */
-    public int getElevatorPositionPotValues(int position)
+    public int getElevatorPositionPotValues(ElevatorPosition position)
     {
-        return elevatorPositionPotValues[position];
+        return elevatorPositionPotValues[position.value];
     }
 
     @Deprecated
@@ -231,35 +227,26 @@ public class Elevator
     {
         public static enum ElevatorPosition
 		{
-            kMinHeight(elevatorPositionPotValues[0], "Min Height"),
-            kMaxHeight(elevatorPositionPotValues[1], "Max Height"),
-            kFloor(elevatorPositionPotValues[2], "Floor"),
-            kCargoShipCargo(elevatorPositionPotValues[3], "Cargo Ship Cargo"),
-            kThreshold(5, "Threshold"),
+            kMinHeight(0),
+            kMaxHeight(1),
+            kFloor(2),
+            kCargoShipCargo(3),
 
-            kBottomHatch(elevatorPositionPotValues[4], "Bottom Hatch"),      // 1 ft 7 inches to center
-            kCenterHatch(elevatorPositionPotValues[5], "Center Hatch"),      // 3 ft 11 inches to center
-            kTopHatch(elevatorPositionPotValues[6], "Top Hatch"),         // 6 ft 3 inches to center
+            kBottomHatch(4),      // 1 ft 7 inches to center
+            kCenterHatch(5),      // 3 ft 11 inches to center
+            kTopHatch(6),         // 6 ft 3 inches to center
 
-            kBottomCargo(elevatorPositionPotValues[7], "Bottom Cargo"),       // 2 ft 3.5 inches to center
-            kCenterCargo(elevatorPositionPotValues[8], "Center Cargo"),       // 4 ft 7.5 inches to center
-            kTopCargo(elevatorPositionPotValues[9], "Top Cargo"),          // 6 ft 11.5 inches to center
-            kNone(-1, "None");
+            kBottomCargo(7),       // 2 ft 3.5 inches to center
+            kCenterCargo(8),       // 4 ft 7.5 inches to center
+            kTopCargo(9),          // 6 ft 11.5 inches to center
+            kThreshold(10),
+            kNone(11);
 
-            
-            private final int position;
-            private final String name;
+            private final int value;
 
-            private ElevatorPosition(int value, String name)
+            private ElevatorPosition(int value)
             {
-                this.position = value;
-                this.name = name;
-            }
-
-            @Override
-            public String toString()
-            {
-                return name;
+                this.value = value;
             }
         }
 
@@ -273,8 +260,10 @@ public class Elevator
         // 7: Bottom Cargo
         // 8: Center Cargo
         // 9: Top Cargo
-        public static final int[] COMPETITION_ELEVATOR_POSITION_POT_VALUES = {111, 876, 111, 360, 111, 406, 744, 283, 636, 876};
-        public static final int[] PRACTICE_ELEVATOR_POSITION_POT_VALUES = {90, 830, 90, 337, 100, 337, 615, 245, 571, 820};
+        // 10: Threshold
+        // 11: None
+        public static final int[] COMPETITION_ELEVATOR_POSITION_POT_VALUES = {111, 876, 111, 406, 111, 406, 744, 283, 636, 876, 5, -1};
+        public static final int[] PRACTICE_ELEVATOR_POSITION_POT_VALUES =    {99, 820, 101, 432, 99, 360, 607, 245, 571, 820, 5, -1};
     
         public static final int INITIAL_HEIGHT_TO_MIN_HEIGHT = 111;//inchesToTicks(-10);
         public static final int INITIAL_HEIGHT_TO_MAX_HEIGHT = 876;//inchesToTicks(85);
