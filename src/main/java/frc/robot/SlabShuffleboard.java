@@ -608,8 +608,8 @@ public class SlabShuffleboard
 
     private void createControllersTab()
     {
-        // Create the Controllers tab
         controllersTab = Shuffleboard.getTab("Controllers");
+        Shuffleboard.selectTab("Controllers");
 
         // All of the Text View Boxes and Boolean Boxes for the Xbox Controller. -Mikey and Annika
         
@@ -651,11 +651,11 @@ public class SlabShuffleboard
 
         // Xbox Right X Axis 
         driverXboxRightXAxisEntry = controllersTab.add("Right X Axis", 0.0).withWidget(BuiltInWidgets.kTextView)
-            .withPosition(9, 12).withSize(3, 1).getEntry();
+            .withPosition(7, 12).withSize(3, 1).getEntry();
 
         // Xbox Right Y Axis
         driverXboxRightYAxisEntry = controllersTab.add("Right Y Axis", 0.0).withWidget(BuiltInWidgets.kTextView)
-            .withPosition(9, 14).withSize(3, 1).getEntry();
+            .withPosition(7, 14).withSize(3, 1).getEntry();
         
         // Xbox Left Bumper button
         Map<String, Object> mapLeftBumperColor = new HashMap<String,Object>();
@@ -669,7 +669,7 @@ public class SlabShuffleboard
             mapRightBumperColor.put("Color when true", "#00BFFF");        
             mapRightBumperColor.put("Color when false", "#000000");    
         driverXboxRightBumperEntry = controllersTab.add("Right Bumper", false).withWidget(BuiltInWidgets.kBooleanBox)
-            .withPosition(11, 2).withSize(3, 1).withProperties(mapRightBumperColor).getEntry();
+            .withPosition(4, 2).withSize(3, 1).withProperties(mapRightBumperColor).getEntry();
         
         // Xbox Left Trigger Axis
         driverXboxLeftTriggerAxisEntry = controllersTab.add("Left Trigger Axis", 0).withWidget(BuiltInWidgets.kTextView)
@@ -677,7 +677,7 @@ public class SlabShuffleboard
         
         // Xbox Right Trigger Axis
         driverXboxRightTriggerAxisEntry = controllersTab.add("Right Trigger Axis", 0).withWidget(BuiltInWidgets.kTextView)
-            .withPosition(11, 0).withSize(3, 1).getEntry();
+            .withPosition(4, 0).withSize(3, 1).getEntry();
         
         // Xbox Start button
         Map<String, Object> mapStartButtonColor = new HashMap<String,Object>();
@@ -705,10 +705,10 @@ public class SlabShuffleboard
         mapRightStickColor.put("Color when true", "#FF1493");        
         mapRightStickColor.put("Color when false", "#40E0D0");    
         driverXboxRightStickButtonEntry = controllersTab.add("Right Stick", false).withWidget(BuiltInWidgets.kBooleanBox)
-            .withPosition(9, 10).withSize(3, 1).withProperties(mapRightStickColor).getEntry();
+            .withPosition(7, 10).withSize(3, 1).withProperties(mapRightStickColor).getEntry();
         
         // Xbox Dpad Value
-        driverXboxDpadEntry = controllersTab.add("Dpad Value", -1).withWidget(BuiltInWidgets.kTextView).withPosition(3, 13)
+        driverXboxDpadEntry = controllersTab.add("Dpad Value", -1).withWidget(BuiltInWidgets.kTextView).withPosition(3, 12)
             .withSize(3, 1).getEntry();
 
 
@@ -720,35 +720,35 @@ public class SlabShuffleboard
         Map<String, Object> mapFloorButtonColor = new HashMap<String,Object>();
         mapFloorButtonColor.put("Color when true", "#FF0000");        
         mapFloorButtonColor.put("Color when false", "#0000FF");
-        operatorButtonBoardButton1Entry = controllersTab.add("Floor Button", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(23, 7)
+        operatorButtonBoardButton1Entry = controllersTab.add("Floor Button", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(21, 7)
             .withSize(3, 1).withProperties(mapFloorButtonColor).getEntry();
         
         // Button Board Cargo Ship Cargo button
         Map<String, Object> mapCargoShipCargoButtonColor = new HashMap<String,Object>();
         mapCargoShipCargoButtonColor.put("Color when true", "#FF0000");        
         mapCargoShipCargoButtonColor.put("Color when false", "#0000FF");    
-        operatorButtonBoardButton2Entry = controllersTab.add("Cargo Ship Cargo", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(23, 5)
+        operatorButtonBoardButton2Entry = controllersTab.add("Cargo Ship Cargo", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(21, 5)
             .withSize(3, 1).withProperties(mapCargoShipCargoButtonColor).getEntry();
         
         // Button Board Bottom Cargo button
         Map<String, Object> mapBottomCargoButtonColor = new HashMap<String,Object>();
         mapBottomCargoButtonColor.put("Color when true", "#191970");        
         mapBottomCargoButtonColor.put("Color when false", "#FFD700");     
-        operatorButtonBoardButton3Entry = controllersTab.add("Bottom Cargo", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(28, 6)
+        operatorButtonBoardButton3Entry = controllersTab.add("Bottom Cargo", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(24, 6)
             .withSize(3, 1).withProperties(mapBottomCargoButtonColor).getEntry();
         
         // Button Board Center Cargo button
         Map<String, Object> mapCenterCargoButtonColor = new HashMap<String,Object>();
         mapCenterCargoButtonColor.put("Color when true", "#191970");        
         mapCenterCargoButtonColor.put("Color when false", "#FFD700");
-        operatorButtonBoardButton4Entry = controllersTab.add("Center Cargo", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(28, 4)
+        operatorButtonBoardButton4Entry = controllersTab.add("Center Cargo", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(24, 4)
             .withSize(3, 1).withProperties(mapCenterCargoButtonColor).getEntry();
         
         // Button Board Top Cargo button
         Map<String, Object> mapTopCargoButtonColor = new HashMap<String,Object>();
         mapTopCargoButtonColor.put("Color when true", "#191970");        
         mapTopCargoButtonColor.put("Color when false", "#FFD700");
-        operatorButtonBoardButton5Entry = controllersTab.add("Top Cargo", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(28, 2)
+        operatorButtonBoardButton5Entry = controllersTab.add("Top Cargo", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(24, 2)
             .withSize(3, 1).withProperties(mapTopCargoButtonColor).getEntry();
         
         // Button Board Bottom Hatch button
@@ -776,22 +776,22 @@ public class SlabShuffleboard
         Map<String, Object> mapArmOverrideButtonColor = new HashMap<String,Object>();
         mapArmOverrideButtonColor.put("Color when true", "#000000");        
         mapArmOverrideButtonColor.put("Color when false", "#FFFFFF");
-        operatorButtonBoardButton9Entry = controllersTab.add("Arm Override", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(25, 0)
+        operatorButtonBoardButton9Entry = controllersTab.add("Arm Override", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(24, 0)
             .withSize(3, 1).withProperties(mapArmOverrideButtonColor).getEntry();
         
         // Button Board Elevator Manual Override button
         Map<String, Object> mapElevatorOverrideButtonColor = new HashMap<String,Object>();
         mapElevatorOverrideButtonColor.put("Color when true", "#000000");        
         mapElevatorOverrideButtonColor.put("Color when false", "#FFFFFF");
-        operatorButtonBoardButton10Entry = controllersTab.add("Elevator Override", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(21, 0)
+        operatorButtonBoardButton10Entry = controllersTab.add("Elevator Override", false).withWidget(BuiltInWidgets.kBooleanBox).withPosition(18, 0)
             .withSize(3, 1).withProperties(mapElevatorOverrideButtonColor).getEntry();
             
         // Button Board Button Board X Axis button
-        operatorButtonBoardJoystickXAxisEntry = controllersTab.add("Joystick X Axis", 0.0).withWidget(BuiltInWidgets.kTextView).withPosition(32, 2)
+        operatorButtonBoardJoystickXAxisEntry = controllersTab.add("Joystick X Axis", 0.0).withWidget(BuiltInWidgets.kTextView).withPosition(27, 2)
             .withSize(3, 1).getEntry();
 
         // Button Board Y Axis button
-        operatorButtonBoardJoystickYAxisEntry = controllersTab.add("Joystick Y Axis", 0.0).withWidget(BuiltInWidgets.kTextView).withPosition(32, 4)
+        operatorButtonBoardJoystickYAxisEntry = controllersTab.add("Joystick Y Axis", 0.0).withWidget(BuiltInWidgets.kTextView).withPosition(27, 4)
             .withSize(3, 1).getEntry();
 
     }    
