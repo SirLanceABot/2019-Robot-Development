@@ -49,7 +49,7 @@ public class Drivetrain extends MecanumDrive
     private AHRS navX = new AHRS(I2C.Port.kOnboard);
     private double previousNavXValue = 999.999;
     private boolean abortAutonomous = false;
-    private boolean driveInFieldOriented = true;
+    private boolean driveInFieldOriented = false;
     private boolean navXIsCalibrated = false;
     private Timer navXTimer = new Timer();
     private boolean needToResetStartingHeading = true;

@@ -109,6 +109,7 @@ public class Teleop
         
         double leftTrigger = driverXbox.getRawAxis(Xbox.Constants.LEFT_TRIGGER_AXIS);
         double rightTrigger = driverXbox.getRawAxis(Xbox.Constants.RIGHT_TRIGGER_AXIS);
+        boolean backButton = driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON);
         
 
         boolean operatorLeftBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);
@@ -350,9 +351,9 @@ public class Teleop
             drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
         }
 
-        if (driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON))
+        if (backButton)
         {
-            drivetrain.resetNavX();
+            arm.toggleArmOverride();
         }
 
         // System.out.println(elevator);

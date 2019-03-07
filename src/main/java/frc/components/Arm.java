@@ -51,6 +51,7 @@ public class Arm
     private boolean isGrabberMoving = false;
     private boolean isWristMoving;
     private boolean isArmMoving;
+    private boolean overrideArm = false;
 
     /**
      * Returns the pot value of the given position
@@ -94,7 +95,7 @@ public class Arm
         armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kTopArmPosition));
         armMotor.configForwardSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kFloorArmPosition));
         armMotor.configForwardSoftLimitEnable(true);
-        armMotor.configReverseSoftLimitEnable(true);
+        armMotor.configReverseSoftLimitEnable(false);
 
         // armMotor.setInverted(InvertType.InvertMotorOutput);
 
@@ -271,6 +272,13 @@ public class Arm
             grabHatchPanel();
             isGrabberRetracted = true;
         }
+    }
+
+    public void toggleArmOverride()
+    {
+        overrideArm = !overrideArm;
+        armMotor.overrideSoftLimitsEnable(overrideArm);
+        System.out.println("Arm override: " + overrideArm);
     }
 
     /**
