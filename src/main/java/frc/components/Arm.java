@@ -51,7 +51,7 @@ public class Arm
     private boolean isGrabberMoving = false;
     private boolean isWristMoving;
     private boolean isArmMoving;
-    private boolean overrideArm = false;
+    private boolean enableArmSoftLimit = true;
 
     /**
      * Returns the pot value of the given position
@@ -276,9 +276,9 @@ public class Arm
 
     public void toggleArmOverride()
     {
-        overrideArm = !overrideArm;
-        armMotor.overrideSoftLimitsEnable(overrideArm);
-        System.out.println("Arm override: " + overrideArm);
+        enableArmSoftLimit = !enableArmSoftLimit;
+        armMotor.overrideSoftLimitsEnable(enableArmSoftLimit);
+        System.out.println("Arm enable soft limits: " + enableArmSoftLimit);
     }
 
     /**
