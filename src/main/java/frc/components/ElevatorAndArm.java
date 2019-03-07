@@ -22,8 +22,11 @@ public class ElevatorAndArm
     private Arm.Constants.Position targetArmPosition = Arm.Constants.Position.kNone;
     private static int floorElevatorPosition = 100;
     private static int horizontalArmPosition = 100;
-    private boolean getStartingPosition = true;
-    private double startingPosition;
+
+    private boolean setElevatorStartingPosition = true;
+    private boolean setArmStartingPosition = true;
+    private double startingElevatorPosition;
+    private double startingArmPosition;
 
     private Arm arm = Arm.getInstance();
     private Elevator elevator = Elevator.getInstance();
@@ -92,13 +95,11 @@ public class ElevatorAndArm
             if(elevatorPotValue < (elevator.getElevatorPositionPotValues(targetElevatorPosition) - elevator.getElevatorPositionPotValues(Elevator.Constants.ElevatorPosition.kThreshold)))
             {
                 elevator.raiseElevator(scaleElevatorMovement());
-                // elevator.raiseElevator(0.3);
-                elevator.setIsMoving(true);
             }
             else if(elevatorPotValue > (elevator.getElevatorPositionPotValues(targetElevatorPosition) + elevator.getElevatorPositionPotValues(Elevator.Constants.ElevatorPosition.kThreshold)))
             {
-                elevator.setIsMoving(true);
                 elevator.lowerElevator(Constants.ELEVATOR_DOWN_SCALE_FACTOR * scaleElevatorMovement());
+                //elevator.lowerElevator(0.4 * Constants.ELEVATOR_DOWN_SCALE_FACTOR);
                 // elevator.lowerElevator(-0.3);
                 // if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristDown)
                 // {
@@ -119,11 +120,13 @@ public class ElevatorAndArm
             else
             {
                 //elevator.stopElevator();
-                elevator.raiseElevator(0.05);
+                elevator.holdElevator();
                 targetElevatorPosition = Elevator.Constants.ElevatorPosition.kNone;
-                elevator.setIsMoving(false);
-                getStartingPosition = true;
             }
+        }
+        else
+        {
+            setElevatorStartingPosition = true;
         }
 
         if(targetArmPosition != Arm.Constants.Position.kNone)
@@ -165,14 +168,10 @@ public class ElevatorAndArm
             if(armPotValue > arm.getArmPositionPotValue(targetArmPosition) + 5)
             {
                 arm.moveArmUp(scaleArmMovement());
-                arm.setIsArmMoving(true);
-                //arm.moveArmUp(0.3);
             }
             else if(armPotValue < arm.getArmPositionPotValue(targetArmPosition) - 5)
             {
-                arm.setIsArmMoving(true);
                 arm.moveArmDown(Constants.ARM_DOWN_SCALE_FACTOR * scaleArmMovement());
-                //arm.moveArmDown(0.2);
 
                 // if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristDown && !arm.isWristDown())
                 // {
@@ -194,8 +193,6 @@ public class ElevatorAndArm
             else
             {
                 arm.stopArm();
-                arm.setIsArmMoving(false);
-                getStartingPosition = true;
             }
 
             if(arm.isWristMoving() == false && arm.isArmMoving() == false)
@@ -203,23 +200,27 @@ public class ElevatorAndArm
                 targetArmPosition = Position.kNone;
             }
         }
+        else
+        {
+            setArmStartingPosition = true;
+        }
     }
 
     public double scaleElevatorMovement()
     {
 
         double currentPotValue = elevator.getPotValue();
-        if(getStartingPosition)
+        if(setElevatorStartingPosition)
         {
-            startingPosition = elevator.getPotValue();
-            getStartingPosition = false;
+            startingElevatorPosition = currentPotValue;
+            setElevatorStartingPosition = false;
         }
         
-        double endingPosition = arm.getArmPositionPotValue(targetArmPosition);
-        double distanceToTravel = Math.abs(endingPosition - startingPosition);
-        double startingDistance = Math.abs(distanceToTravel / 10.0);
-        double stoppingDistance = distanceToTravel - distanceToTravel / 10.0;
-        double distanceTraveled = Math.abs(startingPosition - currentPotValue);
+        double endingPosition = elevator.getElevatorPositionPotValues(targetElevatorPosition);
+        double distanceToTravel = Math.abs(endingPosition - startingElevatorPosition);
+        double startingDistance = distanceToTravel / 10.0;
+        double stoppingDistance = distanceToTravel - startingDistance;
+        double distanceTraveled = Math.abs(startingElevatorPosition - currentPotValue);
 
         if(distanceTraveled < startingDistance)
         {
@@ -241,17 +242,17 @@ public class ElevatorAndArm
     {
 
         double currentPotValue = arm.getPotValue();
-        if(getStartingPosition)
+        if(setArmStartingPosition)
         {
-            startingPosition = currentPotValue;
-            getStartingPosition = false;
+            startingArmPosition = currentPotValue;
+            setArmStartingPosition = false;
         }
         
         double endingPosition = arm.getArmPositionPotValue(targetArmPosition);
-        double distanceToTravel = Math.abs(endingPosition - startingPosition);
-        double startingDistance = Math.abs(distanceToTravel / 10.0);
-        double stoppingDistance = distanceToTravel - distanceToTravel / 10.0;
-        double distanceTraveled = Math.abs(startingPosition - currentPotValue);
+        double distanceToTravel = Math.abs(endingPosition - startingArmPosition);
+        double startingDistance = distanceToTravel / 10.0;
+        double stoppingDistance = distanceToTravel - startingDistance;
+        double distanceTraveled = Math.abs(startingArmPosition - currentPotValue);
 
         if(distanceTraveled < startingDistance)
         {
@@ -273,11 +274,11 @@ public class ElevatorAndArm
     {
         public final static double ARM_MAX_SPEED = 1.0;
         public final static double ARM_STARTING_SPEED = 0.3;
-        public final static double ARM_DOWN_SCALE_FACTOR = 0.5;
+        public final static double ARM_DOWN_SCALE_FACTOR = 0.85;
 
         public final static double ELEVATOR_MAX_SPEED = 1.0;
         public final static double ELEVATOR_STARTING_SPEED = 0.3;
-        public final static double ELEVATOR_DOWN_SCALE_FACTOR = 0.5;
+        public final static double ELEVATOR_DOWN_SCALE_FACTOR = 0.85;
 
     }
 }

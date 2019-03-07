@@ -15,6 +15,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 // import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+
+import java.util.Arrays;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
 /**
@@ -43,7 +46,7 @@ public class Elevator
      * <p> 8: Center Cargo
      * <p> 9: Top Cargo
      */
-    private static int[] elevatorPositionPotValues = Constants.PRACTICE_ELEVATOR_POSITION_POT_VALUES;
+    private static int[] elevatorPositionPotValues = Constants.COMPETITION_ELEVATOR_POSITION_POT_VALUES;
 
     private static Elevator instance = new Elevator();
 
@@ -100,6 +103,12 @@ public class Elevator
     public void raiseElevator(double speed)
     {
         masterElevatorMotor.set(speedFactor * Math.abs(speed));
+        setIsMoving(true);
+    }
+
+    public void holdElevator()
+    {
+        raiseElevator(0.05);
     }
 
     /**
@@ -117,6 +126,7 @@ public class Elevator
     public void lowerElevator(double speed)
     {
         masterElevatorMotor.set(speedFactor * -Math.abs(speed));
+        setIsMoving(false);
     }
 
     /**
@@ -164,13 +174,13 @@ public class Elevator
         if(robotType == SlabShuffleboard.RobotType.kCompetition)
         {
             elevatorPositionPotValues = Constants.COMPETITION_ELEVATOR_POSITION_POT_VALUES;
-            System.out.println(this.getClass().getName() + ": elevatorPositionPotValues = " + elevatorPositionPotValues);
         }
         else
         {
             elevatorPositionPotValues = Constants.PRACTICE_ELEVATOR_POSITION_POT_VALUES;
-            System.out.println(this.getClass().getName() + ": elevatorPositionPotValues = " + elevatorPositionPotValues);
         }
+
+        System.out.println(this.getClass().getName() + ": elevatorPositionPotValues = " + Arrays.toString(elevatorPositionPotValues));
 
         masterElevatorMotor.configReverseSoftLimitThreshold(getElevatorPositionPotValues(Constants.ElevatorPosition.kMinHeight));
         masterElevatorMotor.configForwardSoftLimitThreshold(getElevatorPositionPotValues(Constants.ElevatorPosition.kMaxHeight));
@@ -265,6 +275,7 @@ public class Elevator
         // 9: Top Cargo
         // 10: Threshold
         // 11: None
+                                                                            // 0    1    2
         public static final int[] COMPETITION_ELEVATOR_POSITION_POT_VALUES = {111, 876, 111, 406, 111, 406, 744, 283, 636, 876, 5, -1};
         public static final int[] PRACTICE_ELEVATOR_POSITION_POT_VALUES =    {99, 820, 101, 432, 99, 360, 607, 245, 571, 820, 5, -1};
     

@@ -16,6 +16,9 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import java.util.Arrays;
+
 // import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 // import com.ctre.phoenix.motorcontrol.InvertType;
@@ -43,6 +46,8 @@ public class Arm
 
     private WPI_TalonSRX intakeRoller = new WPI_TalonSRX(Constants.ROLLER_TALON_ID);
 
+
+    private boolean isGrabberRetracted = true;
     private boolean isGrabberMoving = false;
     private boolean isWristMoving;
     private boolean isArmMoving;
@@ -56,7 +61,7 @@ public class Arm
      * <p> 3: Top
      * 
      */
-    private static int[] armPositionPotValues = Constants.PRACTICE_ARM_POSITION_POT_VALUES;
+    private static int[] armPositionPotValues = Constants.COMPETITION_ARM_POSITION_POT_VALUES;
 
     // private SlabShuffleboard shuffleboard = SlabShuffleboard.getInstance();
 
@@ -127,6 +132,7 @@ public class Arm
     public void moveArmUp(double speed)
     {
         armMotor.set(speedFactor * -Math.abs(speed));
+        setIsArmMoving(true);
     }
 
     /**
@@ -145,6 +151,7 @@ public class Arm
     public void moveArmDown(double speed)
     {
         armMotor.set(speedFactor * Math.abs(speed));
+        setIsArmMoving(false);
     }
 
     /**
@@ -216,18 +223,19 @@ public class Arm
      */
     public void grabHatchPanel()
     {
-        if(!isGrabberMoving)
-        {
-            grabberTimer.reset();
-            grabberTimer.start();
-            grabberSolenoid.set(Value.kReverse);
-            isGrabberMoving = true;
-        }
+        grabberSolenoid.set(Value.kReverse);
+        // if(!isGrabberMoving)
+        // {
+        //     grabberTimer.reset();
+        //     grabberTimer.start();
+        //     grabberSolenoid.set(Value.kReverse);
+        //     isGrabberMoving = true;
+        // }
         
-        if(grabberTimer.get() > 0.5)
-        {
-            isGrabberMoving = false;
-        }
+        // if(grabberTimer.get() > 0.5)
+        // {
+        //     isGrabberMoving = false;
+        // }
     }
 
     /**
@@ -235,17 +243,33 @@ public class Arm
      */
     public void releaseHatchPanel()
     {
-        if(!isGrabberMoving)
-        {
-            grabberTimer.reset();
-            grabberTimer.start();
-            grabberSolenoid.set(Value.kForward);
-            isGrabberMoving = true;
-        }
+        grabberSolenoid.set(Value.kForward);
+
+        // if(!isGrabberMoving)
+        // {
+        //     grabberTimer.reset();
+        //     grabberTimer.start();
+        //     grabberSolenoid.set(Value.kForward);
+        //     isGrabberMoving = true;
+        // }
         
-        if(grabberTimer.get() > 0.5)
+        // if(grabberTimer.get() > 0.5)
+        // {
+        //     isGrabberMoving = false;
+        // }
+    }
+
+    public void toggleHatchPanel()
+    {
+        if(isGrabberRetracted)
         {
-            isGrabberMoving = false;
+            releaseHatchPanel();
+            isGrabberRetracted = false;
+        }
+        else
+        {
+            grabHatchPanel();
+            isGrabberRetracted = true;
         }
     }
 
@@ -303,14 +327,13 @@ public class Arm
         if (robotType == SlabShuffleboard.RobotType.kCompetition)
         {
             armPositionPotValues = Constants.COMPETITION_ARM_POSITION_POT_VALUES;
-            System.out.println(this.getClass().getName() + ": armPositionPotValues = " + armPositionPotValues);
         }
         else
         {
             armPositionPotValues = Constants.PRACTICE_ARM_POSITION_POT_VALUES;
-            System.out.println(this.getClass().getName() + ": armPositionPotValues = " + armPositionPotValues);
         }
 
+        System.out.println(this.getClass().getName() + ": armPositionPotValues = " + Arrays.toString(armPositionPotValues));
         armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kTopArmPosition));
         armMotor.configForwardSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kFloorArmPosition));
     }

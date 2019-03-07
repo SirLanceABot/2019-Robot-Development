@@ -53,6 +53,7 @@ public class Teleop
     private static Teleop instance = new Teleop();
     private TargetData targetData;
     private boolean firstTimeOverAmpLimit = true;
+    private boolean rightTriggerPressed = false;
 
     private Teleop()
     {
@@ -105,9 +106,10 @@ public class Teleop
         boolean bButton = driverXbox.getRawButton(Xbox.Constants.B_BUTTON); // Retract climber elevator
         boolean xButton = driverXbox.getRawButtonPressed(Xbox.Constants.X_BUTTON); // Release pin solenoid
         boolean yButton = driverXbox.getRawButtonPressed(Xbox.Constants.Y_BUTTON); // Retract pin solenoid
-        boolean rightBumper = driverXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER); // Hold button in order to
-                                                                                           // access climbing
-        boolean leftBumper = driverXbox.getRawButton(Xbox.Constants.LEFT_BUMPER); //hybrid auto switch
+        
+        double leftTrigger = driverXbox.getRawAxis(Xbox.Constants.LEFT_TRIGGER_AXIS);
+        double rightTrigger = driverXbox.getRawAxis(Xbox.Constants.RIGHT_TRIGGER_AXIS);
+        
 
         boolean operatorLeftBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);
         boolean operatorRightBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER);
@@ -157,14 +159,23 @@ public class Teleop
         {
             arm.moveWristUp();
         }
-        if(operatorAButtonPressed)
+
+
+        if(rightTrigger > 0.3)
         {
-            arm.grabHatchPanel();
+            if(!rightTriggerPressed)
+            {
+                rightTriggerPressed = true;
+                arm.toggleHatchPanel();
+                System.out.println("RIght Trigger Pressed");
+            }
+
         }
-        else if(operatorBButtonPressed)
+        else
         {
-            arm.releaseHatchPanel();
+            rightTriggerPressed = false;
         }
+
 
         if(armButton || elevatorButton)
         {
@@ -214,8 +225,7 @@ public class Teleop
                 }
                 else
                 {
-                    //elevator.stopElevator();
-                    elevator.raiseElevator(0.05);
+                    elevator.holdElevator();
                 }
             }
 
@@ -273,16 +283,18 @@ public class Teleop
             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
             elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
             //elevator.stopElevator();
-            elevator.raiseElevator(0.05);
+            elevator.holdElevator();
+            elevator.setIsMoving(false);
         }
         if (armButtonReleased)
         {
             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
             elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
             arm.stopArm();
+            arm.setIsArmMoving(false);
         }
 
-        // if (rightBumper)
+        // if (leftTrigger > 0.3)
         // {
         //     if (xButton && climber.getEncoder() < Climber.Constants.MAX_CLIMBER_HEIGHT)
         //     {
@@ -394,9 +406,9 @@ public class Teleop
     }
 
     public void intakeStateMachine() {
-        boolean inButtonHeld = driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER);
-        boolean inButtonPressed = driverXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER);
-        boolean outButton = driverXbox.getRawButton(Xbox.Constants.LEFT_BUMPER);
+        boolean inButtonHeld = driverXbox.getRawButton(Xbox.Constants.LEFT_BUMPER);
+        boolean inButtonPressed = driverXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);
+        boolean outButton = driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER);
         double motorCurrent = arm.getIntakeAmperage();
     
         switch (stateOfIntake) 
