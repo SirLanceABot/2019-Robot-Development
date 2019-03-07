@@ -95,7 +95,7 @@ public class Arm
         armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kTopArmPosition));
         armMotor.configForwardSoftLimitThreshold(getArmPositionPotValue(ArmPosition.kFloorArmPosition));
         armMotor.configForwardSoftLimitEnable(true);
-        armMotor.configReverseSoftLimitEnable(false);
+        armMotor.configReverseSoftLimitEnable(true);
 
         // armMotor.setInverted(InvertType.InvertMotorOutput);
 

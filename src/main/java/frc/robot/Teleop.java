@@ -112,13 +112,13 @@ public class Teleop
         boolean backButton = driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON);
         
 
-        boolean operatorLeftBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);
-        boolean operatorRightBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER);
-        boolean operatorXButton = operatorXbox.getRawButton(Xbox.Constants.X_BUTTON);
-        boolean operatorAButtonPressed = operatorXbox.getRawButtonPressed(Xbox.Constants.A_BUTTON);
-        boolean operatorBButtonPressed = operatorXbox.getRawButtonPressed(Xbox.Constants.B_BUTTON);
-        boolean operatorYButton = operatorXbox.getRawButton(Xbox.Constants.Y_BUTTON);
-        boolean operatorYButtonReleased = operatorXbox.getRawButtonReleased(Xbox.Constants.Y_BUTTON);
+        // boolean operatorLeftBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);
+        // boolean operatorRightBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER);
+        // boolean operatorXButton = operatorXbox.getRawButton(Xbox.Constants.X_BUTTON);
+        // boolean operatorAButtonPressed = operatorXbox.getRawButtonPressed(Xbox.Constants.A_BUTTON);
+        // boolean operatorBButtonPressed = operatorXbox.getRawButtonPressed(Xbox.Constants.B_BUTTON);
+        // boolean operatorYButton = operatorXbox.getRawButton(Xbox.Constants.Y_BUTTON);
+        // boolean operatorYButtonReleased = operatorXbox.getRawButtonReleased(Xbox.Constants.Y_BUTTON);
 
         double motorCurrent = arm.getIntakeAmperage();
         // if (operatorYButton)
@@ -152,14 +152,14 @@ public class Teleop
         //     //System.out.println(arm);
         // }
 
-        if(operatorLeftBumper)
-        {
-            arm.moveWristDown();
-        }
-        else if(operatorRightBumper)
-        {
-            arm.moveWristUp();
-        }
+        // if(operatorLeftBumper)
+        // {
+        //     arm.moveWristDown();
+        // }
+        // else if(operatorRightBumper)
+        // {
+        //     arm.moveWristUp();
+        // }
 
 
         if(rightTrigger > 0.3)
@@ -359,14 +359,14 @@ public class Teleop
         // System.out.println(elevator);
         //System.out.println(arm);  
 
-        if(operatorXButton)
-        {
-            lights.turnLightsOn();
-        }
-        else
-        {
-            lights.turnLightsOff();
-        }
+        // if(operatorXButton)
+        // {
+        //     lights.turnLightsOn();
+        // }
+        // else
+        // {
+        //     lights.turnLightsOff();
+        // }
 
         if (aButtonPressed)
         {
