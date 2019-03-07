@@ -201,9 +201,13 @@ public class SlabShuffleboard
     // Camera Tab
     private ShuffleboardTab cameraTab;
 
-    private NetworkTableEntry timeEllapsedEntry;
+    private NetworkTableEntry timeRemainingEntry;
     private NetworkTableEntry matchEntry;
-    private NetworkTableEntry startingFieldPositionEntry;
+    private NetworkTableEntry teamStationEntry;
+
+    private int oldTime = 0;
+
+    private static DriverStation dStation;
 
     // MOTORS AND SENSORS TAB
     private ShuffleboardTab motorsAndSensorsTab;
@@ -279,7 +283,6 @@ public class SlabShuffleboard
 
 
     private static SlabShuffleboard instance = new SlabShuffleboard();
-    private static DriverStation dStation = DriverStation.getInstance();
 
     private SlabShuffleboard()
     {
@@ -289,6 +292,9 @@ public class SlabShuffleboard
         createMotorsAndSensorsTab();
         createCameraTab();
         createPregameSetupTab();
+
+        dStation = DriverStation.getInstance();
+        updateCameraTab();
 
         System.out.println(this.getClass().getName() + ": Started Constructing");
     }
@@ -479,29 +485,48 @@ public class SlabShuffleboard
 
         // Camera widgets created on Rasp Pi
 
-        timeEllapsedEntry = cameraTab.add("Time Ellapsed", "NA")
-                .withWidget(BuiltInWidgets.kTextView).withPosition(9, 0).withSize(8, 2).getEntry();
-                
-        matchEntry = cameraTab.add("Match", "NA")
-                .withWidget(BuiltInWidgets.kTextView).withPosition(9, 2).withSize(8, 2).getEntry();
-        
-        startingFieldPositionEntry = cameraTab.add("Starting Field Position", "NA")
-                .withWidget(BuiltInWidgets.kTextView).withPosition(9, 4).withSize(8, 2).getEntry();
+        timeRemainingEntry = cameraTab.add("Time", "NA").withWidget(BuiltInWidgets.kTextView).withPosition(20, 13)
+                .withSize(4, 2).getEntry();
+
+        matchEntry = cameraTab.add("Match", "NA").withWidget(BuiltInWidgets.kTextView).withPosition(24, 13)
+                .withSize(4, 2).getEntry();
+
+        teamStationEntry = cameraTab.add("Alliance", "NA").withWidget(BuiltInWidgets.kTextView).withPosition(28, 13)
+                .withSize(4, 2).getEntry();
+    }
+
+    public void updateShuffleboardTime()
+    {
+        int matchTime;
+        int minutes;
+        int seconds;
+        String timeRemainingFormatted;
+
+        matchTime = (int)dStation.getMatchTime();
+
+        if (matchTime != oldTime)
+        {
+            oldTime = matchTime;
+            minutes = matchTime / 60;
+            seconds = matchTime % 60;
+            timeRemainingFormatted = Integer.toString(minutes) + ":" + Integer.toString(seconds);
+
+            timeRemainingEntry.setString(timeRemainingFormatted);
+        }
     }
 
     public void updateCameraTab()
     {
-        String timeEllapsedString;
         String matchString;
-        String startingFieldPositionString;
+        String teamStationString;
 
-        timeEllapsedString = "Time Ellapsed: " + dStation.getMatchTime();
-        matchString = "Match Type:\n" + dStation.getMatchType() + "\nMatch #:\n" + dStation.getMatchNumber();
-        startingFieldPositionString = "Alliance: " + dStation.getAlliance() + ", Location: " + dStation.getLocation();
+        updateShuffleboardTime();
 
-        timeEllapsedEntry.setString(timeEllapsedString);
+        matchString = dStation.getMatchType() + " " + dStation.getMatchNumber();
+        teamStationString = dStation.getAlliance() + " " + dStation.getLocation();
+
         matchEntry.setString(matchString);
-        startingFieldPositionEntry.setString(startingFieldPositionString);
+        teamStationEntry.setString(teamStationString);
     }
 
     public void createMotorsAndSensorsTab()

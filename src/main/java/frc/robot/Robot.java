@@ -54,6 +54,7 @@ public class Robot extends TimedRobot
     public void robotPeriodic()
     {
         // double time1 = Timer.getFPGATimestamp();
+        slabShuffleboard.updateShuffleboardTime();
         updateAllShuffleboardData();
         // System.out.println(Timer.getFPGATimestamp() - time1);
     }
