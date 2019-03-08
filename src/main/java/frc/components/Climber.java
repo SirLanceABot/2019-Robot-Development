@@ -125,8 +125,8 @@ public class Climber
 
     public static class Constants
     {
-        public static final int SOLENOID_PORT_1 = 0; 
-        public static final int SOLENOID_PORT_2 = 1;
+        public static final int SOLENOID_PORT_1 = 2; 
+        public static final int SOLENOID_PORT_2 = 3;
         public static final int CLIMBER_TALON_PORT = 14;
         public static final int CLIMBER_VICTOR_PORT = 15;
 

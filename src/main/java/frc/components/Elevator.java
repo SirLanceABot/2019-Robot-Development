@@ -13,7 +13,7 @@ import frc.components.Elevator.Constants.ElevatorPosition;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-// import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import java.util.Arrays;
@@ -67,9 +67,9 @@ public class Elevator
 
         masterElevatorMotor.configSelectedFeedbackSensor(FeedbackDevice.Analog);
 
-        // masterElevatorMotor.setSensorPhase(true);
-        // masterElevatorMotor.setInverted(InvertType.InvertMotorOutput);
-        // slaveElevatorMotor.setInverted(InvertType.InvertMotorOutput);
+        masterElevatorMotor.setSensorPhase(true);
+        masterElevatorMotor.setInverted(InvertType.InvertMotorOutput);
+        slaveElevatorMotor.setInverted(InvertType.InvertMotorOutput);
 
         masterElevatorMotor.configReverseSoftLimitThreshold(getElevatorPositionPotValues(Constants.ElevatorPosition.kMinHeight));
         masterElevatorMotor.configForwardSoftLimitThreshold(getElevatorPositionPotValues(Constants.ElevatorPosition.kMaxHeight));
@@ -275,9 +275,9 @@ public class Elevator
         // 9: Top Cargo
         // 10: Threshold
         // 11: None
-                                                                            // 0    1    2
-        public static final int[] COMPETITION_ELEVATOR_POSITION_POT_VALUES = {111, 876, 111, 406, 111, 406, 744, 283, 636, 876, 5, -1};
-        public static final int[] PRACTICE_ELEVATOR_POSITION_POT_VALUES =    {99, 820, 101, 432, 99, 360, 607, 245, 571, 820, 5, -1};
+                                                                            // 0    1    2    3    4    5    6    7    8    9   10  11
+        public static final int[] COMPETITION_ELEVATOR_POSITION_POT_VALUES = {100, 876, 100, 471, 120, 397, 600, 283, 608, 840, 5, -1};
+        public static final int[] PRACTICE_ELEVATOR_POSITION_POT_VALUES =    {99,  820, 101, 432,  99, 360, 607, 245, 571, 820, 5, -1};
     
         public static final int INITIAL_HEIGHT_TO_MIN_HEIGHT = 111;//inchesToTicks(-10);
         public static final int INITIAL_HEIGHT_TO_MAX_HEIGHT = 876;//inchesToTicks(85);

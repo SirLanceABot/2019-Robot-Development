@@ -166,11 +166,11 @@ public class ElevatorAndArm
                 // }
             }
 
-            if(armPotValue > arm.getArmPositionPotValue(targetArmPosition) + 5 && targetArmPosition.getArmPosition() != Arm.Constants.ArmPosition.kArmNone)
+            if(armPotValue > arm.getArmPositionPotValue(targetArmPosition) + 10)// && targetArmPosition.getArmPosition() != Arm.Constants.ArmPosition.kArmNone)
             {
                 arm.moveArmUp(scaleArmMovement());
             }
-            else if(armPotValue < arm.getArmPositionPotValue(targetArmPosition) - 5 && targetArmPosition.getArmPosition() != Arm.Constants.ArmPosition.kArmNone)
+            else if(armPotValue < arm.getArmPositionPotValue(targetArmPosition) - 10)// && targetArmPosition.getArmPosition() != Arm.Constants.ArmPosition.kArmNone)
             {
                 arm.moveArmDown(Constants.ARM_DOWN_SCALE_FACTOR * scaleArmMovement());
 
@@ -194,7 +194,7 @@ public class ElevatorAndArm
             else
             {
                 arm.stopArm();
-                targetArmPosition.setArmPosition(Arm.Constants.ArmPosition.kArmNone); 
+                //targetArmPosition.setArmPosition(Arm.Constants.ArmPosition.kArmNone); 
             }
 
             if(arm.isWristMoving() == false && arm.isArmMoving() == false)

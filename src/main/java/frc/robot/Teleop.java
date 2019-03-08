@@ -285,12 +285,14 @@ public class Teleop
             elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
             //elevator.stopElevator();
             elevator.holdElevator();
+            arm.stopArm();
             elevator.setIsMoving(false);
         }
         if (armButtonReleased)
         {
             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
             elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
+            elevator.holdElevator();
             arm.stopArm();
             arm.setIsArmMoving(false);
         }

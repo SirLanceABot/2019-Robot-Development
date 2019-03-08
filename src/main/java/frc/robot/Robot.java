@@ -102,8 +102,9 @@ public class Robot extends TimedRobot
             slabShuffleboard.startRecording();
         }
         
-        autonomous.autoInit();
-
+        //autonomous.autoInit();
+        teleop.teleopInit();
+    
         hasAutoRun = true;
     }
 
@@ -111,6 +112,7 @@ public class Robot extends TimedRobot
     public void autonomousPeriodic()
     {
         //drivetrain.driveCartesian(0, .2, 0);
+        teleop.teleop();
         System.out.println(drivetrain);
     }
 
