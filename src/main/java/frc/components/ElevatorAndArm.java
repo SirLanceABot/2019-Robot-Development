@@ -9,6 +9,7 @@ package frc.components;
 
 import frc.components.Arm;
 import frc.components.Elevator;
+import frc.components.Arm.Constants.ArmPosition;
 import frc.components.Arm.Constants.Position;
 
 /**
@@ -144,7 +145,7 @@ public class ElevatorAndArm
             }
             else if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristUp)
             {
-                arm.setIsArmMoving(true);
+                arm.setIsWristMoving(true);
                 arm.moveWristUp();
 
                 if (arm.isWristUp())
@@ -165,11 +166,11 @@ public class ElevatorAndArm
                 // }
             }
 
-            if(armPotValue > arm.getArmPositionPotValue(targetArmPosition) + 5)
+            if(armPotValue > arm.getArmPositionPotValue(targetArmPosition) + 5 && targetArmPosition.getArmPosition() != Arm.Constants.ArmPosition.kArmNone)
             {
                 arm.moveArmUp(scaleArmMovement());
             }
-            else if(armPotValue < arm.getArmPositionPotValue(targetArmPosition) - 5)
+            else if(armPotValue < arm.getArmPositionPotValue(targetArmPosition) - 5 && targetArmPosition.getArmPosition() != Arm.Constants.ArmPosition.kArmNone)
             {
                 arm.moveArmDown(Constants.ARM_DOWN_SCALE_FACTOR * scaleArmMovement());
 
@@ -193,6 +194,7 @@ public class ElevatorAndArm
             else
             {
                 arm.stopArm();
+                targetArmPosition.setArmPosition(Arm.Constants.ArmPosition.kArmNone); 
             }
 
             if(arm.isWristMoving() == false && arm.isArmMoving() == false)

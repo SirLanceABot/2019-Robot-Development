@@ -49,8 +49,8 @@ public class Arm
 
     private boolean isGrabberRetracted = true;
     private boolean isGrabberMoving = false;
-    private boolean isWristMoving;
-    private boolean isArmMoving;
+    private boolean isWristMoving = false;
+    private boolean isArmMoving = false;
     private boolean enableArmSoftLimit = true;
 
     /**
@@ -152,7 +152,7 @@ public class Arm
     public void moveArmDown(double speed)
     {
         armMotor.set(speedFactor * Math.abs(speed));
-        setIsArmMoving(false);
+        setIsArmMoving(true);
     }
 
     /**
@@ -160,6 +160,7 @@ public class Arm
      */
     public void stopArm()
     {
+        setIsArmMoving(false);
         armMotor.set(0);
     }
     
@@ -522,6 +523,16 @@ public class Arm
             {
                 this.wristPosition = wristPosition;
                 this.armPosition = armPosition;
+            }
+
+            public void setArmPosition(Constants.ArmPosition armPosition)
+            {
+                this.armPosition = armPosition;
+            }
+
+            public Constants.ArmPosition getArmPosition()
+            {
+                return armPosition;
             }
         }
 
