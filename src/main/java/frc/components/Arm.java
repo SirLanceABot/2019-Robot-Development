@@ -554,9 +554,9 @@ public class Arm
         // 2: Middle
         // 3: Top
         // 4: Threshold
-        // Comp Bot: starting position is 233
+        // Comp Bot: starting position is 101
                                                                        // 0    1    2    3   4   5
-        public static final int[] COMPETITION_ARM_POSITION_POT_VALUES = {650, 595, 493, 307, 5, -1};
+        public static final int[] COMPETITION_ARM_POSITION_POT_VALUES = {635, 567, 438, 202, 5, -1};
         public static final int[] PRACTICE_ARM_POSITION_POT_VALUES =    {628, 572, 480, 230, 5, -1};
     }
 
