@@ -103,7 +103,7 @@ public class Robot extends TimedRobot
         }
         
         //autonomous.autoInit();
-        teleop.teleopInit();
+        teleop.init();
     
         hasAutoRun = true;
     }
@@ -127,7 +127,7 @@ public class Robot extends TimedRobot
             slabShuffleboard.startRecording();
         }
 
-        teleop.teleopInit();
+        teleop.init();
 
         hasTeleopRun = true;
     }

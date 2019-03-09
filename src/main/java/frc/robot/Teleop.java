@@ -10,7 +10,7 @@ package frc.robot;
 import frc.components.Arm;
 import frc.components.Elevator;
 import frc.components.Climber;
-import frc.components.Drivetrain;a
+import frc.components.Drivetrain;
 import frc.control.Xbox;
 import frc.control.DriverXbox;
 import frc.control.OperatorXbox;
@@ -438,7 +438,7 @@ public class Teleop
             drivetrain.moveOmniWheel();
         }
 
-        intakeStateMachine();
+        intakeControl();
     }
 
     public void periodic()
@@ -447,8 +447,8 @@ public class Teleop
         climberControl();
         hatchPanelControl();
         elevatorAndArmControl();
-        drivingControl();
-        intakeStateMachine();
+        drivetrainControl();
+        intakeControl();
         overrideArmLimits();
     }
 
@@ -459,7 +459,7 @@ public class Teleop
             arm.toggleArmOverride();
         }
     }
-    public void drivingControl()
+    public void drivetrainControl()
     {
         double[] rightAxes = driverXbox.getScaledAxes(Xbox.Constants.RIGHT_STICK_AXES,
         Xbox.Constants.PolynomialDrive.kCubicDrive);
@@ -664,65 +664,9 @@ public class Teleop
             climber.stopLegs();
         }
     }
-    public void initializeButtons()
+    
+    public void intakeControl() 
     {
-         armButton = buttonBoard.getRawButton(ButtonBoard.Constants.ARM_BUTTON);
-         armButtonReleased = buttonBoard.getRawButtonReleased(ButtonBoard.Constants.ARM_BUTTON);
-         elevatorButton = buttonBoard.getRawButton(ButtonBoard.Constants.ELEVATOR_BUTTON);
-         elevatorButtonReleased = buttonBoard.getRawButtonReleased(ButtonBoard.Constants.ELEVATOR_BUTTON);
-        buttonBoardYAxis = buttonBoard.getRawAxis(ButtonBoard.Constants.Y_AXIS);
-           buttonBoardXAxis = buttonBoard.getRawAxis(ButtonBoard.Constants.X_AXIS);
-    
-    
-         floorButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.FLOOR_BUTTON);
-         cargoShipPortButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CARGO_SHIP_CARGO_BUTTON);
-    
-         bottomHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.BOTTOM_HATCH_BUTTON);
-         centerHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_HATCH_BUTTON);
-         topHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_HATCH_BUTTON);
-    
-         bottomCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.BOTTOM_CARGO_BUTTON);
-         centerCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_CARGO_BUTTON);
-         topCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_CARGO_BUTTON);
-    
-        //need to change the buttons to pressed not holds
-         aButtonPressed = driverXbox.getRawButtonPressed(Xbox.Constants.A_BUTTON); // Extend climber elevator
-         bButton = driverXbox.getRawButton(Xbox.Constants.B_BUTTON); // Retract climber elevator
-         xButton = driverXbox.getRawButtonPressed(Xbox.Constants.X_BUTTON); // Release pin solenoid
-         yButton = driverXbox.getRawButton(Xbox.Constants.Y_BUTTON); // Retract pin solenoid
-        
-           leftTrigger = driverXbox.getRawAxis(Xbox.Constants.LEFT_TRIGGER_AXIS);
-           rightTrigger = driverXbox.getRawAxis(Xbox.Constants.RIGHT_TRIGGER_AXIS);
-         backButton = driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON);
-    }
-    public boolean whiteLineAlignment()
-    {
-        targetData = vision.getTargetData();
-        if (targetData.isFreshData())
-        {
-            CameraProcess.rotate rotation = vision.getRotateDirection(targetData);
-            double rotationFactor = vision.getRotateFactor(targetData);
-            CameraProcess.strafeDirection strafeDirection = vision.getStrafeDirection(targetData);
-            double strafeDirectionFactor = vision.getStrafeFactor(targetData);
-
-            // rotate first then strafe
-            if (rotation != rotate.kNone)
-            {
-                drivetrain.driveCartesian(0.0, 0.0, Constants.ROTATION_SPEED * (rotationFactor / 90.0));
-            }
-            else if (strafeDirection != CameraProcess.strafeDirection.kNone)
-            {
-                drivetrain.driveCartesian(0.0, Constants.STRAFE_SPEED * (strafeDirectionFactor / 80.0), 0.0);
-            }
-            else
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void intakeStateMachine() {
         boolean inButtonHeld = driverXbox.getRawButton(Xbox.Constants.LEFT_BUMPER);
         boolean inButtonPressed = driverXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);
         boolean outButton = driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER);
@@ -833,6 +777,64 @@ public class Teleop
     
       // System.out.println("Current: " + motorCurrent + "   State: " + stateOfIntake);
     }
+    public void initializeButtons()
+    {
+         armButton = buttonBoard.getRawButton(ButtonBoard.Constants.ARM_BUTTON);
+         armButtonReleased = buttonBoard.getRawButtonReleased(ButtonBoard.Constants.ARM_BUTTON);
+         elevatorButton = buttonBoard.getRawButton(ButtonBoard.Constants.ELEVATOR_BUTTON);
+         elevatorButtonReleased = buttonBoard.getRawButtonReleased(ButtonBoard.Constants.ELEVATOR_BUTTON);
+        buttonBoardYAxis = buttonBoard.getRawAxis(ButtonBoard.Constants.Y_AXIS);
+           buttonBoardXAxis = buttonBoard.getRawAxis(ButtonBoard.Constants.X_AXIS);
+    
+    
+         floorButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.FLOOR_BUTTON);
+         cargoShipPortButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CARGO_SHIP_CARGO_BUTTON);
+    
+         bottomHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.BOTTOM_HATCH_BUTTON);
+         centerHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_HATCH_BUTTON);
+         topHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_HATCH_BUTTON);
+    
+         bottomCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.BOTTOM_CARGO_BUTTON);
+         centerCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_CARGO_BUTTON);
+         topCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_CARGO_BUTTON);
+    
+        //need to change the buttons to pressed not holds
+         aButtonPressed = driverXbox.getRawButtonPressed(Xbox.Constants.A_BUTTON); // Extend climber elevator
+         bButton = driverXbox.getRawButton(Xbox.Constants.B_BUTTON); // Retract climber elevator
+         xButton = driverXbox.getRawButtonPressed(Xbox.Constants.X_BUTTON); // Release pin solenoid
+         yButton = driverXbox.getRawButton(Xbox.Constants.Y_BUTTON); // Retract pin solenoid
+        
+           leftTrigger = driverXbox.getRawAxis(Xbox.Constants.LEFT_TRIGGER_AXIS);
+           rightTrigger = driverXbox.getRawAxis(Xbox.Constants.RIGHT_TRIGGER_AXIS);
+         backButton = driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON);
+    }
+    public boolean whiteLineAlignment()
+    {
+        targetData = vision.getTargetData();
+        if (targetData.isFreshData())
+        {
+            CameraProcess.rotate rotation = vision.getRotateDirection(targetData);
+            double rotationFactor = vision.getRotateFactor(targetData);
+            CameraProcess.strafeDirection strafeDirection = vision.getStrafeDirection(targetData);
+            double strafeDirectionFactor = vision.getStrafeFactor(targetData);
+
+            // rotate first then strafe
+            if (rotation != rotate.kNone)
+            {
+                drivetrain.driveCartesian(0.0, 0.0, Constants.ROTATION_SPEED * (rotationFactor / 90.0));
+            }
+            else if (strafeDirection != CameraProcess.strafeDirection.kNone)
+            {
+                drivetrain.driveCartesian(0.0, Constants.STRAFE_SPEED * (strafeDirectionFactor / 80.0), 0.0);
+            }
+            else
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static class Constants
     {
         private static final double ROTATION_SPEED = 0.5;
