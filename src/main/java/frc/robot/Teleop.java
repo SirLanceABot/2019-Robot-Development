@@ -10,7 +10,7 @@ package frc.robot;
 import frc.components.Arm;
 import frc.components.Elevator;
 import frc.components.Climber;
-import frc.components.Drivetrain;
+import frc.components.Drivetrain;a
 import frc.control.Xbox;
 import frc.control.DriverXbox;
 import frc.control.OperatorXbox;
@@ -32,6 +32,34 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
  */
 public class Teleop
 {
+    boolean armButton;
+    boolean armButtonReleased;
+    boolean elevatorButton;
+    boolean elevatorButtonReleased;
+    double buttonBoardYAxis;
+    double buttonBoardXAxis;
+
+
+    boolean floorButton;
+    boolean cargoShipPortButton;
+
+    boolean bottomHatchButton;
+    boolean centerHatchButton;
+    boolean topHatchButton;
+
+    boolean bottomCargoButton;
+    boolean centerCargoButton;
+    boolean topCargoButton;
+
+    //need to change the buttons to pressed not holds
+    boolean aButtonPressed;
+    boolean bButton;
+    boolean xButton;
+    boolean yButton;
+    
+    double leftTrigger;
+    double rightTrigger;
+    boolean backButton;
     enum IntakeState
     {
         kOff, kIntake, kHold, kEject; // kOff turns either way off, kIntake is intake at 100%, kHold is intake at 10%,
@@ -72,7 +100,7 @@ public class Teleop
         return (instance);
     }
 
-    public void teleopInit()
+    public void init()
     {
         SlabShuffleboard.PregameSetupTabData pregame = shuffleboard.getPregameSetupTabData();
         arm.setRobotType(pregame.robotType);
@@ -86,38 +114,39 @@ public class Teleop
         elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
     }
 
+    @Deprecated
     public void teleop()
     {
-        boolean armButton = buttonBoard.getRawButton(ButtonBoard.Constants.ARM_BUTTON);
-        boolean armButtonReleased = buttonBoard.getRawButtonReleased(ButtonBoard.Constants.ARM_BUTTON);
-        boolean elevatorButton = buttonBoard.getRawButton(ButtonBoard.Constants.ELEVATOR_BUTTON);
-        boolean elevatorButtonReleased = buttonBoard.getRawButtonReleased(ButtonBoard.Constants.ELEVATOR_BUTTON);
-        double buttonBoardYAxis = buttonBoard.getRawAxis(ButtonBoard.Constants.Y_AXIS);
-        double buttonBoardXAxis = buttonBoard.getRawAxis(ButtonBoard.Constants.X_AXIS);
+        // boolean armButton = buttonBoard.getRawButton(ButtonBoard.Constants.ARM_BUTTON);
+        // boolean armButtonReleased = buttonBoard.getRawButtonReleased(ButtonBoard.Constants.ARM_BUTTON);
+        // boolean elevatorButton = buttonBoard.getRawButton(ButtonBoard.Constants.ELEVATOR_BUTTON);
+        // boolean elevatorButtonReleased = buttonBoard.getRawButtonReleased(ButtonBoard.Constants.ELEVATOR_BUTTON);
+        // double buttonBoardYAxis = buttonBoard.getRawAxis(ButtonBoard.Constants.Y_AXIS);
+        // double buttonBoardXAxis = buttonBoard.getRawAxis(ButtonBoard.Constants.X_AXIS);
 
 
-        boolean floorButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.FLOOR_BUTTON);
-        boolean cargoShipPortButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CARGO_SHIP_CARGO_BUTTON);
+        // boolean floorButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.FLOOR_BUTTON);
+        // boolean cargoShipPortButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CARGO_SHIP_CARGO_BUTTON);
 
-        boolean bottomHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.BOTTOM_HATCH_BUTTON);
-        boolean centerHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_HATCH_BUTTON);
-        boolean topHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_HATCH_BUTTON);
+        // boolean bottomHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.BOTTOM_HATCH_BUTTON);
+        // boolean centerHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_HATCH_BUTTON);
+        // boolean topHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_HATCH_BUTTON);
 
-        boolean bottomCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.BOTTOM_CARGO_BUTTON);
-        boolean centerCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_CARGO_BUTTON);
-        boolean topCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_CARGO_BUTTON);
+        // boolean bottomCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.BOTTOM_CARGO_BUTTON);
+        // boolean centerCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_CARGO_BUTTON);
+        // boolean topCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_CARGO_BUTTON);
 
-        //need to change the buttons to pressed not holds
-        boolean aButtonPressed = driverXbox.getRawButtonPressed(Xbox.Constants.A_BUTTON); // Extend climber elevator
-        boolean bButton = driverXbox.getRawButton(Xbox.Constants.B_BUTTON); // Retract climber elevator
-        boolean xButton = driverXbox.getRawButtonPressed(Xbox.Constants.X_BUTTON); // Release pin solenoid
-        boolean yButton = driverXbox.getRawButton(Xbox.Constants.Y_BUTTON); // Retract pin solenoid
+        // //need to change the buttons to pressed not holds
+        // boolean aButtonPressed = driverXbox.getRawButtonPressed(Xbox.Constants.A_BUTTON); // Extend climber elevator
+        // boolean bButton = driverXbox.getRawButton(Xbox.Constants.B_BUTTON); // Retract climber elevator
+        // boolean xButton = driverXbox.getRawButtonPressed(Xbox.Constants.X_BUTTON); // Release pin solenoid
+        // boolean yButton = driverXbox.getRawButton(Xbox.Constants.Y_BUTTON); // Retract pin solenoid
         
-        double leftTrigger = driverXbox.getRawAxis(Xbox.Constants.LEFT_TRIGGER_AXIS);
-        double rightTrigger = driverXbox.getRawAxis(Xbox.Constants.RIGHT_TRIGGER_AXIS);
-        boolean backButton = driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON);
+        // double leftTrigger = driverXbox.getRawAxis(Xbox.Constants.LEFT_TRIGGER_AXIS);
+        // double rightTrigger = driverXbox.getRawAxis(Xbox.Constants.RIGHT_TRIGGER_AXIS);
+        // boolean backButton = driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON);
     
-    
+        initializeButtons();
 
         // boolean operatorLeftBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);
         // boolean operatorRightBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER);
@@ -127,7 +156,7 @@ public class Teleop
         // boolean operatorYButton = operatorXbox.getRawButton(Xbox.Constants.Y_BUTTON);
         // boolean operatorYButtonReleased = operatorXbox.getRawButtonReleased(Xbox.Constants.Y_BUTTON);
 
-        double motorCurrent = arm.getIntakeAmperage();
+        // double motorCurrent = arm.getIntakeAmperage();
         // if (operatorYButton)
         // {
         //     if (operatorLeftBumper)
@@ -168,53 +197,306 @@ public class Teleop
         //     arm.moveWristUp();
         // }
 
-        if(leftTrigger > 0.7)
+        // if(leftTrigger > 0.7)
+        // {
+        //     if(bButton)
+        //     {
+        //         climber.extendLegs(0.5);
+        //     }
+        //     else if(yButton)
+        //     {
+        //         climber.retractLegs(0.2);
+        //     }
+        //     else if(climber.getAmperage() > 2.0)   //test to find the amps pulled when climbing and holding
+        //     {
+        //         climber.holdLegs(0);//set to the right number
+        //     }
+        //     else if(climber.getAmperage() <= 2.0)
+        //     {
+        //         climber.stopLegs();
+        //     }
+        // }
+        // else
+        // {
+        //     climber.stopLegs();
+        // }
+
+        // if(rightTrigger > 0.3)
+        // {
+        //     if(!rightTriggerPressed)
+        //     {
+        //         rightTriggerPressed = true;
+        //         arm.toggleHatchPanel();
+        //         System.out.println("RIght Trigger Pressed");
+        //     }
+        // }
+        // else
+        // {
+        //     rightTriggerPressed = false;
+        // }
+
+        // if(arm.getGrabberPosition() == Value.kReverse && arm.getRumbleTimer() > 5.0)
+        // {
+        //     driverXbox.setRumble(RumbleType.kRightRumble, 0.5);
+        // }
+        // else
+        // {
+        //     driverXbox.setRumble(RumbleType.kRightRumble, 0.0);
+        // }
+
+        // if(armButton || elevatorButton)
+        // {
+        //     elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
+        //     elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
+
+        //     if(armButton)
+        //     {
+        //         if(buttonBoardYAxis == 1)
+        //         {
+        //             arm.moveArmUp(0.35);
+        //         }
+        //         else if(buttonBoardYAxis == -1)
+        //         {
+        //             arm.moveArmDown(-0.35);
+        //         }
+        //         else if(buttonBoardXAxis == 1)
+        //         {
+        //             arm.moveArmUp(0.8);
+        //         }
+        //         else if(buttonBoardXAxis == -1)
+        //         {
+        //             arm.moveArmDown(-0.8);
+        //         }
+        //         else
+        //         {
+        //             arm.stopArm();
+        //         }
+        //     }
+        //     if(elevatorButton)
+        //     {
+        //         if(buttonBoardYAxis == 1)
+        //         {
+        //             elevator.raiseElevator(0.35);
+        //         }
+        //         else if(buttonBoardYAxis == -1)
+        //         {
+        //             elevator.lowerElevator(-0.35);
+        //         }
+        //         else if(buttonBoardXAxis == 1)
+        //         {
+        //             elevator.raiseElevator(0.8);
+        //         }
+        //         else if(buttonBoardXAxis == -1)
+        //         {
+        //             elevator.lowerElevator(-0.8);
+        //         }
+        //         else
+        //         {
+        //             elevator.holdElevator();
+        //         }
+        //     }
+        // }
+        // else
+        // {
+        //     if (floorButton)
+        //     {
+        //         elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kFloor);
+        //         elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kFloor);
+        //     }
+        //     else if (cargoShipPortButton)
+        //     {
+        //         elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCargoShipCargo);
+        //         elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCargoShipCargo);
+        //     }
+        //     else if (bottomHatchButton)
+        //     {
+        //         elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kBottomHatch);
+        //         elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kBottomHatch);
+        //     }
+        //     else if (centerHatchButton)
+        //     {
+        //         elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCenterHatch);
+        //         elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCenterHatch);
+        //     }
+        //     else if (topHatchButton)
+        //     {
+        //         elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kTopHatch);
+        //         elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kTopHatch);
+        //     }
+        //     else if (bottomCargoButton)
+        //     {
+        //         elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kBottomCargo);
+        //         elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kBottomCargo);
+        //     }
+        //     else if (centerCargoButton)
+        //     {
+        //         elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCenterCargo);
+        //         elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCenterCargo);
+        //     }
+        //     else if (topCargoButton)
+        //     {
+        //         elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kTopCargo);
+        //         elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kTopCargo);
+        //     }
+
+        //     elevatorAndArm.moveTo();
+        // }
+
+        // if (elevatorButtonReleased)
+        // {
+        //     elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
+        //     elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
+        //     //elevator.stopElevator();
+        //     elevator.holdElevator();
+        //     arm.stopArm();
+        //     elevator.setIsMoving(false);
+        // }
+        // if (armButtonReleased)
+        // {
+        //     elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
+        //     elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
+        //     elevator.holdElevator();
+        //     arm.stopArm();
+        //     arm.setIsArmMoving(false);
+        // }
+
+        // if (leftTrigger > 0.3)
+        // {
+        //     if (xButton && climber.getEncoder() < Climber.Constants.MAX_CLIMBER_HEIGHT)
+        //     {
+        //         climber.extendLegs(0.5);
+        //     }
+        //     else if (yButton && climber.getEncoder() > Climber.Constants.MIN_CLIMBER_HEIGHT)
+        //     {
+        //         climber.retractLegs(0.5);
+        //     }
+        //     else
+        //     {
+        //         climber.stopLegs();
+        //     }
+
+        //     if (xButton)
+        //     {
+        //         climber.ejectPin();
+        //     }
+        //     // have way to reset pin solenoid
+        // }
+
+        // double[] rightAxes = driverXbox.getScaledAxes(Xbox.Constants.RIGHT_STICK_AXES,
+        //         Xbox.Constants.PolynomialDrive.kCubicDrive);
+        // double rightXAxis = rightAxes[0];
+
+        // double[] leftAxes = driverXbox.getScaledAxes(Xbox.Constants.LEFT_STICK_AXES,
+        //         Xbox.Constants.PolynomialDrive.kCubicDrive);
+        // double leftXAxis = leftAxes[0];
+        // double leftYAxis = leftAxes[1];
+
+        // // System.out.println("X Axis:" + leftXAxis);
+        // // System.out.println("Y Axis:" + -leftYAxis);
+
+        // if (driverXbox.getRawButtonPressed(Xbox.Constants.START_BUTTON))
+        // {
+        //     drivetrain.toggleDriveInFieldOriented();
+        //     if(drivetrain.getDriveInFieldOriented())
+        //     {
+        //         System.out.println("Field Oriented");
+        //     }
+        //     else
+        //     {
+        //         System.out.println("Not Field Oriented");
+        //     }
+        // }
+
+        // if (drivetrain.getDriveInFieldOriented())
+        // {
+        //     drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis, drivetrain.getFieldOrientedHeading());
+        // }
+        // else
+        // {
+        //     drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
+        // }
+
+        // if (backButton)
+        // {
+        //     arm.toggleArmOverride();
+        // }
+
+        // System.out.println(elevator);
+        //System.out.println(arm);  
+
+        // if(operatorXButton)
+        // {
+        //     lights.turnLightsOn();
+        // }
+        // else
+        // {
+        //     lights.turnLightsOff();
+        // }
+
+        if (aButtonPressed)
         {
-            if(bButton)
+            drivetrain.moveOmniWheel();
+        }
+
+        intakeStateMachine();
+    }
+
+    public void periodic()
+    {
+        initializeButtons();
+        climberControl();
+        hatchPanelControl();
+        elevatorAndArmControl();
+        drivingControl();
+        intakeStateMachine();
+        overrideArmLimits();
+    }
+
+    public void overrideArmLimits()
+    {
+        if (backButton)
+        {
+            arm.toggleArmOverride();
+        }
+    }
+    public void drivingControl()
+    {
+        double[] rightAxes = driverXbox.getScaledAxes(Xbox.Constants.RIGHT_STICK_AXES,
+        Xbox.Constants.PolynomialDrive.kCubicDrive);
+        double rightXAxis = rightAxes[0];
+
+        double[] leftAxes = driverXbox.getScaledAxes(Xbox.Constants.LEFT_STICK_AXES,
+        Xbox.Constants.PolynomialDrive.kCubicDrive);
+        double leftXAxis = leftAxes[0];
+        double leftYAxis = leftAxes[1];
+
+        // System.out.println("X Axis:" + leftXAxis);
+        // System.out.println("Y Axis:" + -leftYAxis);
+
+        if (driverXbox.getRawButtonPressed(Xbox.Constants.START_BUTTON))
+        {
+            drivetrain.toggleDriveInFieldOriented();
+            if(drivetrain.getDriveInFieldOriented())
             {
-                climber.extendLegs(0.5);
+                System.out.println("Field Oriented");
             }
-            else if(yButton)
+            else
             {
-                climber.retractLegs(0.2);
+                System.out.println("Not Field Oriented");
             }
-            else if(climber.getAmperage() > 2.0)   //test to find the amps pulled when climbing and holding
-            {
-                climber.holdLegs(0);//set to the right number
-            }
-            else if(climber.getAmperage() <= 2.0)
-            {
-                climber.stopLegs();
-            }
+        }
+
+        if (drivetrain.getDriveInFieldOriented())
+        {
+            drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis, drivetrain.getFieldOrientedHeading());
         }
         else
         {
-            climber.stopLegs();
+            drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
         }
-
-        if(rightTrigger > 0.3)
-        {
-            if(!rightTriggerPressed)
-            {
-                rightTriggerPressed = true;
-                arm.toggleHatchPanel();
-                System.out.println("RIght Trigger Pressed");
-            }
-        }
-        else
-        {
-            rightTriggerPressed = false;
-        }
-
-        if(arm.getGrabberPosition() == Value.kReverse && arm.getRumbleTimer() > 5.0)
-        {
-            driverXbox.setRumble(RumbleType.kRightRumble, 0.5);
-        }
-        else
-        {
-            driverXbox.setRumble(RumbleType.kRightRumble, 0.0);
-        }
-
+    }
+    public void elevatorAndArmControl()
+    {
         if(armButton || elevatorButton)
         {
             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
@@ -266,9 +548,6 @@ public class Teleop
                     elevator.holdElevator();
                 }
             }
-
-            //System.out.println(arm);
-            // System.out.println(arm);
         }
         else
         {
@@ -320,7 +599,6 @@ public class Teleop
         {
             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
             elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
-            //elevator.stopElevator();
             elevator.holdElevator();
             arm.stopArm();
             elevator.setIsMoving(false);
@@ -333,91 +611,90 @@ public class Teleop
             arm.stopArm();
             arm.setIsArmMoving(false);
         }
-
-        // if (leftTrigger > 0.3)
-        // {
-        //     if (xButton && climber.getEncoder() < Climber.Constants.MAX_CLIMBER_HEIGHT)
-        //     {
-        //         climber.extendLegs(0.5);
-        //     }
-        //     else if (yButton && climber.getEncoder() > Climber.Constants.MIN_CLIMBER_HEIGHT)
-        //     {
-        //         climber.retractLegs(0.5);
-        //     }
-        //     else
-        //     {
-        //         climber.stopLegs();
-        //     }
-
-        //     if (xButton)
-        //     {
-        //         climber.ejectPin();
-        //     }
-        //     // have way to reset pin solenoid
-        // }
-
-        double[] rightAxes = driverXbox.getScaledAxes(Xbox.Constants.RIGHT_STICK_AXES,
-                Xbox.Constants.PolynomialDrive.kCubicDrive);
-        double rightXAxis = rightAxes[0];
-
-        double[] leftAxes = driverXbox.getScaledAxes(Xbox.Constants.LEFT_STICK_AXES,
-                Xbox.Constants.PolynomialDrive.kCubicDrive);
-        double leftXAxis = leftAxes[0];
-        double leftYAxis = leftAxes[1];
-
-        // System.out.println("X Axis:" + leftXAxis);
-        // System.out.println("Y Axis:" + -leftYAxis);
-
-        if (driverXbox.getRawButtonPressed(Xbox.Constants.START_BUTTON))
+    }
+    public void hatchPanelControl()
+    {
+        if(rightTrigger > 0.3)
         {
-            drivetrain.toggleDriveInFieldOriented();
-            if(drivetrain.getDriveInFieldOriented())
+            if(!rightTriggerPressed)
             {
-                System.out.println("Field Oriented");
+                rightTriggerPressed = true;
+                arm.toggleHatchPanel();
+                System.out.println("RIght Trigger Pressed");
             }
-            else
-            {
-                System.out.println("Not Field Oriented");
-            }
-        }
-
-        if (drivetrain.getDriveInFieldOriented())
-        {
-            drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis, drivetrain.getFieldOrientedHeading());
         }
         else
         {
-            drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
+            rightTriggerPressed = false;
         }
 
-        if (backButton)
+        if(arm.getGrabberPosition() == Value.kReverse && arm.getRumbleTimer() > 5.0)
         {
-            arm.toggleArmOverride();
+            driverXbox.setRumble(RumbleType.kRightRumble, 0.5);
         }
-
-        // System.out.println(elevator);
-        //System.out.println(arm);  
-
-        // if(operatorXButton)
-        // {
-        //     lights.turnLightsOn();
-        // }
-        // else
-        // {
-        //     lights.turnLightsOff();
-        // }
-
-        if (aButtonPressed)
+        else
         {
-            drivetrain.moveOmniWheel();
+            driverXbox.setRumble(RumbleType.kRightRumble, 0.0);
         }
-    //   System.out.println(drivetrain.getLeftServo() + " " + drivetrain.getRightServo());
-
-        //System.out.println(drivetrain.getNavXData());
-
-        intakeStateMachine();
     }
-
+    public void climberControl()
+    {
+        double motorCurrent = arm.getIntakeAmperage();
+        if(leftTrigger > 0.7)
+        {
+            if(bButton)
+            {
+                climber.extendLegs(0.5);
+            }
+            else if(yButton)
+            {
+                climber.retractLegs(0.2);
+            }
+            else if(climber.getAmperage() > 2.0)   //test to find the amps pulled when climbing and holding
+            {
+                climber.holdLegs(0);//set to the right number
+            }
+            else if(climber.getAmperage() <= 2.0)
+            {
+                climber.stopLegs();
+            }
+        }
+        else
+        {
+            climber.stopLegs();
+        }
+    }
+    public void initializeButtons()
+    {
+         armButton = buttonBoard.getRawButton(ButtonBoard.Constants.ARM_BUTTON);
+         armButtonReleased = buttonBoard.getRawButtonReleased(ButtonBoard.Constants.ARM_BUTTON);
+         elevatorButton = buttonBoard.getRawButton(ButtonBoard.Constants.ELEVATOR_BUTTON);
+         elevatorButtonReleased = buttonBoard.getRawButtonReleased(ButtonBoard.Constants.ELEVATOR_BUTTON);
+        buttonBoardYAxis = buttonBoard.getRawAxis(ButtonBoard.Constants.Y_AXIS);
+           buttonBoardXAxis = buttonBoard.getRawAxis(ButtonBoard.Constants.X_AXIS);
+    
+    
+         floorButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.FLOOR_BUTTON);
+         cargoShipPortButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CARGO_SHIP_CARGO_BUTTON);
+    
+         bottomHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.BOTTOM_HATCH_BUTTON);
+         centerHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_HATCH_BUTTON);
+         topHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_HATCH_BUTTON);
+    
+         bottomCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.BOTTOM_CARGO_BUTTON);
+         centerCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_CARGO_BUTTON);
+         topCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_CARGO_BUTTON);
+    
+        //need to change the buttons to pressed not holds
+         aButtonPressed = driverXbox.getRawButtonPressed(Xbox.Constants.A_BUTTON); // Extend climber elevator
+         bButton = driverXbox.getRawButton(Xbox.Constants.B_BUTTON); // Retract climber elevator
+         xButton = driverXbox.getRawButtonPressed(Xbox.Constants.X_BUTTON); // Release pin solenoid
+         yButton = driverXbox.getRawButton(Xbox.Constants.Y_BUTTON); // Retract pin solenoid
+        
+           leftTrigger = driverXbox.getRawAxis(Xbox.Constants.LEFT_TRIGGER_AXIS);
+           rightTrigger = driverXbox.getRawAxis(Xbox.Constants.RIGHT_TRIGGER_AXIS);
+         backButton = driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON);
+    }
     public boolean whiteLineAlignment()
     {
         targetData = vision.getTargetData();
