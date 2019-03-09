@@ -84,11 +84,19 @@ public class Climber
         masterLegMotor.set(speed);
     }
 
+    public void holdLegs(double speed)
+    {
+        extendLegs(speed);
+    }
     public void stopLegs()
     {
         masterLegMotor.set(0);
     }
 
+    public double getAmperage()
+    {
+        return masterLegMotor.getOutputCurrent();
+    }
     public int getEncoder()
     {
         return masterLegMotor.getSelectedSensorPosition();

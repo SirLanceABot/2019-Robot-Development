@@ -13,6 +13,7 @@ import frc.robot.SlabShuffleboard;
 import frc.util.MotorConstants;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -238,6 +239,8 @@ public class Arm
         // {
         //     isGrabberMoving = false;
         // }
+        grabberTimer.reset();
+        grabberTimer.stop();
     }
 
     /**
@@ -247,18 +250,8 @@ public class Arm
     {
         grabberSolenoid.set(Value.kForward);
 
-        // if(!isGrabberMoving)
-        // {
-        //     grabberTimer.reset();
-        //     grabberTimer.start();
-        //     grabberSolenoid.set(Value.kForward);
-        //     isGrabberMoving = true;
-        // }
-        
-        // if(grabberTimer.get() > 0.5)
-        // {
-        //     isGrabberMoving = false;
-        // }
+        grabberTimer.reset();
+        grabberTimer.start();
     }
 
     public void toggleHatchPanel()
@@ -273,6 +266,16 @@ public class Arm
             grabHatchPanel();
             isGrabberRetracted = true;
         }
+    }
+
+    public double getRumbleTimer()
+    {
+        return grabberTimer.get();
+    }
+
+    public DoubleSolenoid.Value getGrabberPosition()
+    {
+        return grabberSolenoid.get();
     }
 
     public void toggleArmOverride()

@@ -21,8 +21,11 @@ import frc.visionForWhiteTape.CameraProcess;
 import frc.visionForWhiteTape.TargetData;
 import frc.visionForWhiteTape.CameraProcess.rotate;
 
+import javax.lang.model.util.ElementScanner6;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 /**
  * Add your docs here.
@@ -37,6 +40,7 @@ public class Teleop
     
     private IntakeState stateOfIntake = IntakeState.kOff;
     private final Timer startupTimer = new Timer();
+    private final Timer rumbleTimer = new Timer();
     private Arm arm = Arm.getInstance();
     private Elevator elevator = Elevator.getInstance();
     private ElevatorAndArm elevatorAndArm = ElevatorAndArm.getInstance();
@@ -54,6 +58,8 @@ public class Teleop
     private TargetData targetData;
     private boolean firstTimeOverAmpLimit = true;
     private boolean rightTriggerPressed = false;
+    private int rumbleTimerStart = 1;
+
 
     private Teleop()
     {
@@ -105,12 +111,13 @@ public class Teleop
         boolean aButtonPressed = driverXbox.getRawButtonPressed(Xbox.Constants.A_BUTTON); // Extend climber elevator
         boolean bButton = driverXbox.getRawButton(Xbox.Constants.B_BUTTON); // Retract climber elevator
         boolean xButton = driverXbox.getRawButtonPressed(Xbox.Constants.X_BUTTON); // Release pin solenoid
-        boolean yButton = driverXbox.getRawButtonPressed(Xbox.Constants.Y_BUTTON); // Retract pin solenoid
+        boolean yButton = driverXbox.getRawButton(Xbox.Constants.Y_BUTTON); // Retract pin solenoid
         
         double leftTrigger = driverXbox.getRawAxis(Xbox.Constants.LEFT_TRIGGER_AXIS);
         double rightTrigger = driverXbox.getRawAxis(Xbox.Constants.RIGHT_TRIGGER_AXIS);
         boolean backButton = driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON);
-        
+    
+    
 
         // boolean operatorLeftBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);
         // boolean operatorRightBumper = operatorXbox.getRawButtonPressed(Xbox.Constants.RIGHT_BUMPER);
@@ -161,6 +168,29 @@ public class Teleop
         //     arm.moveWristUp();
         // }
 
+        if(leftTrigger > 0.7)
+        {
+            if(bButton)
+            {
+                climber.extendLegs(0.2);
+            }
+            else if(yButton)
+            {
+                climber.retractLegs(0.2);
+            }
+            else if(climber.getAmperage() > 2.0)   //test to find the amps pulled when climbing and holding
+            {
+                climber.holdLegs(0);//set to the right number
+            }
+            else if(climber.getAmperage() <= 2.0)
+            {
+                climber.stopLegs();
+            }
+        }
+        else
+        {
+            climber.stopLegs();
+        }
 
         if(rightTrigger > 0.3)
         {
@@ -170,13 +200,20 @@ public class Teleop
                 arm.toggleHatchPanel();
                 System.out.println("RIght Trigger Pressed");
             }
-
         }
         else
         {
             rightTriggerPressed = false;
         }
 
+        if(arm.getGrabberPosition() == Value.kForward && arm.getRumbleTimer() > 5.0)
+        {
+            driverXbox.setRumble(RumbleType.kRightRumble, 0.5);
+        }
+        else
+        {
+            driverXbox.setRumble(RumbleType.kRightRumble, 0.0);
+        }
 
         if(armButton || elevatorButton)
         {
