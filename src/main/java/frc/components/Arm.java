@@ -260,11 +260,13 @@ public class Arm
         {
             releaseHatchPanel();
             isGrabberRetracted = false;
+            System.out.println("The grabber is extended");
         }
         else
         {
             grabHatchPanel();
             isGrabberRetracted = true;
+            System.out.println("The grabber is retracted");
         }
     }
 

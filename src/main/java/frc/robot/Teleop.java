@@ -172,7 +172,7 @@ public class Teleop
         {
             if(bButton)
             {
-                climber.extendLegs(0.2);
+                climber.extendLegs(0.5);
             }
             else if(yButton)
             {
@@ -206,7 +206,7 @@ public class Teleop
             rightTriggerPressed = false;
         }
 
-        if(arm.getGrabberPosition() == Value.kForward && arm.getRumbleTimer() > 5.0)
+        if(arm.getGrabberPosition() == Value.kReverse && arm.getRumbleTimer() > 5.0)
         {
             driverXbox.setRumble(RumbleType.kRightRumble, 0.5);
         }
