@@ -226,19 +226,7 @@ public class Arm
      */
     public void grabHatchPanel()
     {
-        grabberSolenoid.set(Value.kReverse);
-        // if(!isGrabberMoving)
-        // {
-        //     grabberTimer.reset();
-        //     grabberTimer.start();
-        //     grabberSolenoid.set(Value.kReverse);
-        //     isGrabberMoving = true;
-        // }
-        
-        // if(grabberTimer.get() > 0.5)
-        // {
-        //     isGrabberMoving = false;
-        // }
+        grabberSolenoid.set(Value.kForward);
         grabberTimer.reset();
         grabberTimer.stop();
     }
@@ -248,11 +236,12 @@ public class Arm
      */
     public void releaseHatchPanel()
     {
-        grabberSolenoid.set(Value.kForward);
-
+        grabberSolenoid.set(Value.kReverse);
+        
         grabberTimer.reset();
         grabberTimer.start();
     }
+    
 
     public void toggleHatchPanel()
     {
@@ -260,13 +249,11 @@ public class Arm
         {
             releaseHatchPanel();
             isGrabberRetracted = false;
-            System.out.println("The grabber is extended");
         }
         else
         {
             grabHatchPanel();
             isGrabberRetracted = true;
-            System.out.println("The grabber is retracted");
         }
     }
 
@@ -561,7 +548,7 @@ public class Arm
         // 4: Threshold
         // Comp Bot: starting position is 101
                                                                        // 0    1    2    3   4   5
-        public static final int[] COMPETITION_ARM_POSITION_POT_VALUES = {635, 567, 438, 202, 5, -1};
+        public static final int[] COMPETITION_ARM_POSITION_POT_VALUES = {625, 567, 438, 202, 5, -1};
         public static final int[] PRACTICE_ARM_POSITION_POT_VALUES =    {628, 572, 480, 230, 5, -1};
     }
 
