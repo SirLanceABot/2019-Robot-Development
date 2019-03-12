@@ -135,7 +135,7 @@ public class Robot extends TimedRobot
     public void teleopPeriodic()
     {
         // double[] scaledArray = driverXbox.getScaledAxes(Constants.LEFT_STICK_AXES, Xbox.Constants.PolynomialDrive.kCubicDrive);
-        teleop.teleop();
+        teleop.periodic();
         //System.out.println(drivetrain);
 
         // System.out.printf("X = %5.3f Y = %5.3f X = %5.3f Y = %5.3f \n",

@@ -13,11 +13,11 @@ public class Intake
 {
     public static class Constants
     {
-        private static final int INTAKE_VICTOR_PORT = 0;
-        private static final int INTAKE_TALON_PORT = 1;
-        private static final double BALL_STALL_CURRENT = 0.5;
-        private static final double CURRENT_LIMIT = 15.0;
-        private static final double RUN_TIME = 0.5;
+        public static final int INTAKE_VICTOR_PORT = 0;
+        public static final int INTAKE_TALON_PORT = 1;
+        public static final double BALL_STALL_CURRENT = 0.5;
+        public static final double CURRENT_LIMIT = 15.0;
+        public static final double RUN_TIME = 0.5;
     }
     enum IntakeState
     {
@@ -26,18 +26,17 @@ public class Intake
         kOff, kIntake, kHold, kEject;
     }
 
+    private static Intake instance = new Intake();
+    private IntakeState stateOfIntake;
+    private Timer startupTimer = new Timer();
+    private WPI_TalonSRX intakeRoller = new WPI_TalonSRX(Constants.INTAKE_TALON_PORT);
+    private boolean firstTimeOverAmpLimit = true;
+
     private Intake()
     {
 
     }
 
-    private static Intake instance = new Intake();
-
-    private IntakeState stateOfIntake;
-    private Timer startupTimer = new Timer();
-    private WPI_TalonSRX intakeRoller = new WPI_TalonSRX(Constants.INTAKE_TALON_PORT);
-    private Arm arm = Arm.getInstance();
-    private boolean firstTimeOverAmpLimit = true;
 
     public static Intake getInstance()
     {
@@ -54,14 +53,26 @@ public class Intake
         intakeRoller.set(-Math.abs(.75));
     }
 
-    public double getRollerAmperage()
+    public void stopCargo()
+    {
+        intakeRoller.set(0.0);
+    }
+
+    public double getIntakeAmperage()
     {
         return intakeRoller.getOutputCurrent();
     }
 
+    public String getIntakeRollerMotorData()
+    {
+        return String.format("%6.3f,  %6d,  %6.3f,  %5.1f",
+         intakeRoller.get(), intakeRoller.getSelectedSensorPosition(),
+         intakeRoller.getOutputCurrent(), intakeRoller.getTemperature() * (9.0 / 5.0) + 32.0);
+    }
+
     public void cargoControl(boolean inButtonHeld, boolean outButton, boolean inButtonPressed)
     {
-        double motorCurrent = arm.getIntakeAmperage();
+        double motorCurrent = getIntakeAmperage();
         switch (stateOfIntake)
         {
         case kOff:

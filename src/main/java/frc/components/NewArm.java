@@ -1,0 +1,258 @@
+package frc.components;
+
+import frc.components.Arm.Constants.ArmPosition;
+import frc.components.Arm.Constants.Position;
+import frc.robot.SlabShuffleboard;
+import frc.util.MotorConstants;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import java.util.Arrays;
+
+// import com.ctre.phoenix.ParamEnum;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+// import com.ctre.phoenix.motorcontrol.InvertType;
+// import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+// import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+/**
+ * Add your docs here.
+ */
+public class NewArm 
+{
+    public static class Constants
+    {
+        public static enum NewArmPosition
+        {
+            kFloorArmPosition(0), 
+            kHorizontalArmPosition(1), 
+            kMiddleArmPosition(2),
+            kTopArmPosition(3),
+            kThreshold(4),
+            kArmNone(5);
+
+            private int value;
+
+            private NewArmPosition(int value)
+            {
+                this.value = value;
+            }
+        }
+
+        public static final int ARM_MOTOR_ID = 9;
+        public static final int ARM_THRESHOLD = 5;
+        // 0: Floor
+        // 1: Horizontal
+        // 2: Middle
+        // 3: Top
+        // 4: Threshold
+        // Comp Bot: starting position is 101
+                                                                       // 0    1    2    3   4   5
+        public static final int[] COMPETITION_ARM_POSITION_POT_VALUES = {635, 567, 438, 202, 5, -1};
+        public static final int[] PRACTICE_ARM_POSITION_POT_VALUES =    {628, 572, 480, 230, 5, -1};
+    }
+
+    private WPI_TalonSRX armMotor = new WPI_TalonSRX(Constants.ARM_MOTOR_ID);
+    private double speedFactor = 1.0;
+    private boolean isArmMoving = false;
+    private boolean enableArmSoftLimit = true;
+
+    /**
+     * Returns the pot value of the given position
+     * 
+     * <p> 0: Floor
+     * <p> 1: Horizontal
+     * <p> 2: Middle
+     * <p> 3: Top
+     * 
+     */
+    private static int[] armPositionPotValues = Constants.COMPETITION_ARM_POSITION_POT_VALUES;
+
+    // private SlabShuffleboard shuffleboard = SlabShuffleboard.getInstance();
+
+    private static NewArm instance = new NewArm();
+
+    private NewArm()
+    {
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+
+        armMotor.configFactoryDefault();
+
+        armMotor.setNeutralMode(NeutralMode.Brake);
+        armMotor.configPeakCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.k9015Motor, 0.3));
+        armMotor.configPeakCurrentDuration(MotorConstants.Constants.PEAK_CURRENT_DURATION);
+        armMotor.configContinuousCurrentLimit(MotorConstants.Constants.CONTINOUS_CURRENT_LIMIT);
+        armMotor.configOpenloopRamp(MotorConstants.Constants.OPEN_LOOP_RAMP);
+        armMotor.enableCurrentLimit(true);
+
+        armMotor.configSelectedFeedbackSensor(FeedbackDevice.Analog);
+        armMotor.setSensorPhase(false);
+        armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(Constants.NewArmPosition.kTopArmPosition));
+        armMotor.configForwardSoftLimitThreshold(getArmPositionPotValue(Constants.NewArmPosition.kFloorArmPosition));
+        armMotor.configForwardSoftLimitEnable(true);
+        armMotor.configReverseSoftLimitEnable(true);
+
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
+    }
+
+    /**
+     * This function returns the instance of the Arm to be used
+     * 
+     * @return instance of the arm that is going to be used
+     */
+    public static NewArm getInstance()
+    {
+        return instance;
+    }
+
+    /**
+     * this function moves the arm up at a speed of .5
+     */
+    public void moveArmUp()
+    {
+        // armMotor.set(speedFactor * -0.5);
+        moveArmUp(-0.5);
+    }
+
+    /**
+     * moves arm up at given speed
+     * @param speed
+     */
+    public void moveArmUp(double speed)
+    {
+        armMotor.set(speedFactor * -Math.abs(speed));
+        setIsArmMoving(true);
+    }
+
+    /**
+     * this function moves the arm down at a speed of -.5
+     */
+    public void moveArmDown()
+    {
+        // armMotor.set(speedFactor * 0.25);
+        moveArmDown(0.25);
+    }
+
+     /**
+     * moves arm down at given speed
+     * @param speed
+     */
+    public void moveArmDown(double speed)
+    {
+        armMotor.set(speedFactor * Math.abs(speed));
+        setIsArmMoving(true);
+    }
+
+    /**
+     * this function will stop the movement of the arm
+     */
+    public void stopArm()
+    {
+        setIsArmMoving(false);
+        armMotor.set(0);
+    }
+
+    public void holdArm()
+    {
+        armMotor.set(0.1); 
+    }
+    
+    public double getArmCurrent()
+    {
+        return armMotor.getOutputCurrent();
+    }
+
+
+    public void toggleArmOverride()
+    {
+        enableArmSoftLimit = !enableArmSoftLimit;
+        armMotor.overrideSoftLimitsEnable(enableArmSoftLimit);
+        System.out.println("Arm enable soft limits: " + enableArmSoftLimit);
+    }
+
+    /**
+     * this function gets the potentiometer value that moniters the arms position
+     * 
+     * @return returns the potentiometer value for the arm
+     */
+    public int getPotValue()
+    {
+        return armMotor.getSelectedSensorPosition();   // Subtract a number from this to flip the directions (Down is low num, up is high num)
+    }
+
+
+    /**
+     * sets the robot we are using (competition or practice)
+     * @param robotType
+     */
+    public void setRobotType(SlabShuffleboard.RobotType robotType)
+    {
+        if (robotType == SlabShuffleboard.RobotType.kCompetition)
+        {
+            armPositionPotValues = Constants.COMPETITION_ARM_POSITION_POT_VALUES;
+        }
+        else
+        {
+            armPositionPotValues = Constants.PRACTICE_ARM_POSITION_POT_VALUES;
+        }
+
+        System.out.println(this.getClass().getName() + ": armPositionPotValues = " + Arrays.toString(armPositionPotValues));
+        armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(Constants.NewArmPosition.kTopArmPosition));
+        armMotor.configForwardSoftLimitThreshold(getArmPositionPotValue(Constants.NewArmPosition.kFloorArmPosition));
+    }
+
+    public void setMotorSpeedFactor(SlabShuffleboard.MotorSpeed speedFactor)
+    {
+        this.speedFactor = speedFactor.value;
+    }
+
+    /**
+     * Returns the pot value of the given position
+     * 
+     * @param position which position to return:
+     * <p> 0: Floor
+     * <p> 1: Horizontal
+     * <p> 2: Middle
+     * <p> 3: Top
+     * 
+     * @return pot value of the selected position
+     */
+    public int getArmPositionPotValue(Constants.NewArmPosition position)
+    {
+        return armPositionPotValues[position.value];
+    }
+
+    /**
+     * checks if the arm is moving
+     */
+    public boolean isArmMoving()
+    {
+        return isArmMoving;
+    }
+
+    /**
+     * sets if the arm is moving
+     */
+    public void setIsArmMoving(boolean isArmMoving)
+    {
+        this.isArmMoving = isArmMoving;
+    }
+
+    public String getArmMotorData()
+    {
+        return String.format("%6.3f,  %6d,  %6.3f,  %5.1f",
+         armMotor.get(), armMotor.getSelectedSensorPosition(),
+         armMotor.getOutputCurrent(), armMotor.getTemperature() * (9.0 / 5.0) + 32.0);
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("Arm Pot Value: " + getPotValue());
+    }
+
+}

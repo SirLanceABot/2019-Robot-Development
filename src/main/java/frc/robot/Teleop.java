@@ -183,8 +183,6 @@ public class Teleop
         // boolean backButton =
         // driverXbox.getRawButtonPressed(Xbox.Constants.BACK_BUTTON);
 
-        buttonBoardControl();
-
         // boolean operatorLeftBumper =
         // operatorXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);
         // boolean operatorRightBumper =
@@ -493,8 +491,8 @@ public class Teleop
         driverXboxControl();
         drivetrainControl();
         elevatorAndArmControl();
-        //cargoControl();
-        intake.cargoControl(inButtonHeld, outButton, inButtonPressed);
+        cargoControl();
+        //intake.cargoControl(inButtonHeld, outButton, inButtonPressed);
         hatchPanelControl();
         climberControl();
         overrideArmLimits();

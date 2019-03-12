@@ -1,6 +1,8 @@
 
 package frc.components;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 /**
@@ -10,29 +12,81 @@ public class Grabber
 {
     public static class Constants
     {
-        private static final int GRABBER_SOLENOID_PORT_1 = 0;
-        private static final int GRABBER_SOLENOID_PORT_2 = 1;
+        public static final int GRABBER_SOLENOID_EXTEND = 4;
+        public static final int GRABBER_SOLENOID_RETRACT = 5;
     }
 
-    private DoubleSolenoid grabberSolenoid = new DoubleSolenoid(Constants.GRABBER_SOLENOID_PORT_1,
-    Constants.GRABBER_SOLENOID_PORT_2); // On the blue solenoid holder
+    private static Grabber instance = new Grabber();
+
+    private Grabber()
+    {
+
+    }
+
+    private DoubleSolenoid grabberSolenoid = new DoubleSolenoid(Constants.GRABBER_SOLENOID_EXTEND,
+            Constants.GRABBER_SOLENOID_RETRACT); // On the blue solenoid holder
+    private Timer grabberTimer = new Timer();
+    private boolean isGrabberRetracted = true;
+    private boolean isGrabberMoving = false;
+
+
+    public Grabber getInstance()
+    {
+        return instance;
+    }
 
     public void retractGrabber()
     {
         grabberSolenoid.set(Value.kReverse);
     }
 
-    public void ExtendGrabber()
+    public void extendGrabber()
     {
         grabberSolenoid.set(Value.kForward);
     }
 
+    public void toggleHatchPanel()
+    {
+        if (isGrabberRetracted)
+        {
+            extendGrabber();
+            isGrabberRetracted = false;
+            System.out.println("The grabber is extended");
+        }
+        else
+        {
+            retractGrabber();
+            isGrabberRetracted = true;
+            System.out.println("The grabber is retracted");
+        }
+    }
+
+    public double getRumbleTimer()
+    {
+        return grabberTimer.get();
+    }
+
+    public String getGrabberSolenoidData()
+    {
+        return grabberSolenoid.get().toString();
+    }
+
+    /**
+     * @return the isGrabberMoving, whether the grabber is moving or not
+     */
+    public boolean isGrabberMoving()
+    {
+        return isGrabberMoving;
+    }
+
     /**
      * returns the grabbers position
+     * 
      * @return kReverse is retracted, kForward is extended
      */
     public DoubleSolenoid.Value getgrabberPosition()
     {
         return grabberSolenoid.get();
     }
+    
 }

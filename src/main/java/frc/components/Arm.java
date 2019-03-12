@@ -1,4 +1,3 @@
-
 package frc.components;
 
 import frc.components.Arm.Constants.ArmPosition;
