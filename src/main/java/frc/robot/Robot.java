@@ -4,15 +4,14 @@ import frc.components.Arm;
 import frc.components.Climber;
 import frc.components.Drivetrain;
 import frc.components.Elevator;
-import edu.wpi.first.wpilibj.TimedRobot;
 import frc.control.DriverXbox;
+import frc.control.Xbox;
+import frc.control.Xbox.Constants;
 import frc.robot.Teleop;
 import frc.robot.SlabShuffleboard.MotorsAndSensorsTabData;
 import frc.robot.SlabShuffleboard.PregameSetupTabData;
 import frc.robot.SlabShuffleboard.Recording;
-import frc.control.Xbox;
-import frc.control.Xbox.Constants;
-
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Robot extends TimedRobot
@@ -112,7 +111,7 @@ public class Robot extends TimedRobot
     public void autonomousPeriodic()
     {
         //drivetrain.driveCartesian(0, .2, 0);
-        teleop.teleop();
+        teleop.periodic();
         System.out.println(drivetrain);
     }
 
@@ -161,6 +160,11 @@ public class Robot extends TimedRobot
 
     }
 
+    /**
+     * this function will return the pregame data
+     * that will decide which robot it is, motor speed
+     * and autonomous.
+     */
     public void getPregameSetupData()
     {
         if (slabShuffleboard.getSendData() && isNewPregameDataAvailable)
@@ -178,6 +182,12 @@ public class Robot extends TimedRobot
         }
     }
 
+    /**
+     * this function updates the shuffleboard
+     * one step at a time so that there is not
+     * significant lag with the system. Right 
+     * now it updates one thing every loop through
+     */
     public void updateAllShuffleboardData()
     {
         shuffleboardPrintCounter++;

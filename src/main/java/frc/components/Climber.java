@@ -1,9 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
 
 package frc.components;
 
@@ -24,9 +18,20 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
  */
 public class Climber 
 {
+    public static class Constants
+    {
+        public static final int SOLENOID_PORT_1 = 2; 
+        public static final int SOLENOID_PORT_2 = 3;
+        public static final int CLIMBER_TALON_PORT = 14;
+        public static final int CLIMBER_VICTOR_PORT = 15;
+        public static final int CLIMBER_DRIVE_PORT = 0; //need to get this port
+        public static final int MAX_CLIMBER_HEIGHT = 500;
+        public static final int MIN_CLIMBER_HEIGHT = -5;
+    }
     private DoubleSolenoid pinSolenoid = new DoubleSolenoid(Constants.SOLENOID_PORT_1, Constants.SOLENOID_PORT_2); // // On the white solenoid holder
     private WPI_TalonSRX masterLegMotor =  new WPI_TalonSRX(Constants.CLIMBER_TALON_PORT);
     private WPI_VictorSPX slaveLegMotor = new WPI_VictorSPX(Constants.CLIMBER_VICTOR_PORT);
+    private WPI_TalonSRX forwardClimbDrive = new WPI_TalonSRX(Constants.CLIMBER_DRIVE_PORT);
 
     private static Climber instance = new Climber();
 
@@ -93,6 +98,11 @@ public class Climber
         masterLegMotor.set(0);
     }
 
+    public void driveForward(double speed)
+    {
+        forwardClimbDrive.set(Math.abs(speed));
+    }
+    
     public double getAmperage()
     {
         return masterLegMotor.getOutputCurrent();
@@ -130,15 +140,4 @@ public class Climber
         return String.format("Encoder: %d  Motor Current: %.2f", getEncoder(), masterLegMotor.getOutputCurrent());
     }
 
-
-    public static class Constants
-    {
-        public static final int SOLENOID_PORT_1 = 2; 
-        public static final int SOLENOID_PORT_2 = 3;
-        public static final int CLIMBER_TALON_PORT = 14;
-        public static final int CLIMBER_VICTOR_PORT = 15;
-
-        public static final int MAX_CLIMBER_HEIGHT = 500;
-        public static final int MIN_CLIMBER_HEIGHT = -5;
-    }
 }

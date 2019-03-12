@@ -1,9 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
 
 package frc.components;
 
@@ -33,6 +27,96 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
  */
 public class Arm
 {
+    public static class Constants
+    {
+        public static enum ArmPosition
+        {
+            kFloorArmPosition(0), 
+            kHorizontalArmPosition(1), 
+            kMiddleArmPosition(2),
+            kTopArmPosition(3),
+            kThreshold(4),
+            kArmNone(5);
+
+            private int value;
+
+            private ArmPosition(int value)
+            {
+                this.value = value;
+            }
+        }
+
+        public static enum WristPosition
+        {
+            kWristDown(DoubleSolenoid.Value.kReverse), 
+            kWristUp(DoubleSolenoid.Value.kForward), 
+            kWristNone(DoubleSolenoid.Value.kOff);
+
+            private DoubleSolenoid.Value value;
+
+            private WristPosition(DoubleSolenoid.Value value)
+            {
+                this.value = value;
+            }
+        }
+
+        public static enum Position
+        {
+            kFloor(Constants.WristPosition.kWristDown, Constants.ArmPosition.kFloorArmPosition),              
+            kCargoShipCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kHorizontalArmPosition),
+            kBottomHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kFloorArmPosition), // 1 ft 7 inches to center
+            kCenterHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kHorizontalArmPosition), // 3 ft 11 inches to center
+            kTopHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kMiddleArmPosition), // 6 ft 3 inches to center
+            kBottomCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kHorizontalArmPosition), // 2 ft 3.5 inches to center
+            kCenterCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kHorizontalArmPosition), // 4 ft 7.5 inches to center
+            kTopCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kMiddleArmPosition), // 6 ft 11.5 inches to center
+            kDrive(Constants.WristPosition.kWristUp, Constants.ArmPosition.kMiddleArmPosition), 
+            kNone(Constants.WristPosition.kWristNone, Constants.ArmPosition.kArmNone);
+
+            private Constants.ArmPosition armPosition;
+            private Constants.WristPosition wristPosition;
+
+            private Position(Constants.WristPosition wristPosition, Constants.ArmPosition armPosition)
+            {
+                this.wristPosition = wristPosition;
+                this.armPosition = armPosition;
+            }
+
+            public void setArmPosition(Constants.ArmPosition armPosition)
+            {
+                this.armPosition = armPosition;
+            }
+
+            public Constants.ArmPosition getArmPosition()
+            {
+                return armPosition;
+            }
+        }
+
+        public static final int HORIZONTAL_TO_FLOOR = angleToTicks(-30); // -30 degrees
+        public static final int HORIZONTAL_TO_MIDDLE = angleToTicks(45); // 45 degrees
+        public static final int HORIZONTAL_TO_TOP = angleToTicks(90); // 90 degrees
+
+        public static final int WRIST_SOLENOID_PORT_1 = 0;
+        public static final int WRIST_SOLENOID_PORT_2 = 1;
+        public static final int GRABBER_SOLENOID_PORT_1 = 4;
+        public static final int GRABBER_SOLENOID_PORT_2 = 5;
+        public static final int ROLLER_TALON_ID = 12;
+        public static final int ARM_MOTOR_ID = 9;
+
+        public static final int ARM_THRESHOLD = 5;
+
+        // 0: Floor
+        // 1: Horizontal
+        // 2: Middle
+        // 3: Top
+        // 4: Threshold
+        // Comp Bot: starting position is 101
+                                                                       // 0    1    2    3   4   5
+        public static final int[] COMPETITION_ARM_POSITION_POT_VALUES = {635, 567, 438, 202, 5, -1};
+        public static final int[] PRACTICE_ARM_POSITION_POT_VALUES =    {628, 572, 480, 230, 5, -1};
+    }
+
     private DoubleSolenoid wristSolenoid = new DoubleSolenoid(Constants.WRIST_SOLENOID_PORT_1,
             Constants.WRIST_SOLENOID_PORT_2); // On the blue solenoid holder
     private DoubleSolenoid grabberSolenoid = new DoubleSolenoid(Constants.GRABBER_SOLENOID_PORT_1,
@@ -226,7 +310,19 @@ public class Arm
      */
     public void grabHatchPanel()
     {
-        grabberSolenoid.set(Value.kForward);
+        grabberSolenoid.set(Value.kReverse);
+        // if(!isGrabberMoving)
+        // {
+        //     grabberTimer.reset();
+        //     grabberTimer.start();
+        //     grabberSolenoid.set(Value.kReverse);
+        //     isGrabberMoving = true;
+        // }
+        
+        // if(grabberTimer.get() > 0.5)
+        // {
+        //     isGrabberMoving = false;
+        // }
         grabberTimer.reset();
         grabberTimer.stop();
     }
@@ -236,12 +332,11 @@ public class Arm
      */
     public void releaseHatchPanel()
     {
-        grabberSolenoid.set(Value.kReverse);
-        
+        grabberSolenoid.set(Value.kForward);
+
         grabberTimer.reset();
         grabberTimer.start();
     }
-    
 
     public void toggleHatchPanel()
     {
@@ -249,11 +344,13 @@ public class Arm
         {
             releaseHatchPanel();
             isGrabberRetracted = false;
+            System.out.println("The grabber is extended");
         }
         else
         {
             grabHatchPanel();
             isGrabberRetracted = true;
+            System.out.println("The grabber is retracted");
         }
     }
 
@@ -462,94 +559,5 @@ public class Arm
         return String.format("Arm Pot Value: " + getPotValue());
     }
 
-    public static class Constants
-    {
-        public static enum ArmPosition
-        {
-            kFloorArmPosition(0), 
-            kHorizontalArmPosition(1), 
-            kMiddleArmPosition(2),
-            kTopArmPosition(3),
-            kThreshold(4),
-            kArmNone(5);
-
-            private int value;
-
-            private ArmPosition(int value)
-            {
-                this.value = value;
-            }
-        }
-
-        public static enum WristPosition
-        {
-            kWristDown(DoubleSolenoid.Value.kReverse), 
-            kWristUp(DoubleSolenoid.Value.kForward), 
-            kWristNone(DoubleSolenoid.Value.kOff);
-
-            private DoubleSolenoid.Value value;
-
-            private WristPosition(DoubleSolenoid.Value value)
-            {
-                this.value = value;
-            }
-        }
-
-        public static enum Position
-        {
-            kFloor(Constants.WristPosition.kWristDown, Constants.ArmPosition.kFloorArmPosition),              
-            kCargoShipCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kHorizontalArmPosition),
-            kBottomHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kFloorArmPosition), // 1 ft 7 inches to center
-            kCenterHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kHorizontalArmPosition), // 3 ft 11 inches to center
-            kTopHatch(Constants.WristPosition.kWristUp, Constants.ArmPosition.kMiddleArmPosition), // 6 ft 3 inches to center
-            kBottomCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kHorizontalArmPosition), // 2 ft 3.5 inches to center
-            kCenterCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kHorizontalArmPosition), // 4 ft 7.5 inches to center
-            kTopCargo(Constants.WristPosition.kWristDown, Constants.ArmPosition.kMiddleArmPosition), // 6 ft 11.5 inches to center
-            kDrive(Constants.WristPosition.kWristUp, Constants.ArmPosition.kMiddleArmPosition), 
-            kNone(Constants.WristPosition.kWristNone, Constants.ArmPosition.kArmNone);
-
-            private Constants.ArmPosition armPosition;
-            private Constants.WristPosition wristPosition;
-
-            private Position(Constants.WristPosition wristPosition, Constants.ArmPosition armPosition)
-            {
-                this.wristPosition = wristPosition;
-                this.armPosition = armPosition;
-            }
-
-            public void setArmPosition(Constants.ArmPosition armPosition)
-            {
-                this.armPosition = armPosition;
-            }
-
-            public Constants.ArmPosition getArmPosition()
-            {
-                return armPosition;
-            }
-        }
-
-        public static final int HORIZONTAL_TO_FLOOR = angleToTicks(-30); // -30 degrees
-        public static final int HORIZONTAL_TO_MIDDLE = angleToTicks(45); // 45 degrees
-        public static final int HORIZONTAL_TO_TOP = angleToTicks(90); // 90 degrees
-
-        public static final int WRIST_SOLENOID_PORT_1 = 0;
-        public static final int WRIST_SOLENOID_PORT_2 = 1;
-        public static final int GRABBER_SOLENOID_PORT_1 = 4;
-        public static final int GRABBER_SOLENOID_PORT_2 = 5;
-        public static final int ROLLER_TALON_ID = 12;
-        public static final int ARM_MOTOR_ID = 9;
-
-        public static final int ARM_THRESHOLD = 5;
-
-        // 0: Floor
-        // 1: Horizontal
-        // 2: Middle
-        // 3: Top
-        // 4: Threshold
-        // Comp Bot: starting position is 101
-                                                                       // 0    1    2    3   4   5
-        public static final int[] COMPETITION_ARM_POSITION_POT_VALUES = {625, 567, 438, 202, 5, -1};
-        public static final int[] PRACTICE_ARM_POSITION_POT_VALUES =    {628, 572, 480, 230, 5, -1};
-    }
 
 }
