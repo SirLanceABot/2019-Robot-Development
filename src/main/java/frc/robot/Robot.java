@@ -19,10 +19,10 @@ public class Robot extends TimedRobot
     private Drivetrain drivetrain = Drivetrain.getInstance();
     private DriverXbox driverXbox = DriverXbox.getInstance();
     private Teleop teleop = Teleop.getInstance();
-    private Elevator elevator = Elevator.getInstance();
-    private Arm arm = Arm.getInstance();
-    private Climber climber = Climber.getInstance();
-    private Autonomous autonomous = Autonomous.getInstance();
+    // private Elevator elevator = Elevator.getInstance();
+    // private Arm arm = Arm.getInstance();
+    // private Climber climber = Climber.getInstance();
+    // private Autonomous autonomous = Autonomous.getInstance();
 
     private SlabShuffleboard slabShuffleboard;
     private PregameSetupTabData pregameSetupTabData;
@@ -190,60 +190,60 @@ public class Robot extends TimedRobot
      */
     public void updateAllShuffleboardData()
     {
-        shuffleboardPrintCounter++;
+        // shuffleboardPrintCounter++;
 
-        // Motors and Sensors Tab Data
-        switch (shuffleboardPrintCounter)
-        {
-        case 1:
-            motorsAndSensorsTabData.frontLeftMotor = drivetrain.getFrontLeftMotorData();
-            break;
-        case 2:
-            motorsAndSensorsTabData.frontRightMotor = drivetrain.getFrontRightMotorData();
-            break;
-        case 3:
-            motorsAndSensorsTabData.backLeftMotor = drivetrain.getBackLeftMotorData();
-            break;
-        case 4:
-            motorsAndSensorsTabData.backRightMotor = drivetrain.getBackRightMotorData();
-            break;
-        case 5:
-            motorsAndSensorsTabData.omniWheel = drivetrain.getOmniWheelData();
-            break;
-        case 6:
-            motorsAndSensorsTabData.elevator = elevator.getMasterLegElevatorMotorData();
-            break;
-        case 7:
-            motorsAndSensorsTabData.arm = arm.getArmMotorData();
-            break;
-        case 8:
-            motorsAndSensorsTabData.wrist = arm.getWristSolenoidData();
-            break;
-        case 9:
-            motorsAndSensorsTabData.cargoIntakeRoller = arm.getIntakeRollerMotorData();
-            break;
-        case 10:
-            motorsAndSensorsTabData.hatchPanelGrabber = arm.getGrabberSolenoidData();
-            break;
-        case 11:
-            motorsAndSensorsTabData.climber = climber.getMasterLegMotorData();
-            break;
-        case 12:
-            motorsAndSensorsTabData.climberPinSolenoid = climber.getPinSolenoidData();
-            break;
-        case 13:
-            // motorsAndSensorsTabData.lidar = 
-            break;
-        case 14:
-            motorsAndSensorsTabData.navX = drivetrain.getNavXData();
-            break;
-        case 15:
-            slabShuffleboard.updateMotorsAndSensorsTabData(motorsAndSensorsTabData);
-            shuffleboardPrintCounter = 0;
-            break;
-        default:
-            shuffleboardPrintCounter = 0;
-            break;
-        }
+        // // Motors and Sensors Tab Data
+        // switch (shuffleboardPrintCounter)
+        // {
+        // case 1:
+        //     motorsAndSensorsTabData.frontLeftMotor = drivetrain.getFrontLeftMotorData();
+        //     break;
+        // case 2:
+        //     motorsAndSensorsTabData.frontRightMotor = drivetrain.getFrontRightMotorData();
+        //     break;
+        // case 3:
+        //     motorsAndSensorsTabData.backLeftMotor = drivetrain.getBackLeftMotorData();
+        //     break;
+        // case 4:
+        //     motorsAndSensorsTabData.backRightMotor = drivetrain.getBackRightMotorData();
+        //     break;
+        // case 5:
+        //     motorsAndSensorsTabData.omniWheel = drivetrain.getOmniWheelData();
+        //     break;
+        // case 6:
+        //     motorsAndSensorsTabData.elevator = elevator.getMasterLegElevatorMotorData();
+        //     break;
+        // case 7:
+        //     motorsAndSensorsTabData.arm = arm.getArmMotorData();
+        //     break;
+        // case 8:
+        //     motorsAndSensorsTabData.wrist = arm.getWristSolenoidData();
+        //     break;
+        // case 9:
+        //     motorsAndSensorsTabData.cargoIntakeRoller = arm.getIntakeRollerMotorData();
+        //     break;
+        // case 10:
+        //     motorsAndSensorsTabData.hatchPanelGrabber = arm.getGrabberSolenoidData();
+        //     break;
+        // case 11:
+        //     motorsAndSensorsTabData.climber = climber.getMasterLegMotorData();
+        //     break;
+        // case 12:
+        //     motorsAndSensorsTabData.climberPinSolenoid = climber.getPinSolenoidData();
+        //     break;
+        // case 13:
+        //     // motorsAndSensorsTabData.lidar = 
+        //     break;
+        // case 14:
+        //     motorsAndSensorsTabData.navX = drivetrain.getNavXData();
+        //     break;
+        // case 15:
+        //     slabShuffleboard.updateMotorsAndSensorsTabData(motorsAndSensorsTabData);
+        //     shuffleboardPrintCounter = 0;
+        //     break;
+        // default:
+        //     shuffleboardPrintCounter = 0;
+        //     break;
+        // }
     }
 }

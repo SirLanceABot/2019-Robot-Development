@@ -1,9 +1,7 @@
 
 package frc.components;
 
-import frc.components.Arm;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -13,8 +11,7 @@ public class Intake
 {
     public static class Constants
     {
-        public static final int INTAKE_VICTOR_PORT = 0;
-        public static final int INTAKE_TALON_PORT = 1;
+        public static final int INTAKE_PORT = 12;
         public static final double BALL_STALL_CURRENT = 0.5;
         public static final double CURRENT_LIMIT = 15.0;
         public static final double RUN_TIME = 0.5;
@@ -29,12 +26,14 @@ public class Intake
     private static Intake instance = new Intake();
     private IntakeState stateOfIntake;
     private Timer startupTimer = new Timer();
-    private WPI_TalonSRX intakeRoller = new WPI_TalonSRX(Constants.INTAKE_TALON_PORT);
+    private WPI_TalonSRX intakeRoller = new WPI_TalonSRX(Constants.INTAKE_PORT);
     private boolean firstTimeOverAmpLimit = true;
 
     private Intake()
     {
-
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+        intakeRoller.configFactoryDefault();
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
 

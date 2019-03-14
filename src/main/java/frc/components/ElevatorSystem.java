@@ -7,30 +7,38 @@
 
 package frc.components;
 
-import frc.components.Arm;
-import frc.components.Elevator;
+import frc.components.NewArm;
+import frc.components.Carriage;
+import frc.components.Grabber;
+import frc.components.Intake;
+import frc.components.Wrist;
 import frc.components.Arm.Constants.ArmPosition;
-import frc.components.Arm.Constants.Position;
+import frc.components.NewArm.Constants.NewArmPosition;
+import frc.components.Wrist.Constants.WristPosition;
 
 /**
  * Add your docs here.
  */
 public class ElevatorSystem 
 {
-    private int elevatorPotValue;
+    private int carriagePotValue;
     private int armPotValue;
-    private Elevator.Constants.ElevatorPosition targetElevatorPosition = Elevator.Constants.ElevatorPosition.kNone;
-    private Arm.Constants.Position targetArmPosition = Arm.Constants.Position.kNone;
+    private Carriage.Constants.CarriagePosition targetCarriagePosition = Carriage.Constants.CarriagePosition.kNone;
+    private NewArm.Constants.NewArmPosition targetArmPosition = NewArm.Constants.NewArmPosition.kArmNone;
+    private Wrist.Constants.WristPosition targetWristPosition = Wrist.Constants.WristPosition.kWristNone;
     private static int floorElevatorPosition = 100;
     private static int horizontalArmPosition = 100;
 
-    private boolean setElevatorStartingPosition = true;
+    private boolean setCarriageStartingPosition = true;
     private boolean setArmStartingPosition = true;
-    private double startingElevatorPosition;
+    private double startingCarriagePosition;
     private double startingArmPosition;
 
-    private Arm arm = Arm.getInstance();
-    private Elevator elevator = Elevator.getInstance();
+    private NewArm newArm = NewArm.getInstance();
+    private Carriage carriage = Carriage.getInstance();
+    private Grabber grabber = Grabber.getInstance();
+    private Wrist wrist = Wrist.getInstance();
+    private Intake intake = Intake.getInstance();
 
     private static ElevatorSystem instance = new ElevatorSystem();
 
@@ -45,35 +53,44 @@ public class ElevatorSystem
         return instance;
     }
 
-    public void setElevatorTargetPosition(Elevator.Constants.ElevatorPosition targetPosition)
+    public void setCarriageTargetPosition(Carriage.Constants.CarriagePosition targetPosition)
     {
-        targetElevatorPosition = targetPosition;
+        targetCarriagePosition = targetPosition;
     }
 
     /**
-     * Returns the current target position of the elevator
+     * Returns the current target position of the carriage
      * 
-     * @return the target position the elevator is attempting to move to
+     * @return the target position the carriage is attempting to move to
      */
-    public Elevator.Constants.ElevatorPosition getTargetElevatorPosition()
+    public Carriage.Constants.CarriagePosition getTargetCarriagePosition()
     {
-       return targetElevatorPosition;
+       return targetCarriagePosition;
     }
 
-    public void setArmTargetPosition(Arm.Constants.Position targetPosition)
-
+    public void setArmTargetPosition(NewArm.Constants.NewArmPosition targetPosition)
     {
         targetArmPosition = targetPosition;
     }
 
     /**
-     * Returns the current target position of the elevator
+     * Returns the current target position of the carriage
      * 
-     * @return the target position the elevator is attempting to move to
+     * @return the target position the carriage is attempting to move to
      */
-    public Arm.Constants.Position getTargetArmPosition()
+    public NewArm.Constants.NewArmPosition getTargetArmPosition()
     {
        return targetArmPosition;
+    }
+
+    public void setWristTargetPosition(Wrist.Constants.WristPosition wristPosition)
+    {
+        targetWristPosition = wristPosition;
+    }
+
+    public Wrist.Constants.WristPosition getWristTargetPosition()
+    {
+        return targetWristPosition;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -89,128 +106,128 @@ public class ElevatorSystem
     //////////////////////////////////////////////////////////////////////////////////////
     public void moveTo()
     {
-        elevatorPotValue = elevator.getPotValue();
-        //System.out.println(elevator + "Target Elevator: " + targetElevatorPosition);
-        //System.out.println(arm + "Arm Elevator: " + targetArmPosition);
-        armPotValue = arm.getPotValue();
-        horizontalArmPosition = arm.getArmPositionPotValue(Arm.Constants.ArmPosition.kHorizontalArmPosition);
-        floorElevatorPosition = elevator.getElevatorPositionPotValues(Elevator.Constants.ElevatorPosition.kFloor);
+        carriagePotValue = carriage.getPotValue();
+        //System.out.println(carriage + "Target Carriage: " + targetElevatorPosition);
+        //System.out.println(arm + "Arm: " + targetArmPosition);
+        armPotValue = newArm.getPotValue();
+        horizontalArmPosition = newArm.getArmPositionPotValue(NewArm.Constants.NewArmPosition.kHorizontalArmPosition);
+        floorElevatorPosition = carriage.getCarriagePositionPotValues(Carriage.Constants.CarriagePosition.kFloor);
 
-        if(targetElevatorPosition != Elevator.Constants.ElevatorPosition.kNone)
+        if(targetCarriagePosition != Carriage.Constants.CarriagePosition.kNone)
         {
             // if(armPotValue > horizontalArmPosition + 200)
             // {
-            //     elevator.stopElevator();
-            //     elevator.setIsMoving(true);
+            //     carriage.stopCarriage();
+            //     carriage.setIsMoving(true);
             // }
             //else 
-            if(elevatorPotValue < (elevator.getElevatorPositionPotValues(targetElevatorPosition) - elevator.getElevatorPositionPotValues(Elevator.Constants.ElevatorPosition.kThreshold)))
+            if(carriagePotValue < (carriage.getCarriagePositionPotValues(targetCarriagePosition) - carriage.getCarriagePositionPotValues(Carriage.Constants.CarriagePosition.kThreshold)))
             {
-                elevator.raiseElevator(scaleElevatorMovement());
+                carriage.raiseCarriage(scaleCarriageMovement());
             }
-            else if(elevatorPotValue > (elevator.getElevatorPositionPotValues(targetElevatorPosition) + elevator.getElevatorPositionPotValues(Elevator.Constants.ElevatorPosition.kThreshold)))
+            else if(carriagePotValue > (carriage.getCarriagePositionPotValues(targetCarriagePosition) + carriage.getCarriagePositionPotValues(Carriage.Constants.CarriagePosition.kThreshold)))
             {
-                elevator.lowerElevator(Constants.ELEVATOR_DOWN_SCALE_FACTOR * scaleElevatorMovement());
-                //elevator.lowerElevator(0.4 * Constants.ELEVATOR_DOWN_SCALE_FACTOR);
-                // elevator.lowerElevator(-0.3);
-                // if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristDown)
+                carriage.lowerCarriage(Constants.CARRIAGE_DOWN_SCALE_FACTOR * scaleCarriageMovement());
+       
+                // if(targetWristPosition == Wrist.Constants.WristPosition.kWristDown)
                 // {
-                //     if(elevatorPotValue > initialElevatorPosition || armPotValue < arm.getHorizontalArmPosition())
+                //     if(carriagePotValue > initialCarriagePosition || armPotValue < newArm.getHorizontalArmPosition())
                 //     {
-                //         elevator.lowerElevator(scaleElevatorMovement());
+                //         carriage.lowerCarriage(Constants.CARRIAGE_DOWN_SCALE_FACTOR * scaleCarriageMovement());
                 //     }
                 //     else
                 //     {
-                //         elevator.stopElevator(scaleElevatorMovement());
+                //         carriage.stopCarriage(Constants.CARRIAGE_DOWN_SCALE_FACTOR * scaleCarriageMovement());
                 //     }
                 // }
                 // else
                 // {       
-                //     elevator.lowerElevator(scaleElevatorMovement());
+                //     carriage.lowerCarriage(Constants.CARRIAGE_DOWN_SCALE_FACTOR * scaleCarriageMovement());
                 // }
             }
             else
             {
-                //elevator.stopElevator();
-                elevator.holdElevator();
-                targetElevatorPosition = Elevator.Constants.ElevatorPosition.kNone;
+                //carriage.stopCarriage();
+                carriage.holdCarriage();
+                targetCarriagePosition = Carriage.Constants.CarriagePosition.kNone;
             }
         }
         else
         {
-            setElevatorStartingPosition = true;
+            setCarriageStartingPosition = true;
         }
 
-        if(targetArmPosition != Arm.Constants.Position.kNone)
+        if(targetArmPosition != NewArm.Constants.NewArmPosition.kArmNone)
         {
-            if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristDown)
+            if(targetWristPosition == Wrist.Constants.WristPosition.kWristDown)
             {
-                arm.setIsWristMoving(true);
-                arm.moveWristDown();
+                wrist.setIsWristMoving(true);
+                wrist.moveWristDown();
 
-                if(arm.isWristDown())
+                if(wrist.isWristDown())
                 { 
-                    targetArmPosition = arm.setWristPosition(targetArmPosition, Arm.Constants.WristPosition.kWristNone);
-                    arm.setIsWristMoving(false);
+                    targetWristPosition = Wrist.Constants.WristPosition.kWristNone;
+                    wrist.setIsWristMoving(false);
                 }
             }
-            else if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristUp)
+            else if(targetWristPosition == Wrist.Constants.WristPosition.kWristUp)
             {
-                arm.setIsWristMoving(true);
-                arm.moveWristUp();
+                wrist.setIsWristMoving(true);
+                wrist.moveWristUp();
 
-                if (arm.isWristUp())
+                if (wrist.isWristUp())
                 {
-                    targetArmPosition = arm.setWristPosition(targetArmPosition, Arm.Constants.WristPosition.kWristNone);
-                    arm.setIsWristMoving(false);
+                    targetWristPosition = Wrist.Constants.WristPosition.kWristNone;
+                    wrist.setIsWristMoving(false);
                 }
-                // if (elevatorPotValue > initialElevatorPosition - 50
+                // if (carriagePotValue > initialCarriagePosition - 50
                 //      && armPotValue < horizontalArmPosition + 50) // Check logic
                 // {
-                //     arm.moveWristUp();
+                //     wrist.moveWristUp();
 
-                //     if (arm.isWristUp())
+                //     if (wrist.isWristUp())
                 //     {
-                //         targetArmPosition = arm.setWristPosition(targetArmPosition, Arm.Constants.WristPosition.kWristNone);
-                //         arm.setIsWristMoving(false);
+                //         targetWristPosition = Arm.Constants.WristPosition.kWristNone;
+                //         wrist.setIsWristMoving(false);
                 //     }
                 // }
             }
 
-            if(armPotValue > arm.getArmPositionPotValue(targetArmPosition) + 10)// && targetArmPosition.getArmPosition() != Arm.Constants.ArmPosition.kArmNone)
+            if(armPotValue > newArm.getArmPositionPotValue(targetArmPosition) + 10)// && targetArmPosition.getArmPosition() != NewArm.Constants.NewArmPosition.kArmNone)
             {
-                arm.moveArmUp(scaleArmMovement());
+                newArm.moveArmUp(scaleArmMovement());
             }
-            else if(armPotValue < arm.getArmPositionPotValue(targetArmPosition) - 10)// && targetArmPosition.getArmPosition() != Arm.Constants.ArmPosition.kArmNone)
+            else if(armPotValue < newArm.getArmPositionPotValue(targetArmPosition) - 10)// && targetArmPosition.getArmPosition() != NewArm.Constants.NewArmPosition.kArmNone)
             {
-                arm.moveArmDown(Constants.ARM_DOWN_SCALE_FACTOR * scaleArmMovement());
+                newArm.moveArmDown(Constants.ARM_DOWN_SCALE_FACTOR * scaleArmMovement());
 
-                // if(arm.getWristPosition(targetArmPosition) == Arm.Constants.WristPosition.kWristDown && !arm.isWristDown())
+                // if(targetWristPosition == Wrist.Constants.WristPosition.kWristDown && !wrist.isWristDown())
                 // {
-                //     if(elevatorPotValue > initialElevatorPosition || armPotValue < horizontalArmPosition)
+                //     if(carriagePotValue > initialCarriagePosition || armPotValue < horizontalArmPosition)
                 //     {
-                //         arm.moveArmDown(scaleArmMovement());
+                //         newArm.moveArmDown(scaleArmMovement());
                 //     }
                 //     else
                 //     {
-                //         arm.stopArm();
+                //         newArm.stopArm();
                 //     }
                 // }
                 // else
                 // {
-                //     arm.moveArmDown(scaleArmMovement());
+                //     newArm.moveArmDown(scaleArmMovement());
                 // }
 
             }
             else
             {
-                arm.stopArm();
-                //targetArmPosition.setArmPosition(Arm.Constants.ArmPosition.kArmNone); 
+                newArm.stopArm();
+                //targetArmPosition = NewArm.Constants.NewArmPosition.kArmNone; 
             }
 
-            if(arm.isWristMoving() == false && arm.isArmMoving() == false)
+            if(wrist.isWristMoving() == false && newArm.isArmMoving() == false)
             {
-                targetArmPosition = Position.kNone;
+                targetArmPosition = NewArm.Constants.NewArmPosition.kArmNone;
+                targetWristPosition = Wrist.Constants.WristPosition.kWristNone;
             }
         }
         else
@@ -219,33 +236,33 @@ public class ElevatorSystem
         }
     }
 
-    public double scaleElevatorMovement()
+    public double scaleCarriageMovement()
     {
 
-        double currentPotValue = elevator.getPotValue();
-        if(setElevatorStartingPosition)
+        double currentPotValue = carriage.getPotValue();
+        if(setCarriageStartingPosition)
         {
-            startingElevatorPosition = currentPotValue;
-            setElevatorStartingPosition = false;
+            startingCarriagePosition = currentPotValue;
+            setCarriageStartingPosition = false;
         }
         
-        double endingPosition = elevator.getElevatorPositionPotValues(targetElevatorPosition);
-        double distanceToTravel = Math.abs(endingPosition - startingElevatorPosition);
+        double endingPosition = carriage.getCarriagePositionPotValues(targetCarriagePosition);
+        double distanceToTravel = Math.abs(endingPosition - startingCarriagePosition);
         double startingDistance = distanceToTravel / 10.0;
         double stoppingDistance = distanceToTravel - startingDistance;
-        double distanceTraveled = Math.abs(startingElevatorPosition - currentPotValue);
+        double distanceTraveled = Math.abs(startingCarriagePosition - currentPotValue);
 
         if(distanceTraveled < startingDistance)
         {
-            return ((Constants.ELEVATOR_MAX_SPEED - Constants.ELEVATOR_STARTING_SPEED) / startingDistance) * distanceTraveled + Constants.ELEVATOR_STARTING_SPEED;
+            return ((Constants.CARRIAGE_MAX_SPEED - Constants.CARRIAGE_STARTING_SPEED) / startingDistance) * distanceTraveled + Constants.CARRIAGE_STARTING_SPEED;
         }
         else if(distanceTraveled >= startingDistance && distanceTraveled <= stoppingDistance)
         {
-            return Constants.ELEVATOR_MAX_SPEED;
+            return Constants.CARRIAGE_MAX_SPEED;
         }
         else if(distanceTraveled > stoppingDistance)
         {
-            return ((Constants.ELEVATOR_MAX_SPEED - Constants.ELEVATOR_STARTING_SPEED) / (distanceToTravel - stoppingDistance)) * (distanceToTravel - distanceTraveled) + Constants.ELEVATOR_STARTING_SPEED;
+            return ((Constants.CARRIAGE_MAX_SPEED - Constants.CARRIAGE_STARTING_SPEED) / (distanceToTravel - stoppingDistance)) * (distanceToTravel - distanceTraveled) + Constants.CARRIAGE_STARTING_SPEED;
         }
         else
             return 0.0;
@@ -254,14 +271,14 @@ public class ElevatorSystem
     public double scaleArmMovement()
     {
 
-        double currentPotValue = arm.getPotValue();
+        double currentPotValue = newArm.getPotValue();
         if(setArmStartingPosition)
         {
             startingArmPosition = currentPotValue;
             setArmStartingPosition = false;
         }
         
-        double endingPosition = arm.getArmPositionPotValue(targetArmPosition);
+        double endingPosition = newArm.getArmPositionPotValue(targetArmPosition);
         double distanceToTravel = Math.abs(endingPosition - startingArmPosition);
         double startingDistance = distanceToTravel / 10.0;
         double stoppingDistance = distanceToTravel - startingDistance;
@@ -289,9 +306,9 @@ public class ElevatorSystem
         public final static double ARM_STARTING_SPEED = 0.3;
         public final static double ARM_DOWN_SCALE_FACTOR = 0.85;
 
-        public final static double ELEVATOR_MAX_SPEED = 1.0;
-        public final static double ELEVATOR_STARTING_SPEED = 0.3;
-        public final static double ELEVATOR_DOWN_SCALE_FACTOR = 0.85;
+        public final static double CARRIAGE_MAX_SPEED = 1.0;
+        public final static double CARRIAGE_STARTING_SPEED = 0.3;
+        public final static double CARRIAGE_DOWN_SCALE_FACTOR = 0.85;
 
     }
 }

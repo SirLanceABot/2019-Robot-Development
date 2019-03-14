@@ -1,48 +1,55 @@
 package frc.components;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 /**
  * Add your docs here.
  */
-public class Wrist 
+public class Wrist
 {
     public static class Constants
     {
+        public static enum WristPosition
+        {
+            kWristDown(DoubleSolenoid.Value.kReverse), 
+            kWristUp(DoubleSolenoid.Value.kForward), 
+            kWristNone(DoubleSolenoid.Value.kOff);
+
+            private DoubleSolenoid.Value value;
+
+            private WristPosition(DoubleSolenoid.Value value)
+            {
+                this.value = value;
+            }
+        }
+
         private static final int WRIST_SOLENOID_EXTEND = 0;
         private static final int WRIST_SOLENOID_RETRACT = 1;
+        private static final int LIMIT_SWITCH_UP = 1;
+        private static final int LIMIT_SWITCH_DOWN = 2;
     }
 
-    private Wrist instance = new Wrist();
-    private Wrist()
-    {
-
-    }
-
-    private DoubleSolenoid wristSolenoid = new DoubleSolenoid(Constants.WRIST_SOLENOID_EXTEND,
-    Constants.WRIST_SOLENOID_RETRACT); // On the blue solenoid holder
+    private DoubleSolenoid wristSolenoid = new DoubleSolenoid(Constants.WRIST_SOLENOID_EXTEND, Constants.WRIST_SOLENOID_RETRACT); // On the blue solenoid holder
+    private DigitalInput limitSwitchUp = new DigitalInput(Constants.LIMIT_SWITCH_UP);
+    private DigitalInput limitSwitchDown = new DigitalInput(Constants.LIMIT_SWITCH_DOWN);
 
     private boolean isWristMoving = false;
 
-    public static enum WristPosition
+    private static Wrist instance = new Wrist();
+
+    private Wrist()
     {
-        kWristDown(DoubleSolenoid.Value.kReverse), 
-        kWristUp(DoubleSolenoid.Value.kForward), 
-        kWristNone(DoubleSolenoid.Value.kOff);
-
-        private DoubleSolenoid.Value value;
-
-        private WristPosition(DoubleSolenoid.Value value)
-        {
-            this.value = value;
-        }
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
     }
 
-    public Wrist getInstance()
+    public static Wrist getInstance()
     {
         return instance;
     }
+
     public void moveWristUp()
     {
         wristSolenoid.set(Value.kForward);
@@ -60,7 +67,7 @@ public class Wrist
 
     public boolean isWristDown()
     {
-        if(wristSolenoid.get() == Value.kForward)
+        if (wristSolenoid.get() == Value.kReverse)
         {
             return true;
         }
@@ -69,17 +76,17 @@ public class Wrist
             return false;
         }
     }
-    
+
     public boolean isWristUp()
     {
-        if(wristSolenoid.get() == Value.kForward)
+        if (wristSolenoid.get() == Value.kForward)
         {
             return false;
         }
         else
         {
             return true;
-        }    
+        }
     }
 
     public String getWristSolenoidData()
@@ -102,10 +109,11 @@ public class Wrist
     {
         this.isWristMoving = isWristMoving;
     }
-    // public Constants.Position setWristPosition(Constants.Position position, Constants.WristPosition wristPosition)
+    // public Constants.Position setWristPosition(Constants.Position position,
+    // Constants.WristPosition wristPosition)
     // {
-    //     position.wristPosition = wristPosition;
+    // position.wristPosition = wristPosition;
 
-    //     return position;
+    // return position;
     // }
 }

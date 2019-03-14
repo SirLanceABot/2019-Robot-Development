@@ -16,12 +16,7 @@ public class Grabber
         public static final int GRABBER_SOLENOID_RETRACT = 5;
     }
 
-    private static Grabber instance = new Grabber();
-
-    private Grabber()
-    {
-
-    }
+    
 
     private DoubleSolenoid grabberSolenoid = new DoubleSolenoid(Constants.GRABBER_SOLENOID_EXTEND,
             Constants.GRABBER_SOLENOID_RETRACT); // On the blue solenoid holder
@@ -29,8 +24,15 @@ public class Grabber
     private boolean isGrabberRetracted = true;
     private boolean isGrabberMoving = false;
 
+    private static Grabber instance = new Grabber();
 
-    public Grabber getInstance()
+    private Grabber()
+    {
+        System.out.println(this.getClass().getName() + ": Started Constructing");
+        System.out.println(this.getClass().getName() + ": Finished Constructing");
+    }
+
+    public static Grabber getInstance()
     {
         return instance;
     }
@@ -84,7 +86,7 @@ public class Grabber
      * 
      * @return kReverse is retracted, kForward is extended
      */
-    public DoubleSolenoid.Value getgrabberPosition()
+    public DoubleSolenoid.Value getGrabberPosition()
     {
         return grabberSolenoid.get();
     }

@@ -449,7 +449,7 @@ public class Arm
      * <p> 2: Middle
      * <p> 3: Top
      * 
-     * @return pot value of the selected position
+     * @return Pot value of the selected position
      */
     public int getArmPositionPotValue(ArmPosition position)
     {

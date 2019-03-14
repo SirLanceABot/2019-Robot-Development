@@ -24,7 +24,7 @@ public class Climber
         public static final int SOLENOID_PORT_2 = 3;
         public static final int CLIMBER_TALON_PORT = 14;
         public static final int CLIMBER_VICTOR_PORT = 15;
-        public static final int CLIMBER_DRIVE_PORT = 0; //need to get this port
+        public static final int CLIMBER_DRIVE_PORT = 13;
         public static final int MAX_CLIMBER_HEIGHT = 500;
         public static final int MIN_CLIMBER_HEIGHT = -5;
     }

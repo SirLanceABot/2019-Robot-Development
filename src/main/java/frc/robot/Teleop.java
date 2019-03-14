@@ -6,8 +6,13 @@ import frc.components.Elevator;
 import frc.components.Climber;
 import frc.components.Drivetrain;
 import frc.components.ElevatorAndArm;
+import frc.components.ElevatorSystem;
 import frc.components.Lights;
 import frc.components.Intake;
+import frc.components.Wrist;
+import frc.components.NewArm;
+import frc.components.Carriage;
+import frc.components.Grabber;
 import frc.control.Xbox;
 import frc.control.DriverXbox;
 import frc.control.OperatorXbox;
@@ -34,9 +39,10 @@ public class Teleop
 
     }
 
-    private Arm arm = Arm.getInstance();
-    private Elevator elevator = Elevator.getInstance();
-    private ElevatorAndArm elevatorAndArm = ElevatorAndArm.getInstance();
+//    private Arm arm = Arm.getInstance();
+//    private Elevator elevator = Elevator.getInstance();
+//    private ElevatorAndArm elevatorAndArm = ElevatorAndArm.getInstance();
+    private ElevatorSystem elevatorSystem = ElevatorSystem.getInstance();
     private CameraProcess vision = CameraProcess.getInstance();
 
     private Intake intake = Intake.getInstance();
@@ -47,6 +53,11 @@ public class Teleop
     private SlabShuffleboard shuffleboard = SlabShuffleboard.getInstance();
     private Drivetrain drivetrain = Drivetrain.getInstance();
     private Lights lights = Lights.getInstance();
+ 
+    private NewArm newArm = NewArm.getInstance();
+    private Carriage carriage = Carriage.getInstance();
+    private Grabber grabber = Grabber.getInstance();
+    private Wrist wrist = Wrist.getInstance();
 
     private boolean armButton;
     private boolean armButtonReleased;
@@ -56,7 +67,7 @@ public class Teleop
     private double buttonBoardXAxis;
 
     private boolean floorButton;
-    private boolean cargoShipPortButton;
+    private boolean cargoShipCargoButton;
 
     private boolean bottomHatchButton;
     private boolean centerHatchButton;
@@ -79,7 +90,7 @@ public class Teleop
     private boolean inButtonHeld = driverXbox.getRawButton(Xbox.Constants.LEFT_BUMPER);
     private boolean inButtonPressed = driverXbox.getRawButtonPressed(Xbox.Constants.LEFT_BUMPER);
     private boolean outButton = driverXbox.getRawButton(Xbox.Constants.RIGHT_BUMPER);
-    private double motorCurrent = arm.getIntakeAmperage();
+    private double motorCurrent = intake.getIntakeAmperage();
 
     private double[] rightAxes = driverXbox.getScaledAxes(Xbox.Constants.RIGHT_STICK_AXES,
             Xbox.Constants.PolynomialDrive.kCubicDrive);
@@ -120,15 +131,16 @@ public class Teleop
     public void init()
     {
         SlabShuffleboard.PregameSetupTabData pregame = shuffleboard.getPregameSetupTabData();
-        arm.setRobotType(pregame.robotType);
-        elevator.setRobotType(pregame.robotType);
-        arm.setMotorSpeedFactor(pregame.motorSpeed);
-        elevator.setMotorSpeedFactor(pregame.motorSpeed);
+        newArm.setRobotType(pregame.robotType);
+        carriage.setRobotType(pregame.robotType);
+        newArm.setMotorSpeedFactor(pregame.motorSpeed);
+        carriage.setMotorSpeedFactor(pregame.motorSpeed);
         drivetrain.setMotorSpeedFactor(pregame.motorSpeed);
         System.out.println(pregame.robotType);
 
-        elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
-        elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
+        elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kArmNone);
+        elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
+        elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristNone);
     }
 
     @Deprecated
@@ -482,7 +494,7 @@ public class Teleop
             drivetrain.moveOmniWheel();
         }
 
-        cargoControl();
+        intakeControl();
     }
 
     public void periodic()
@@ -490,10 +502,14 @@ public class Teleop
         buttonBoardControl();
         driverXboxControl();
         drivetrainControl();
-        elevatorAndArmControl();
-        cargoControl();
+        carriageControl();
+        armControl();
+        wristControl();
+        //elevatorSystem.moveTo();
+        //elevatorAndArmControl();
+        intakeControl();
         //intake.cargoControl(inButtonHeld, outButton, inButtonPressed);
-        hatchPanelControl();
+        grabberControl();
         climberControl();
         overrideArmLimits();
     }
@@ -502,7 +518,7 @@ public class Teleop
     {
         if (backButton)
         {
-            arm.toggleArmOverride();
+            newArm.toggleArmOverride();
         }
     }
 
@@ -535,57 +551,153 @@ public class Teleop
         }
     }
 
-    public void elevatorAndArmControl()
+    // public void elevatorAndArmControl()
+    // {
+    //     if (armButton || elevatorButton)
+    //     {
+    //         elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
+    //         elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
+
+    //         if (armButton)
+    //         {
+    //             if (buttonBoardYAxis == 1)
+    //             {
+    //                 arm.moveArmUp(0.35);
+    //             }
+    //             else if (buttonBoardYAxis == -1)
+    //             {
+    //                 arm.moveArmDown(-0.35);
+    //             }
+    //             else if (buttonBoardXAxis == 1)
+    //             {
+    //                 arm.moveArmUp(0.8);
+    //             }
+    //             else if (buttonBoardXAxis == -1)
+    //             {
+    //                 arm.moveArmDown(-0.8);
+    //             }
+    //             else
+    //             {
+    //                 arm.stopArm();
+    //             }
+    //         }
+    //         if (elevatorButton)
+    //         {
+    //             if (buttonBoardYAxis == 1)
+    //             {
+    //                 elevator.raiseElevator(0.35);
+    //             }
+    //             else if (buttonBoardYAxis == -1)
+    //             {
+    //                 elevator.lowerElevator(-0.35);
+    //             }
+    //             else if (buttonBoardXAxis == 1)
+    //             {
+    //                 elevator.raiseElevator(0.8);
+    //             }
+    //             else if (buttonBoardXAxis == -1)
+    //             {
+    //                 elevator.lowerElevator(-0.8);
+    //             }
+    //             else
+    //             {
+    //                 elevator.holdElevator();
+    //             }
+    //         }
+    //     }
+    //     else
+    //     {
+    //         if (floorButton)
+    //         {
+    //             elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kFloor);
+    //             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kFloor);
+    //         }
+    //         else if (cargoShipCargoButton)
+    //         {
+    //             elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCargoShipCargo);
+    //             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCargoShipCargo);
+    //         }
+    //         else if (bottomHatchButton)
+    //         {
+    //             elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kBottomHatch);
+    //             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kBottomHatch);
+    //         }
+    //         else if (centerHatchButton)
+    //         {
+    //             elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCenterHatch);
+    //             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCenterHatch);
+    //         }
+    //         else if (topHatchButton)
+    //         {
+    //             elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kTopHatch);
+    //             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kTopHatch);
+    //         }
+    //         else if (bottomCargoButton)
+    //         {
+    //             elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kBottomCargo);
+    //             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kBottomCargo);
+    //         }
+    //         else if (centerCargoButton)
+    //         {
+    //             elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCenterCargo);
+    //             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCenterCargo);
+    //         }
+    //         else if (topCargoButton)
+    //         {
+    //             elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kTopCargo);
+    //             elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kTopCargo);
+    //         }
+
+    //         elevatorAndArm.moveTo();
+    //     }
+
+    //     if (elevatorButtonReleased)
+    //     {
+    //         elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
+    //         elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
+    //         elevator.holdElevator();
+    //         arm.stopArm();
+    //         elevator.setIsMoving(false);
+    //     }
+    //     if (armButtonReleased)
+    //     {
+    //         elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
+    //         elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
+    //         elevator.holdElevator();
+    //         arm.stopArm();
+    //         arm.setIsArmMoving(false);
+    //     }
+    // }
+
+    public void carriageControl()
     {
         if (armButton || elevatorButton)
         {
-            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
-            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
+            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kArmNone);
+            elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
+            elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristNone);
 
-            if (armButton)
+            if(elevatorButton)
             {
                 if (buttonBoardYAxis == 1)
                 {
-                    arm.moveArmUp(0.35);
+                    carriage.raiseCarriage(0.35);
                 }
                 else if (buttonBoardYAxis == -1)
                 {
-                    arm.moveArmDown(-0.35);
+                    carriage.lowerCarriage(-0.35);
                 }
                 else if (buttonBoardXAxis == 1)
                 {
-                    arm.moveArmUp(0.8);
+                    carriage.raiseCarriage(0.8);
                 }
                 else if (buttonBoardXAxis == -1)
                 {
-                    arm.moveArmDown(-0.8);
+                    carriage.lowerCarriage(-0.8);
                 }
                 else
                 {
-                    arm.stopArm();
-                }
-            }
-            if (elevatorButton)
-            {
-                if (buttonBoardYAxis == 1)
-                {
-                    elevator.raiseElevator(0.35);
-                }
-                else if (buttonBoardYAxis == -1)
-                {
-                    elevator.lowerElevator(-0.35);
-                }
-                else if (buttonBoardXAxis == 1)
-                {
-                    elevator.raiseElevator(0.8);
-                }
-                else if (buttonBoardXAxis == -1)
-                {
-                    elevator.lowerElevator(-0.8);
-                }
-                else
-                {
-                    elevator.holdElevator();
+                    carriage.holdCarriage();
                 }
             }
         }
@@ -593,75 +705,179 @@ public class Teleop
         {
             if (floorButton)
             {
-                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kFloor);
-                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kFloor);
+                elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kFloor);
             }
-            else if (cargoShipPortButton)
+            else if (cargoShipCargoButton)
             {
-                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCargoShipCargo);
-                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCargoShipCargo);
+                elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kCargoShipCargo);
             }
             else if (bottomHatchButton)
             {
-                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kBottomHatch);
-                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kBottomHatch);
+                elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kBottomHatch);
             }
             else if (centerHatchButton)
             {
-                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCenterHatch);
-                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCenterHatch);
+                elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kCenterHatch);
             }
             else if (topHatchButton)
             {
-                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kTopHatch);
-                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kTopHatch);
+                elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kTopHatch);
             }
             else if (bottomCargoButton)
             {
-                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kBottomCargo);
-                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kBottomCargo);
+                elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kBottomCargo);
             }
             else if (centerCargoButton)
             {
-                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kCenterCargo);
-                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kCenterCargo);
+                elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kCenterCargo);
             }
             else if (topCargoButton)
             {
-                elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kTopCargo);
-                elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kTopCargo);
+                elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kTopCargo);
             }
-
-            elevatorAndArm.moveTo();
         }
 
         if (elevatorButtonReleased)
         {
-            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
-            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
-            elevator.holdElevator();
-            arm.stopArm();
-            elevator.setIsMoving(false);
-        }
-        if (armButtonReleased)
-        {
-            elevatorAndArm.setArmTargetPosition(Arm.Constants.Position.kNone);
-            elevatorAndArm.setElevatorTargetPosition(Elevator.Constants.ElevatorPosition.kNone);
-            elevator.holdElevator();
-            arm.stopArm();
-            arm.setIsArmMoving(false);
+            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kArmNone);
+            elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
+            carriage.holdCarriage();
+            newArm.stopArm();
+            carriage.setIsMoving(false);
         }
     }
 
-    public void hatchPanelControl()
+    public void armControl()
+    {
+        if (armButton || elevatorButton)
+        {
+            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kArmNone);
+            elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
+            elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristNone);
+
+            if(armButton)
+            {
+                if (buttonBoardYAxis == 1)
+                {
+                    newArm.moveArmUp(0.35);
+                }
+                else if (buttonBoardYAxis == -1)
+                {
+                    newArm.moveArmDown(-0.35);
+                }
+                else if (buttonBoardXAxis == 1)
+                {
+                    newArm.moveArmUp(0.8);
+                }
+                else if (buttonBoardXAxis == -1)
+                {
+                    newArm.moveArmDown(-0.8);
+                }
+                else
+                {
+                    newArm.stopArm();
+                }
+            }
+        }
+        else
+        {
+            if (floorButton)
+            {
+                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kFloorArmPosition);
+            }
+            else if (cargoShipCargoButton)
+            {
+                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kHorizontalArmPosition);
+            }
+            else if (bottomHatchButton)
+            {
+                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kFloorArmPosition);
+            }
+            else if (centerHatchButton)
+            {
+                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kHorizontalArmPosition);
+            }
+            else if (topHatchButton)
+            {
+                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kMiddleArmPosition);
+            }
+            else if (bottomCargoButton)
+            {
+                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kHorizontalArmPosition);
+            }
+            else if (centerCargoButton)
+            {
+                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kHorizontalArmPosition);
+            }
+            else if (topCargoButton)
+            {
+                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kMiddleArmPosition);
+            }
+        }
+
+        if (armButtonReleased)
+        {
+            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kArmNone);
+            elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
+            carriage.holdCarriage();
+            newArm.stopArm();
+            carriage.setIsMoving(false);
+        }
+    }
+
+    public void wristControl()
+    {
+        if (armButton || elevatorButton)
+        {
+
+        }
+        else
+        {
+            if (floorButton)
+            {
+                elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristDown);
+            }
+            else if (cargoShipCargoButton)
+            {
+                elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristDown);
+            }
+            else if (bottomHatchButton)
+            {
+                elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristUp);
+            }
+            else if (centerHatchButton)
+            {
+                elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristUp);
+            }
+            else if (topHatchButton)
+            {
+                elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristUp);
+            }
+            else if (bottomCargoButton)
+            {
+                elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristDown);
+            }
+            else if (centerCargoButton)
+            {
+                elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristDown);
+            }
+            else if (topCargoButton)
+            {
+                elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristDown);
+            }
+        }
+    }
+
+
+    public void grabberControl()
     {
         if (rightTrigger > 0.3)
         {
             if (!rightTriggerPressed)
             {
                 rightTriggerPressed = true;
-                arm.toggleHatchPanel();
-                System.out.println("RIght Trigger Pressed");
+                grabber.toggleHatchPanel();
+                System.out.println("Right Trigger Pressed");
             }
         }
         else
@@ -669,7 +885,7 @@ public class Teleop
             rightTriggerPressed = false;
         }
 
-        if (arm.getGrabberPosition() == Value.kReverse && arm.getRumbleTimer() > 5.0)
+        if (grabber.getGrabberPosition() == Value.kReverse && grabber.getRumbleTimer() > 5.0)
         {
             driverXbox.setRumble(RumbleType.kRightRumble, 0.5);
         }
@@ -706,9 +922,9 @@ public class Teleop
         }
     }
 
-    public void cargoControl()
+    public void intakeControl()
     {
-        motorCurrent = arm.getIntakeAmperage();
+        motorCurrent = intake.getIntakeAmperage();
         switch (stateOfIntake)
         {
         case kOff:
@@ -798,16 +1014,16 @@ public class Teleop
         switch (stateOfIntake)
         {
         case kOff:
-            arm.stopCargo();
+            intake.stopCargo();
             break;
         case kIntake:
-            arm.intakeCargo(1.0);
+            intake.intakeCargo();
             break;
         case kEject:
-            arm.ejectCargo(1.0);
+            intake.ejectCargo();
             break;
         case kHold:
-            arm.intakeCargo(0.1);
+            intake.intakeCargo();
             break;
         }
 
@@ -824,7 +1040,7 @@ public class Teleop
         buttonBoardXAxis = buttonBoard.getRawAxis(ButtonBoard.Constants.X_AXIS);
 
         floorButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.FLOOR_BUTTON);
-        cargoShipPortButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CARGO_SHIP_CARGO_BUTTON);
+        cargoShipCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CARGO_SHIP_CARGO_BUTTON);
 
         bottomHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.BOTTOM_HATCH_BUTTON);
         centerHatchButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_HATCH_BUTTON);
