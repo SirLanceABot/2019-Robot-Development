@@ -505,7 +505,7 @@ public class Teleop
         carriageControl();
         armControl();
         wristControl();
-        //elevatorSystem.moveTo();
+        elevatorSystem.moveTo();
         //elevatorAndArmControl();
         intakeControl();
         //intake.cargoControl(inButtonHeld, outButton, inButtonPressed);
