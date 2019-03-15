@@ -24,7 +24,7 @@ public class ElevatorSystem
     private int carriagePotValue;
     private int armPotValue;
     private Carriage.Constants.CarriagePosition targetCarriagePosition = Carriage.Constants.CarriagePosition.kNone;
-    private NewArm.Constants.NewArmPosition targetArmPosition = NewArm.Constants.NewArmPosition.kArmNone;
+    private NewArm.Constants.NewArmPosition targetArmPosition = NewArm.Constants.NewArmPosition.kNotMoving;
     private Wrist.Constants.WristPosition targetWristPosition = Wrist.Constants.WristPosition.kWristNone;
     private static int floorElevatorPosition = 100;
     private static int horizontalArmPosition = 100;
@@ -156,7 +156,7 @@ public class ElevatorSystem
             setCarriageStartingPosition = true;
         }
 
-        if(targetArmPosition != NewArm.Constants.NewArmPosition.kArmNone)
+        if(targetArmPosition != NewArm.Constants.NewArmPosition.kNotMoving)
         {
             if(targetWristPosition == Wrist.Constants.WristPosition.kWristDown)
             {
@@ -225,7 +225,7 @@ public class ElevatorSystem
 
             if(wrist.isWristMoving() == false && newArm.isArmMoving() == false)
             {
-                targetArmPosition = NewArm.Constants.NewArmPosition.kArmNone;
+                targetArmPosition = NewArm.Constants.NewArmPosition.kNotMoving;
                 targetWristPosition = Wrist.Constants.WristPosition.kWristNone;
             }
         }

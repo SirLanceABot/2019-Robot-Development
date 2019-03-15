@@ -139,7 +139,7 @@ public class Teleop
         drivetrain.setMotorSpeedFactor(pregame.motorSpeed);
         System.out.println(pregame.robotType);
 
-        elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kArmNone);
+        elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kNotMoving);
         elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
         elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristNone);
     }
@@ -685,7 +685,7 @@ public class Teleop
     {
         if (armButton || elevatorButton)
         {
-            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kArmNone);
+            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kNotMoving);
             elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
             elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristNone);
 
@@ -751,7 +751,7 @@ public class Teleop
 
         if (elevatorButtonReleased)
         {
-            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kArmNone);
+            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kNotMoving);
             elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
             carriage.holdCarriage();
             newArm.stopArm();
@@ -763,7 +763,7 @@ public class Teleop
     {
         if (armButton || elevatorButton)
         {
-            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kArmNone);
+            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kNotMoving);
             elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
             elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristNone);
 
@@ -829,7 +829,7 @@ public class Teleop
 
         if (armButtonReleased)
         {
-            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kArmNone);
+            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kNotMoving);
             elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
             carriage.holdCarriage();
             newArm.stopArm();
