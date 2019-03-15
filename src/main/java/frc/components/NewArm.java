@@ -274,13 +274,11 @@ public class NewArm
     }
 
     /**
-     * TODO
-     * getPotValue() should be stored as variable
-     * update the switches
-     * make sure all cases are accounted for
+     * state machine for control of the arm. 
      */
     public void newArmControl()
     {
+        int currentPotValue = getPotValue();
         switch (currentArmState)
         {
         case kFloorArmPosition:
@@ -349,10 +347,6 @@ public class NewArm
                 moveArmUp();
                 currentArmState = NewArmPosition.kMovingUp;
                 break;
-            case kThreshold:
-                stopArm();
-                currentArmState = NewArmPosition.kNotMoving;
-                break;
             case kMovingDown:
                 moveArmDown();
                 currentArmState = NewArmPosition.kMovingDown;
@@ -390,10 +384,6 @@ public class NewArm
                 moveArmUp();
                 currentArmState = NewArmPosition.kMovingUp;
                 break;
-            case kThreshold:
-                stopArm();
-                currentArmState = NewArmPosition.kNotMoving;
-                break;
             case kMovingDown:
                 moveArmDown();
                 currentArmState = NewArmPosition.kMovingDown;
@@ -430,10 +420,6 @@ public class NewArm
                 moveArmDown();
                 currentArmState = NewArmPosition.kMovingDown;
                 break;
-            case kThreshold:
-                stopArm();
-                currentArmState = NewArmPosition.kNotMoving;
-                break;
             case kMovingDown:
                 moveArmDown();
                 currentArmState = NewArmPosition.kMovingDown;
@@ -469,10 +455,6 @@ public class NewArm
             case kStartingPosition:
                 moveArmUp();
                 currentArmState = NewArmPosition.kStartingPosition;
-                break;
-            case kThreshold:
-                stopArm();
-                currentArmState = NewArmPosition.kNotMoving;
                 break;
             case kMovingDown:
                 moveArmDown();
@@ -520,18 +502,18 @@ public class NewArm
                 currentArmState = NewArmPosition.kMovingDown;
                 break;
             case kMovingUp:
-                moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                stopArm();
+                currentArmState = NewArmPosition.kNotMoving;
                 break;
             }
             break;
- 
+
         case kMovingDown:
-            if (getArmPositionPotValue(currentArmState) < (getArmPositionPotValue(targetArmState) + 5))
+            if (currentPotValue > (getArmPositionPotValue(targetArmState) + 5))
             {
                 currentArmState = NewArmPosition.kMovingUp;
             }
-            else if (getArmPositionPotValue(currentArmState) > (getArmPositionPotValue(targetArmState) - 5))
+            else if (currentPotValue < (getArmPositionPotValue(targetArmState) - 5))
             {
                 currentArmState = NewArmPosition.kMovingDown;
             }
@@ -542,11 +524,11 @@ public class NewArm
             break;
 
         case kMovingUp:
-            if (getPotValue() > (targetArmState.value + 5))
+            if (currentPotValue > (targetArmState.value + 5))
             {
                 currentArmState = NewArmPosition.kMovingUp;
             }
-            else if (getPotValue() < (targetArmState.value - 5))
+            else if (currentPotValue < (targetArmState.value - 5))
             {
                 currentArmState = NewArmPosition.kMovingDown;
             }
@@ -556,7 +538,10 @@ public class NewArm
                 currentArmState = targetArmState;
             }
             break;
-
+        case kNotMoving:
+            stopArm();
+            currentArmState = NewArmPosition.kNotMoving;
+            break;
         }
     }
 

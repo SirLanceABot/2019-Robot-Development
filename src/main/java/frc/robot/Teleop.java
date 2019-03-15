@@ -515,6 +515,11 @@ public class Teleop
         overrideArmLimits();
     }
 
+    public void setStates()
+    {
+        //this is where the  states for the elevator system will be set
+    }
+
     public void overrideArmLimits()
     {
         if (backButton)
