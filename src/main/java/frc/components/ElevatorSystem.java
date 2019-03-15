@@ -96,9 +96,8 @@ public class ElevatorSystem
     //////////////////////////////////////////////////////////////////////////////////////
     public void setStates()
     {
-
+        //this goes into teleop
     }
-
     public void executeStateMachines()
     {
 

@@ -3,6 +3,7 @@ package frc.components;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import frc.components.Arm.Constants.WristPosition;
 
 /**
  * Add your docs here.
@@ -36,6 +37,8 @@ public class Wrist
     private DigitalInput limitSwitchDown = new DigitalInput(Constants.LIMIT_SWITCH_DOWN);
 
     private boolean isWristMoving = false;
+    private WristPosition currentWristState = WristPosition.kWristUp;
+    private WristPosition targetWristState = WristPosition.kWristUp;
 
     private static Wrist instance = new Wrist();
 
@@ -116,4 +119,40 @@ public class Wrist
 
     // return position;
     // }
+
+    public void setState(WristPosition position)
+    {
+        targetWristState = position;
+    }
+
+    public WristPosition wristControl()
+    {
+        switch (currentWristState)
+        {
+        case kWristDown:
+            if (targetWristState == WristPosition.kWristUp)
+            {
+                moveWristUp();
+                currentWristState = WristPosition.kWristUp;
+            }
+            else if (targetWristState == WristPosition.kWristDown)
+            {
+                currentWristState = WristPosition.kWristDown;
+            }
+            break;
+        case kWristUp:
+            if (targetWristState == WristPosition.kWristUp)
+            {
+                currentWristState = WristPosition.kWristUp;
+            }
+            else if (targetWristState == WristPosition.kWristDown)
+            {
+                moveWristDown();
+                currentWristState = WristPosition.kWristDown;
+            }
+            break;
+        }
+        
+        return currentWristState;
+    }
 }

@@ -4,9 +4,6 @@ package frc.components;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import frc.control.DriverXbox;
-import frc.control.Xbox;
 
 /**
  * Add your docs here.
@@ -19,21 +16,18 @@ public class Grabber
         public static final int GRABBER_SOLENOID_RETRACT = 5;
     }
 
-    public enum grabberState
+    public enum GrabberState
     {
-        kRetracted, kExtended, kRumble, kNoRumble, kNone;
+        kRetracted, kExtendedNoRumble, kExtendedRumble;
     }
-    
 
     private DoubleSolenoid grabberSolenoid = new DoubleSolenoid(Constants.GRABBER_SOLENOID_EXTEND,
             Constants.GRABBER_SOLENOID_RETRACT); // On the blue solenoid holder
     private Timer grabberTimer = new Timer();
-    private DriverXbox driverXbox = DriverXbox.getInstance();
     private boolean isGrabberRetracted = true;
     private boolean isGrabberMoving = false;
-    private grabberState currentGrabberState = grabberState.kRetracted;
-    private grabberState targetGrabberState = grabberState.kNone;
-    private grabberState rumbleState = grabberState.kNoRumble;
+    private GrabberState currentGrabberState = GrabberState.kRetracted;
+    private GrabberState targetGrabberState = GrabberState.kRetracted;
 
     private static Grabber instance = new Grabber();
 
@@ -102,76 +96,63 @@ public class Grabber
         return grabberSolenoid.get();
     }
 
-    public void setState(grabberState targetGrabberState)
+    public void setState(GrabberState targetState)
     {
-        this.targetGrabberState = targetGrabberState;
+        targetGrabberState = targetState;
     }
 
-    public void grabberControl()
+    public GrabberState grabberControl()
     {
-        switch(targetGrabberState)
+        switch (currentGrabberState)
         {
-            case kExtended:
-                if(currentGrabberState == grabberState.kRetracted)
-                {
-                    extendGrabber();
-                    grabberTimer.reset();
-                    grabberTimer.start();
-                    currentGrabberState = grabberState.kExtended;
-                }
-                else if(currentGrabberState == grabberState.kExtended && grabberTimer.get() > 5.0)
-                {
-                    currentGrabberState = grabberState.kExtended;
-                    rumbleState = grabberState.kRumble;
-                }
-                else if(currentGrabberState == grabberState.kNone)
-                {
-                    extendGrabber();
-                    grabberTimer.reset();
-                    grabberTimer.start();
-                    currentGrabberState = grabberState.kExtended;
-                }
-                else if(currentGrabberState == grabberState.kExtended)
-                {
-                    currentGrabberState = grabberState.kExtended;
-                }
-                break;
-            case kRetracted:
-                if(currentGrabberState == grabberState.kExtended)
-                {
-                    retractGrabber();
-                    grabberTimer.stop();
-                    grabberTimer.reset();
-                    currentGrabberState = grabberState.kRetracted;
-                    rumbleState = grabberState.kNoRumble;
-                }
-                else if(currentGrabberState == grabberState.kNone)
-                {
-                    retractGrabber();
-                    currentGrabberState = grabberState.kRetracted;
-                    rumbleState = grabberState.kNoRumble;
-                }
-                else if(currentGrabberState == grabberState.kRetracted)
-                {
-                    currentGrabberState = grabberState.kRetracted;
-                    rumbleState = grabberState.kNoRumble;
-                }
-                break;
-            case kNone:
-                break;
+        case kRetracted:
+            if (targetGrabberState == GrabberState.kExtendedNoRumble)
+            {
+                extendGrabber();
+                grabberTimer.reset();
+                grabberTimer.start();
+                currentGrabberState = GrabberState.kExtendedNoRumble;
+            }
+            else if (targetGrabberState == GrabberState.kRetracted)
+            {
+                currentGrabberState = GrabberState.kRetracted;
+            }
+            break;
+        case kExtendedNoRumble:
+            if (targetGrabberState == GrabberState.kExtendedNoRumble && grabberTimer.get() <= 5.0)
+            {
+                currentGrabberState = GrabberState.kExtendedNoRumble;
+            }
+            else if (targetGrabberState == GrabberState.kExtendedNoRumble && grabberTimer.get() > 5.0)
+            {
+                currentGrabberState = GrabberState.kExtendedRumble;
+                targetGrabberState = GrabberState.kExtendedRumble;
+            }
+            else if (targetGrabberState == GrabberState.kRetracted)
+            {
+                retractGrabber();
+                grabberTimer.stop();
+                grabberTimer.reset();
+                currentGrabberState = GrabberState.kRetracted;
+            }
+            break;
+        case kExtendedRumble:
+            if(targetGrabberState == GrabberState.kExtendedNoRumble)
+            {
+                currentGrabberState = GrabberState.kExtendedNoRumble;
+            }
+            else if(targetGrabberState == GrabberState.kExtendedRumble)
+            {
+                currentGrabberState = GrabberState.kExtendedRumble;
+            }
+            else if(targetGrabberState == GrabberState.kRetracted)
+            {
+                grabberTimer.stop();
+                grabberTimer.reset();
+                currentGrabberState = GrabberState.kRetracted;
+            }
         }
+        
+        return currentGrabberState;
     }
-        public void setRumble()
-        {
-            if(rumbleState == grabberState.kRumble)
-            {
-                driverXbox.setRumble(RumbleType.kRightRumble, 0.5);;
-            }
-            else
-            {
-                driverXbox.setRumble(RumbleType.kRightRumble, 0.00);
-            }
-
-        }
-
 }
