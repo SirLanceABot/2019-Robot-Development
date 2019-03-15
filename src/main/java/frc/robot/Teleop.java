@@ -33,6 +33,7 @@ public class Teleop
     {
         private static final double ROTATION_SPEED = 0.5;
         private static final double STRAFE_SPEED = 0.5;
+        private static final double CLIMBER_DRIVE_SPEED = 0.2;
         private static final double BALL_STALL_CURRENT = 0.5;
         private static final double CURRENT_LIMIT = 15.0;
         private static final double RUN_TIME = 0.5;
@@ -78,7 +79,7 @@ public class Teleop
     private boolean topCargoButton;
 
     // need to change the buttons to pressed not holds
-    private boolean aButtonPressed;
+    private boolean aButton;
     private boolean bButton;
     private boolean xButton;
     private boolean yButton;
@@ -489,10 +490,10 @@ public class Teleop
         // lights.turnLightsOff();
         // }
 
-        if (aButtonPressed)
-        {
-            drivetrain.moveOmniWheel();
-        }
+        // if (aButtonPressed)
+        // {
+        //     drivetrain.moveOmniWheel();
+        // }
 
         intakeControl();
     }
@@ -541,7 +542,18 @@ public class Teleop
             }
         }
 
-        if (drivetrain.getDriveInFieldOriented())
+        if(leftTrigger > 0.7)
+        {
+            if(aButton)
+            {
+                drivetrain.driveCartesian(0, Constants.CLIMBER_DRIVE_SPEED, 0);
+            }
+            else
+            {
+                drivetrain.driveCartesian(0, 0, 0);
+            }
+        }
+        else if (drivetrain.getDriveInFieldOriented())
         {
             drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis, drivetrain.getFieldOrientedHeading());
         }
@@ -909,16 +921,27 @@ public class Teleop
             }
             else if (climber.getAmperage() > 2.0) // test to find the amps pulled when climbing and holding
             {
-                climber.holdLegs(0);// set to the right number
+                climber.holdLegs(0.1);// set to the right number
             }
             else if (climber.getAmperage() <= 2.0)
             {
                 climber.stopLegs();
             }
+
+            if(aButton)
+            {
+                climber.driveForward(Constants.CLIMBER_DRIVE_SPEED);
+            }
+            else
+            {
+                climber.driveForward(0.0);
+            }
+
         }
         else
         {
             climber.stopLegs();
+            climber.driveForward(0.0);
         }
     }
 
@@ -1061,10 +1084,10 @@ public class Teleop
         leftXAxis = leftAxes[0];
         leftYAxis = leftAxes[1];
 
-        aButtonPressed = driverXbox.getRawButtonPressed(Xbox.Constants.A_BUTTON); // Extend climber elevator
-        bButton = driverXbox.getRawButton(Xbox.Constants.B_BUTTON); // Retract climber elevator
-        xButton = driverXbox.getRawButtonPressed(Xbox.Constants.X_BUTTON); // Release pin solenoid
-        yButton = driverXbox.getRawButton(Xbox.Constants.Y_BUTTON); // Retract pin solenoid
+        aButton = driverXbox.getRawButton(Xbox.Constants.A_BUTTON); // Drive Climber forwards
+        bButton = driverXbox.getRawButton(Xbox.Constants.B_BUTTON); // Extend Climber Legs
+        xButton = driverXbox.getRawButton(Xbox.Constants.X_BUTTON); // Unused
+        yButton = driverXbox.getRawButton(Xbox.Constants.Y_BUTTON); // Retract climber Legs
 
         leftTrigger = driverXbox.getRawAxis(Xbox.Constants.LEFT_TRIGGER_AXIS);
         rightTrigger = driverXbox.getRawAxis(Xbox.Constants.RIGHT_TRIGGER_AXIS);

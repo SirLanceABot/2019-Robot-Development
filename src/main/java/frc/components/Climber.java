@@ -31,7 +31,7 @@ public class Climber
     private DoubleSolenoid pinSolenoid = new DoubleSolenoid(Constants.SOLENOID_PORT_1, Constants.SOLENOID_PORT_2); // // On the white solenoid holder
     private WPI_TalonSRX masterLegMotor =  new WPI_TalonSRX(Constants.CLIMBER_TALON_PORT);
     private WPI_VictorSPX slaveLegMotor = new WPI_VictorSPX(Constants.CLIMBER_VICTOR_PORT);
-    private WPI_TalonSRX forwardClimbDrive = new WPI_TalonSRX(Constants.CLIMBER_DRIVE_PORT);
+    private WPI_VictorSPX forwardClimbDrive = new WPI_VictorSPX(Constants.CLIMBER_DRIVE_PORT);
 
     private static Climber instance = new Climber();
 
@@ -41,6 +41,7 @@ public class Climber
         
         masterLegMotor.configFactoryDefault();
         slaveLegMotor.configFactoryDefault();
+        forwardClimbDrive.configFactoryDefault();
 
         masterLegMotor.setNeutralMode(NeutralMode.Brake);
         slaveLegMotor.setNeutralMode(NeutralMode.Brake);
