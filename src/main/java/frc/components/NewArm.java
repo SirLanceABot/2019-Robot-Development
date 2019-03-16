@@ -172,7 +172,7 @@ public class NewArm
 
     public void holdArm()
     {
-        armMotor.set(0.1);
+        armMotor.set(-0.05);
     }
 
     public double getArmCurrent()
@@ -308,15 +308,15 @@ public class NewArm
                 currentArmState = NewArmPosition.kMovingUp;
                 break;
             case kMovingDown:
-                stopArm();
+                holdArm();
                 currentArmState = NewArmPosition.kNotMoving;
                 break;
             case kMovingUp:
-                moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                holdArm();
+                currentArmState = NewArmPosition.kNotMoving;
                 break;
             case kNotMoving:
-                stopArm();
+                holdArm();
                 currentArmState = NewArmPosition.kNotMoving;
             }
             break;
@@ -348,13 +348,16 @@ public class NewArm
                 currentArmState = NewArmPosition.kMovingUp;
                 break;
             case kMovingDown:
-                moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                holdArm();
+                currentArmState = NewArmPosition.kNotMoving;
                 break;
             case kMovingUp:
-                moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                holdArm();
+                currentArmState = NewArmPosition.kNotMoving;
                 break;
+            case kNotMoving:
+                holdArm();
+                currentArmState = NewArmPosition.kNotMoving;
             }
             break;
 
@@ -385,13 +388,16 @@ public class NewArm
                 currentArmState = NewArmPosition.kMovingUp;
                 break;
             case kMovingDown:
-                moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                holdArm();
+                currentArmState = NewArmPosition.kNotMoving;
                 break;
             case kMovingUp:
-                moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                holdArm();
+                currentArmState = NewArmPosition.kNotMoving;
                 break;
+            case kNotMoving:
+                holdArm();
+                currentArmState = NewArmPosition.kNotMoving;
             }
             break;
         case kTopArmPosition:
@@ -421,13 +427,16 @@ public class NewArm
                 currentArmState = NewArmPosition.kMovingDown;
                 break;
             case kMovingDown:
-                moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                holdArm();
+                currentArmState = NewArmPosition.kNotMoving;
                 break;
             case kMovingUp:
-                moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                holdArm();
+                currentArmState = NewArmPosition.kNotMoving;
                 break;
+            case kNotMoving:
+                holdArm();
+                currentArmState = NewArmPosition.kNotMoving;
             }
             break;
         case kSafePosition:
@@ -457,13 +466,16 @@ public class NewArm
                 currentArmState = NewArmPosition.kStartingPosition;
                 break;
             case kMovingDown:
-                moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                holdArm();
+                currentArmState = NewArmPosition.kNotMoving;
                 break;
             case kMovingUp:
-                moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                holdArm();
+                currentArmState = NewArmPosition.kNotMoving;
                 break;
+            case kNotMoving:
+                holdArm();
+                currentArmState = NewArmPosition.kNotMoving;
             }
             break;
         case kStartingPosition:
@@ -493,32 +505,34 @@ public class NewArm
                 moveArmDown();
                 currentArmState = NewArmPosition.kMovingDown;
                 break;
-            case kThreshold:
-                stopArm();
-                currentArmState = NewArmPosition.kNotMoving;
-                break;
             case kMovingDown:
-                moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                holdArm();
+                currentArmState = NewArmPosition.kNotMoving;
                 break;
             case kMovingUp:
-                stopArm();
+                holdArm();
                 currentArmState = NewArmPosition.kNotMoving;
                 break;
+            case kNotMoving:
+                holdArm();
+                currentArmState = NewArmPosition.kNotMoving;
             }
             break;
 
         case kMovingDown:
-            if (currentPotValue > (getArmPositionPotValue(targetArmState) + 5))
+            if (currentPotValue > (targetArmState.value + 5))
             {
+                moveArmUp();
                 currentArmState = NewArmPosition.kMovingUp;
             }
-            else if (currentPotValue < (getArmPositionPotValue(targetArmState) - 5))
+            else if (currentPotValue < (targetArmState.value - 5))
             {
+                moveArmDown();
                 currentArmState = NewArmPosition.kMovingDown;
             }
             else
             {
+                holdArm();
                 currentArmState = targetArmState;
             }
             break;
@@ -526,20 +540,22 @@ public class NewArm
         case kMovingUp:
             if (currentPotValue > (targetArmState.value + 5))
             {
+                moveArmUp();
                 currentArmState = NewArmPosition.kMovingUp;
             }
             else if (currentPotValue < (targetArmState.value - 5))
             {
+                moveArmDown();
                 currentArmState = NewArmPosition.kMovingDown;
             }
             else
             {
-                stopArm();
+                holdArm();
                 currentArmState = targetArmState;
             }
             break;
         case kNotMoving:
-            stopArm();
+            holdArm();
             currentArmState = NewArmPosition.kNotMoving;
             break;
         }

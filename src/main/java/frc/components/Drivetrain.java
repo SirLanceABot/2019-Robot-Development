@@ -325,6 +325,14 @@ public class Drivetrain extends MecanumDrive
         this.speedFactor = speedFactor.value;
     }
 
+    public void setIdleMode(IdleMode mode)
+    {
+        frontLeftMotor.setIdleMode(mode);
+        frontRightMotor.setIdleMode(mode);
+        backLeftMotor.setIdleMode(mode);
+        backRightMotor.setIdleMode(mode);
+    }
+
     @Override
     public void driveCartesian(double ySpeed, double xSpeed, double zRotation)
     {

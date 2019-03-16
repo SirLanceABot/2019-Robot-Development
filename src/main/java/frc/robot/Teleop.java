@@ -20,6 +20,9 @@ import frc.control.ButtonBoard;
 import frc.visionForWhiteTape.CameraProcess;
 import frc.visionForWhiteTape.TargetData;
 import frc.visionForWhiteTape.CameraProcess.rotate;
+
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -33,7 +36,7 @@ public class Teleop
     {
         private static final double ROTATION_SPEED = 0.5;
         private static final double STRAFE_SPEED = 0.5;
-        private static final double CLIMBER_DRIVE_SPEED = 0.2;
+        private static final double CLIMBER_DRIVE_SPEED = 0.4;
         private static final double BALL_STALL_CURRENT = 0.5;
         private static final double CURRENT_LIMIT = 15.0;
         private static final double RUN_TIME = 0.5;
@@ -77,6 +80,9 @@ public class Teleop
     private boolean bottomCargoButton;
     private boolean centerCargoButton;
     private boolean topCargoButton;
+
+    private boolean wristButton;
+    private boolean safePositionButton;
 
     // need to change the buttons to pressed not holds
     private boolean aButton;
@@ -549,21 +555,25 @@ public class Teleop
 
         if(leftTrigger > 0.7)
         {
-            if(aButton)
-            {
-                drivetrain.driveCartesian(0, Constants.CLIMBER_DRIVE_SPEED, 0);
-            }
-            else
-            {
-                drivetrain.driveCartesian(0, 0, 0);
-            }
+            drivetrain.setIdleMode(IdleMode.kCoast);
+
+            // if(aButton)
+            // {
+            //     drivetrain.driveCartesian(0, Constants.CLIMBER_DRIVE_SPEED, 0);
+            // }
+            // else
+            // {
+            //     drivetrain.driveCartesian(0, 0, 0);
+            // }
         }
         else if (drivetrain.getDriveInFieldOriented())
         {
+            drivetrain.setIdleMode(IdleMode.kBrake);
             drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis, drivetrain.getFieldOrientedHeading());
         }
         else
         {
+            drivetrain.setIdleMode(IdleMode.kBrake);
             drivetrain.driveCartesian(leftXAxis, leftYAxis, rightXAxis);
         }
     }
@@ -752,6 +762,10 @@ public class Teleop
             {
                 elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kTopCargo);
             }
+            else if(safePositionButton)
+            {
+                elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kFloor);
+            }
         }
 
         if (elevatorButtonReleased)
@@ -830,6 +844,10 @@ public class Teleop
             {
                 elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kMiddleArmPosition);
             }
+            else if(safePositionButton)
+            {
+                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kSafePosition);
+            }
         }
 
         if (armButtonReleased)
@@ -844,11 +862,7 @@ public class Teleop
 
     public void wristControl()
     {
-        if (armButton || elevatorButton)
-        {
-
-        }
-        else
+        if (!(armButton || elevatorButton))
         {
             if (floorButton)
             {
@@ -881,6 +895,10 @@ public class Teleop
             else if (topCargoButton)
             {
                 elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristDown);
+            }
+            else if (wristButton)
+            {
+                wrist.toggleWrist();
             }
         }
     }
@@ -918,7 +936,7 @@ public class Teleop
         {
             if (bButton)
             {
-                climber.extendLegs(0.5);
+                climber.extendLegs(1.0);
             }
             else if (yButton)
             {
@@ -1077,6 +1095,9 @@ public class Teleop
         bottomCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.BOTTOM_CARGO_BUTTON);
         centerCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.CENTER_CARGO_BUTTON);
         topCargoButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.TOP_CARGO_BUTTON);
+
+        wristButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.WRIST_BUTTON);
+        safePositionButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.SAFE_POSITION_BUTTON);
     }
 
     public void driverXboxControl()

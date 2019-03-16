@@ -46,7 +46,7 @@ public class Climber
         masterLegMotor.setNeutralMode(NeutralMode.Brake);
         slaveLegMotor.setNeutralMode(NeutralMode.Brake);
 
-        masterLegMotor.configPeakCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.kCimMotor, 0.3));
+        masterLegMotor.configPeakCurrentLimit(MotorConstants.getMotorStallCurrent(MotorConstants.Constants.MotorType.kRedLine, 0.5));
         masterLegMotor.configPeakCurrentDuration(MotorConstants.Constants.PEAK_CURRENT_DURATION);
         masterLegMotor.configContinuousCurrentLimit(MotorConstants.Constants.CONTINOUS_CURRENT_LIMIT);
         masterLegMotor.configOpenloopRamp(MotorConstants.Constants.OPEN_LOOP_RAMP);
@@ -80,13 +80,13 @@ public class Climber
 
     public void extendLegs(double speed)
     {
-        speed = Math.abs(speed);
+        speed = -Math.abs(speed);
         masterLegMotor.set(speed);
     }
 
     public void retractLegs(double speed) 
     {
-        speed = -Math.abs(speed);
+        speed = Math.abs(speed);
         masterLegMotor.set(speed);
     }
 

@@ -41,13 +41,22 @@ public class Carriage
             kCenterCargo(8),       // 4 ft 7.5 inches to center
             kTopCargo(9),          // 6 ft 11.5 inches to center
             kThreshold(10),
-            kNone(11);
+            kNone(11),
 
-            private final int value;
+            kMovingDown,
+            kMovingUp,
+            kNotMoving;
+
+            private int value;
 
             private CarriagePosition(int value)
             {
                 this.value = value;
+            }
+
+            private CarriagePosition()
+            {
+
             }
         }
 
@@ -90,6 +99,9 @@ public class Carriage
     private double speedFactor = 1.0;
 
     private boolean isMoving = false;
+
+    private Constants.CarriagePosition currentState = Constants.CarriagePosition.kFloor;
+    private Constants.CarriagePosition targetState = Constants.CarriagePosition.kFloor;
 
     /**
      * Returns the pot value of the given position
@@ -268,6 +280,434 @@ public class Carriage
     public int getCarriagePositionPotValues(CarriagePosition position)
     {
         return carriagePositionPotValues[position.value];
+    }
+
+    public void setState(CarriagePosition position)
+    {
+        targetState = position;
+    }
+
+    public void carriageControl()
+    {
+        int currentPotValue = getPotValue();
+        switch(currentState)
+        {
+            case kFloor:
+                switch(targetState)
+                {
+                    case kFloor:
+                        currentState = Constants.CarriagePosition.kFloor;
+                        break;
+                    case kCargoShipCargo:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kBottomHatch:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kCenterHatch:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kTopHatch:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break; 
+                    case kBottomCargo:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kCenterCargo:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kTopCargo:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kMovingDown:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kMovingUp:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kNotMoving:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                    
+                }
+                break;
+            case kCargoShipCargo:
+                switch(targetState)
+                {
+                    case kFloor:                   
+                        lowerCarriage();
+                        currentState = Constants.CarriagePosition.kMovingDown;
+                        break;
+                    case kCargoShipCargo:
+                        currentState = CarriagePosition.kCargoShipCargo;
+                        break;
+                    case kBottomHatch:
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kCenterHatch:
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kTopHatch:                        
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break; 
+                    case kBottomCargo:
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kCenterCargo:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kTopCargo:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kMovingDown:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kMovingUp:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kNotMoving:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                }
+                break;
+            case kBottomHatch:
+                switch(targetState)
+                {
+                    case kFloor:
+                        lowerCarriage();
+                        currentState = Constants.CarriagePosition.kMovingDown;
+                        break;
+                    case kCargoShipCargo:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kBottomHatch:
+                        currentState = CarriagePosition.kBottomHatch;
+                        break;
+                    case kCenterHatch:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kTopHatch:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break; 
+                    case kBottomCargo:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kCenterCargo:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kTopCargo:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kMovingDown:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kMovingUp:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kNotMoving:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                }
+                break;
+            case kCenterHatch:
+                switch(targetState)
+                {
+                    case kFloor:
+                        lowerCarriage();
+                        currentState = Constants.CarriagePosition.kMovingDown;
+                        break;
+                    case kCargoShipCargo:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kBottomHatch:
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kCenterHatch:
+                        currentState = CarriagePosition.kCenterHatch;
+                        break;
+                    case kTopHatch:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break; 
+                    case kBottomCargo:
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kCenterCargo:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kTopCargo:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kMovingDown:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kMovingUp:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kNotMoving:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                }
+                break;
+            case kTopHatch:
+                switch(targetState)
+                {
+                    case kFloor:
+                        lowerCarriage();
+                        currentState = Constants.CarriagePosition.kMovingDown;
+                        break;
+                    case kCargoShipCargo:
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kBottomHatch:
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kCenterHatch:
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kTopHatch:
+                        currentState = CarriagePosition.kTopHatch;
+                        break; 
+                    case kBottomCargo:
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kCenterCargo:
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kTopCargo:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kMovingDown:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kMovingUp:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kNotMoving:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                }
+                break;
+            case kBottomCargo:
+                switch(targetState)
+                {
+                    case kFloor:
+                        lowerCarriage();
+                        currentState = Constants.CarriagePosition.kMovingDown;
+                        break;
+                    case kCargoShipCargo:
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kBottomHatch:
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kCenterHatch:                    
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kTopHatch:                    
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break; 
+                    case kBottomCargo:
+                        currentState = CarriagePosition.kBottomCargo;
+                        break;
+                    case kCenterCargo:                    
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kTopCargo:                    
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kMovingDown:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kMovingUp:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kNotMoving:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                }
+                break;
+            case kCenterCargo:
+                switch(targetState)
+                {
+                    case kFloor:                    
+                        lowerCarriage();
+                        currentState = Constants.CarriagePosition.kMovingDown;
+                        break;
+                    case kCargoShipCargo:                    
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kBottomHatch:                    
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kCenterHatch:                    
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kTopHatch:                    
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break; 
+                    case kBottomCargo:                    
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kCenterCargo:                    
+                        currentState = CarriagePosition.kCenterCargo;
+                        break;
+                    case kTopCargo:                    
+                        raiseCarriage();
+                        currentState = CarriagePosition.kMovingUp;
+                        break;
+                    case kMovingDown:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kMovingUp:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kNotMoving:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                }
+                break;
+            case kTopCargo:
+                switch(targetState)
+                {
+                    case kFloor:                    
+                        lowerCarriage();
+                        currentState = Constants.CarriagePosition.kMovingDown;
+                        break;
+                    case kCargoShipCargo:                      
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kBottomHatch:                    
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kCenterHatch:                    
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kTopHatch:                    
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break; 
+                    case kBottomCargo:                    
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kCenterCargo:                    
+                        lowerCarriage();
+                        currentState = CarriagePosition.kMovingDown;
+                        break;
+                    case kTopCargo:                    
+                        lowerCarriage();
+                        currentState = CarriagePosition.kTopCargo;
+                        break;
+                    case kMovingDown:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kMovingUp:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                        break;
+                    case kNotMoving:
+                        holdCarriage();
+                        currentState = CarriagePosition.kNotMoving;
+                }
+                break;
+            case kMovingDown:
+                if (currentPotValue > (targetState.value + 5))
+                {
+                    lowerCarriage();
+                    targetState = CarriagePosition.kMovingUp;
+                }
+                else if (currentPotValue < (targetState.value - 5))
+                {
+                    raiseCarriage();
+                    targetState = CarriagePosition.kMovingDown;
+                }
+                else
+                {
+                    holdCarriage();
+                    currentState = targetState;
+                }
+                break;
+            case kMovingUp:
+                if (currentPotValue > (targetState.value + 5))
+                {
+                    targetState = CarriagePosition.kMovingUp;
+                }
+                else if (currentPotValue < (targetState.value - 5))
+                {
+                    targetState = CarriagePosition.kMovingDown;
+                }
+                else
+                {
+                    holdCarriage();
+                    currentState = targetState;
+                }
+                break;
+            case kNotMoving:
+                holdCarriage();
+                currentState = CarriagePosition.kNotMoving;
+                break;
+        }
+
     }
 
     public String getMasterLegCarriageMotorData()

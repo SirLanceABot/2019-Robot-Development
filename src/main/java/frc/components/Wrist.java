@@ -68,6 +68,18 @@ public class Wrist
         return wristSolenoid.get();
     }
 
+    public void toggleWrist()
+    {
+        if(isWristUp())
+        {
+            moveWristDown();
+        }
+        else
+        {
+            moveWristUp();
+        }
+    }
+
     public boolean isWristDown()
     {
         if (wristSolenoid.get() == Value.kReverse)
