@@ -1,19 +1,9 @@
 package frc.visionForWhiteTape;
 
-// import java.io.File;
-// import java.io.FileWriter;
-// import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-// import java.util.Map;
-// import java.util.stream.Collectors;
-// import java.util.HashMap;
 import org.opencv.core.*;
-// import org.opencv.core.Core.*;
-// import org.opencv.features2d.FeatureDetector;
-// import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.*;
-// import org.opencv.objdetect.*;
 
 /**
 * WhiteLineVision class.
@@ -22,8 +12,8 @@ import org.opencv.imgproc.*;
 *
 * @author GRIP
 */
-public class WhiteLineVision {
-
+public class WhiteLineVision 
+{
 	//Outputs
 	private Mat rgbThresholdOutput = new Mat();
 	private Mat cvErode0Output = new Mat();
@@ -33,7 +23,8 @@ public class WhiteLineVision {
 	private ArrayList<MatOfPoint> convexHullsOutput = new ArrayList<MatOfPoint>();
 	private ArrayList<MatOfPoint> filterContoursOutput = new ArrayList<MatOfPoint>();
 
-	static {
+	static 
+	{
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
 
@@ -48,7 +39,6 @@ public class WhiteLineVision {
 		double[] rgbThresholdBlue = {215.5575539568345, 255.0};
 		rgbThreshold(rgbThresholdInput, rgbThresholdRed, rgbThresholdGreen, rgbThresholdBlue, rgbThresholdOutput);
 		
-
 		// Step CV_erode0:
 		Mat cvErode0Src = rgbThresholdOutput;
 		Mat cvErode0Kernel = new Mat();
@@ -99,14 +89,14 @@ public class WhiteLineVision {
 		double filterContoursMinRatio = 0.0;
 		double filterContoursMaxRatio = 1000.0;
 		filterContours(filterContoursContours, filterContoursMinArea, filterContoursMinPerimeter, filterContoursMinWidth, filterContoursMaxWidth, filterContoursMinHeight, filterContoursMaxHeight, filterContoursSolidity, filterContoursMaxVertices, filterContoursMinVertices, filterContoursMinRatio, filterContoursMaxRatio, filterContoursOutput);
-
 	}
 
 	/**
 	 * This method is a generated getter for the output of a RGB_Threshold.
 	 * @return Mat output from RGB_Threshold.
 	 */
-	public Mat rgbThresholdOutput() {
+	public Mat rgbThresholdOutput() 
+	{
 		return rgbThresholdOutput;
 	}
 
@@ -114,7 +104,8 @@ public class WhiteLineVision {
 	 * This method is a generated getter for the output of a CV_erode.
 	 * @return Mat output from CV_erode.
 	 */
-	public Mat cvErode0Output() {
+	public Mat cvErode0Output() 
+	{
 		return cvErode0Output;
 	}
 
@@ -122,7 +113,8 @@ public class WhiteLineVision {
 	 * This method is a generated getter for the output of a CV_dilate.
 	 * @return Mat output from CV_dilate.
 	 */
-	public Mat cvDilateOutput() {
+	public Mat cvDilateOutput() 
+	{
 		return cvDilateOutput;
 	}
 
@@ -130,7 +122,8 @@ public class WhiteLineVision {
 	 * This method is a generated getter for the output of a CV_erode.
 	 * @return Mat output from CV_erode.
 	 */
-	public Mat cvErode1Output() {
+	public Mat cvErode1Output() 
+	{
 		return cvErode1Output;
 	}
 
@@ -138,7 +131,8 @@ public class WhiteLineVision {
 	 * This method is a generated getter for the output of a Find_Contours.
 	 * @return ArrayList<MatOfPoint> output from Find_Contours.
 	 */
-	public ArrayList<MatOfPoint> findContoursOutput() {
+	public ArrayList<MatOfPoint> findContoursOutput() 
+	{
 		return findContoursOutput;
 	}
 
@@ -146,7 +140,8 @@ public class WhiteLineVision {
 	 * This method is a generated getter for the output of a Convex_Hulls.
 	 * @return ArrayList<MatOfPoint> output from Convex_Hulls.
 	 */
-	public ArrayList<MatOfPoint> convexHullsOutput() {
+	public ArrayList<MatOfPoint> convexHullsOutput() 
+	{
 		return convexHullsOutput;
 	}
 
@@ -154,10 +149,10 @@ public class WhiteLineVision {
 	 * This method is a generated getter for the output of a Filter_Contours.
 	 * @return ArrayList<MatOfPoint> output from Filter_Contours.
 	 */
-	public ArrayList<MatOfPoint> filterContoursOutput() {
+	public ArrayList<MatOfPoint> filterContoursOutput() 
+	{
 		return filterContoursOutput;
 	}
-
 
 	/**
 	 * Segment an image based on color ranges.

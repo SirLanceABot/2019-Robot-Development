@@ -13,17 +13,12 @@ public class TargetDataController
         targetData.size.height = newTargetData.size.height;
         targetData.angle = newTargetData.angle;
         targetData.fixedAngle = newTargetData.fixedAngle;
-
         targetData.isFreshData = true;
         targetData.isTargetFound = newTargetData.isTargetFound;
-
-        // System.out.println(targetData.center.x + " " + targetData.center.y);
     }
 
     public synchronized TargetData get()
     {
-        // TargetData copyOfTargetData = new TargetData(targetData);
-        // copyOfTargetData = targetData;
         TargetData copyOfTargetData = new TargetData();
         copyOfTargetData.center.x = targetData.center.x;
         copyOfTargetData.center.y = targetData.center.y;
@@ -33,16 +28,6 @@ public class TargetDataController
         copyOfTargetData.fixedAngle = targetData.fixedAngle;
         targetData.isFreshData = false;
         copyOfTargetData.isFreshData = true;
-        // System.out.println(this.targetData.center.x + " " + this.targetData.center.y);
-
         return copyOfTargetData;
     }
-
-    /*
-    public synchronized String toString()
-    {
-        return String.format("[TargetInfo] center.x = %f, center.y = %f, size.width = %f, size.height = %f, angle = %f, fixedAngle = %f %s]", 
-        center.x, center.y, size.width, size.height, angle, fixedAngle, isFreshData ? "FRESH" : "stale");
-    }
-    */
 }

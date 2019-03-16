@@ -3,8 +3,6 @@ package frc.robot;
 
 import frc.components.Drivetrain;
 import frc.robot.SlabShuffleboard;
-import frc.robot.SlabShuffleboard.GamePiece;
-import frc.robot.SlabShuffleboard.Objective;
 import frc.robot.SlabShuffleboard.PregameSetupTabData;
 import frc.robot.SlabShuffleboard.RocketHatch;
 import frc.robot.SlabShuffleboard.StartingLocation;
@@ -25,11 +23,13 @@ import javax.xml.stream.util.StreamReaderDelegate;
 
 import edu.wpi.first.wpilibj.Timer;
 
-/**
- * TODO: add variable motor speeds
- */
 public class Autonomous
 {
+    private int step = 0; 
+    private int pointCounter = 0;
+    boolean isDoneDriving = false; 
+    boolean isDoneSpinning = false; 
+
     private SlabShuffleboard shuffleboard = SlabShuffleboard.getInstance();
     private Drivetrain drivetrain = Drivetrain.getInstance();
     private Arm arm = Arm.getInstance();
@@ -44,12 +44,7 @@ public class Autonomous
     private int driveDistance;
     private int angle;
     private TargetData targetData;        
-    private int step = 0; // move to top
-    private int pointCounter = 0; // moveto top
     private double motorSpeedFactor;
-
-    boolean isDoneDriving = false; // move to top
-    boolean isDoneSpinning = false; // move to top
 
     private static Autonomous instance = new Autonomous();
 
@@ -127,35 +122,34 @@ public class Autonomous
 
         switch (pregameSetupTabData.task1Objective)
         {
-        case kRocket:
-            if (pregameSetupTabData.task1RocketHatch == RocketHatch.kFront)
-                pathing.add(new Point(leftOrRight() * 200, 300));
-            if (pregameSetupTabData.task1RocketHatch == RocketHatch.kBack)
-                pathing.add(new Point(leftOrRight() * 200, 340));
-            break;
-        case kCargoShip:
-            pathing.add(new Point(leftOrRight() * 100, 80));
-            pathing.add(new Point(leftOrRight() * 100, 200));
+            case kRocket:
+                if (pregameSetupTabData.task1RocketHatch == RocketHatch.kFront)
+                    pathing.add(new Point(leftOrRight() * 200, 300));
+                if (pregameSetupTabData.task1RocketHatch == RocketHatch.kBack)
+                    pathing.add(new Point(leftOrRight() * 200, 340));
+                break;
+            case kCargoShip:
+                pathing.add(new Point(leftOrRight() * 100, 80));
+                pathing.add(new Point(leftOrRight() * 100, 200));
 
-            switch (pregameSetupTabData.task1CargoShip)
-            {
-            case kSideNear:
-                pathing.add(new Point(leftOrRight() * 100, 210));
+                switch (pregameSetupTabData.task1CargoShip)
+                {
+                case kSideNear:
+                    pathing.add(new Point(leftOrRight() * 100, 210));
+                    break;
+
+                case kSideMiddle:
+                    pathing.add(new Point(leftOrRight() * 100, 240));
+                    break;
+
+                case kSideFar:
+                    pathing.add(new Point(leftOrRight() * 100, 280));
+                    break;
+                }
                 break;
 
-            case kSideMiddle:
-                pathing.add(new Point(leftOrRight() * 100, 240));
+            case kNothing:
                 break;
-
-            case kSideFar:
-                pathing.add(new Point(leftOrRight() * 100, 280));
-                break;
-            }
-            break;
-
-        case kNothing:
-            break;
-
         }
     }
 

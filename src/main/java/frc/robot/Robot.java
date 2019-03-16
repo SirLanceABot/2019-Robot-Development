@@ -40,7 +40,6 @@ public class Robot extends TimedRobot
     private MotorsAndSensorsTabData motorsAndSensorsTabData;
     private boolean hasAutoRun = false;
     private boolean hasTeleopRun = false;
-    // private boolean isPregame = true;
     private boolean isNewPregameDataAvailable = true;
 
     private int shuffleboardPrintCounter = 0;
