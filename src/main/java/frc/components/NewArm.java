@@ -32,7 +32,7 @@ public class NewArm
         {
             kFloorArmPosition(0), kHorizontalArmPosition(1), kMiddleArmPosition(2), kTopArmPosition(3),
             // need to set these
-            kSafePosition, kStartingPosition, kMovingUp, kMovingDown, kThreshold(4), kNotMoving();
+            kSafePosition(3), kStartingPosition, kMovingUp, kMovingDown, kThreshold(4), kNotMoving(), kManualOverride;
 
             private int value;
 
@@ -268,7 +268,7 @@ public class NewArm
                 armMotor.getOutputCurrent(), armMotor.getTemperature() * (9.0 / 5.0) + 32.0);
     }
 
-    public void setArmState(Constants.NewArmPosition position)
+    public void setState(Constants.NewArmPosition position)
     {
         targetArmState = position;
     }
@@ -312,15 +312,14 @@ public class NewArm
                 currentArmState = NewArmPosition.kNotMoving;
                 break;
             case kMovingUp:
-                holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                moveArmUp();
+                currentArmState = NewArmPosition.kMovingUp;
                 break;
             case kNotMoving:
                 holdArm();
                 currentArmState = NewArmPosition.kNotMoving;
             }
             break;
-
         case kHorizontalArmPosition:
             switch (targetArmState)
             {
@@ -352,15 +351,14 @@ public class NewArm
                 currentArmState = NewArmPosition.kNotMoving;
                 break;
             case kMovingUp:
-                holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                moveArmUp();
+                currentArmState = NewArmPosition.kMovingUp;
                 break;
             case kNotMoving:
-                holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                moveArmDown();
+                currentArmState = NewArmPosition.kMovingDown;
             }
             break;
-
         case kMiddleArmPosition:
             switch (targetArmState)
             {
@@ -388,12 +386,12 @@ public class NewArm
                 currentArmState = NewArmPosition.kMovingUp;
                 break;
             case kMovingDown:
-                holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                moveArmDown();
+                currentArmState = NewArmPosition.kMovingDown;
                 break;
             case kMovingUp:
-                holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                moveArmUp();
+                currentArmState = NewArmPosition.kMovingUp;
                 break;
             case kNotMoving:
                 holdArm();
@@ -507,7 +505,7 @@ public class NewArm
                 break;
             case kMovingDown:
                 holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                currentArmState = NewArmPosition.kMovingDown;
                 break;
             case kMovingUp:
                 holdArm();
@@ -520,12 +518,12 @@ public class NewArm
             break;
 
         case kMovingDown:
-            if (currentPotValue > (targetArmState.value + 5))
+            if (currentPotValue > (targetArmState.value + NewArmPosition.kThreshold.value))
             {
                 moveArmUp();
                 currentArmState = NewArmPosition.kMovingUp;
             }
-            else if (currentPotValue < (targetArmState.value - 5))
+            else if (currentPotValue < (targetArmState.value - NewArmPosition.kThreshold.value))
             {
                 moveArmDown();
                 currentArmState = NewArmPosition.kMovingDown;
@@ -538,12 +536,12 @@ public class NewArm
             break;
 
         case kMovingUp:
-            if (currentPotValue > (targetArmState.value + 5))
+            if (currentPotValue > (targetArmState.value + NewArmPosition.kThreshold.value))
             {
                 moveArmUp();
                 currentArmState = NewArmPosition.kMovingUp;
             }
-            else if (currentPotValue < (targetArmState.value - 5))
+            else if (currentPotValue < (targetArmState.value - NewArmPosition.kThreshold.value))
             {
                 moveArmDown();
                 currentArmState = NewArmPosition.kMovingDown;
