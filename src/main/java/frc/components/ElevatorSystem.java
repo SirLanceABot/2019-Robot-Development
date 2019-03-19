@@ -5,13 +5,11 @@ import frc.components.Carriage;
 import frc.components.Grabber;
 import frc.components.Intake;
 import frc.components.Wrist;
-import frc.components.Arm.Constants.ArmPosition;
-import frc.components.Carriage.Constants.CarriagePosition;
+import frc.components.Carriage.CarriageState;
 import frc.components.Grabber.GrabberState;
 import frc.components.Intake.IntakeState;
-import frc.components.NewArm.Constants.NewArmPosition;
+import frc.components.NewArm.NewArmState;
 import frc.components.Wrist.Constants.WristPosition;
-import frc.components.NewArm;
 
 /**
  * Add your docs here.
@@ -20,7 +18,7 @@ public class ElevatorSystem
 {
     public enum ElevatorSystemState
     {
-        kBottomHatch, kMiddleHatch, kTopHatch, kBottomCargo, kMiddleCargo, kTopCargo, kFloorPickup;
+        kBottomHatch, kMiddleHatch, kTopHatch, kBottomCargo, kMiddleCargo, kTopCargo, kFloorPickup, kCargoShipCargo, kSafePosition, kManualOverride;
     }
 
     public enum IntakeSystemState
@@ -111,40 +109,52 @@ public class ElevatorSystem
         switch (targetElevatorState)
         {
         case kBottomCargo:
-            carriage.setState(CarriagePosition.kBottomCargo);
-            newArm.setState(NewArmPosition.kHorizontalArmPosition);
+            carriage.setState(CarriageState.kBottomCargo);
+            newArm.setState(NewArmState.kHorizontalArmPosition);
             wrist.setState(WristPosition.kWristDown);
             break;
         case kMiddleCargo:
-            carriage.setState(CarriagePosition.kCenterCargo);
-            newArm.setState(NewArmPosition.kHorizontalArmPosition);
+            carriage.setState(CarriageState.kCenterCargo);
+            newArm.setState(NewArmState.kHorizontalArmPosition);
             wrist.setState(WristPosition.kWristDown);
             break;
         case kTopCargo:
-            carriage.setState(CarriagePosition.kTopCargo);
-            newArm.setState(NewArmPosition.kMiddleArmPosition);
+            carriage.setState(CarriageState.kTopCargo);
+            newArm.setState(NewArmState.kMiddleArmPosition);
             wrist.setState(WristPosition.kWristDown);
             break;
         case kBottomHatch:
-            carriage.setState(CarriagePosition.kBottomHatch);
-            newArm.setState(NewArmPosition.kHorizontalArmPosition);
+            carriage.setState(CarriageState.kBottomHatch);
+            newArm.setState(NewArmState.kHorizontalArmPosition);
             wrist.setState(WristPosition.kWristUp);
             break;
         case kMiddleHatch:
-            carriage.setState(CarriagePosition.kBottomCargo);
-            newArm.setState(NewArmPosition.kHorizontalArmPosition);
+            carriage.setState(CarriageState.kBottomCargo);
+            newArm.setState(NewArmState.kHorizontalArmPosition);
             wrist.setState(WristPosition.kWristUp);
             break;
         case kTopHatch:
-            carriage.setState(CarriagePosition.kTopHatch);
-            newArm.setState(NewArmPosition.kMiddleArmPosition);
+            carriage.setState(CarriageState.kTopHatch);
+            newArm.setState(NewArmState.kMiddleArmPosition);
             wrist.setState(WristPosition.kWristUp);
             break;
         case kFloorPickup:
-            carriage.setState(CarriagePosition.kFloor);
-            newArm.setState(NewArmPosition.kFloorArmPosition);
+            carriage.setState(CarriageState.kFloor);
+            newArm.setState(NewArmState.kFloorArmPosition);
             wrist.setState(WristPosition.kWristDown);
             break;
+        case kCargoShipCargo:
+            carriage.setState(CarriageState.kCargoShipCargo);
+            newArm.setState(NewArmState.kHorizontalArmPosition);
+            wrist.setState(WristPosition.kWristDown);
+            break;
+        case kSafePosition:
+            carriage.setState(CarriageState.kFloor);
+            newArm.setState(NewArmState.kSafePosition);
+            wrist.setState(WristPosition.kWristDown);
+        case kManualOverride:
+            carriage.setState(CarriageState.kManualOverride);
+            newArm.setState(NewArmState.kManualOverride);
         }
 
         switch(targetIntakeState)
@@ -173,7 +183,14 @@ public class ElevatorSystem
 
     public void executeStateMachines()
     {
-
+        if(newArm.getState() == NewArmState.kTopArmPosition)
+        {
+            newArm.newArmControl();
+        }
+        else if(newArm.getState() == NewArmState.kFloorArmPosition);
+        {
+            newArm.newArmControl();
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////////////////

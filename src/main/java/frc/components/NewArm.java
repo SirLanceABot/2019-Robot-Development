@@ -1,19 +1,10 @@
 package frc.components;
 
-import frc.components.Arm.Constants.ArmPosition;
-import frc.components.Arm.Constants.Position;
-import frc.components.NewArm.Constants.NewArmPosition;
+
 import frc.robot.SlabShuffleboard;
 import frc.util.MotorConstants;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
 import java.util.Arrays;
-
 // import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 // import com.ctre.phoenix.motorcontrol.InvertType;
@@ -32,7 +23,8 @@ public class NewArm
         {
             kFloorArmPosition(0), kHorizontalArmPosition(1), kMiddleArmPosition(2), kTopArmPosition(3),
             // need to set these
-            kSafePosition(3), kStartingPosition, kMovingUp, kMovingDown, kThreshold(4), kNotMoving(), kManualOverride;
+            kSafePosition(
+                    3), kStartingPosition, kMovingUp, kMovingDown, /* kThreshold(4), */ kNotMoving(), kManualOverride;
 
             private int value;
 
@@ -61,12 +53,31 @@ public class NewArm
         public static final int[] PRACTICE_ARM_POSITION_POT_VALUES = { 628, 572, 480, 230, 5, -1 };
     }
 
+    public static enum NewArmState
+    {
+            kFloorArmPosition(0), kHorizontalArmPosition(1), kMiddleArmPosition(2), kTopArmPosition(3),
+            // need to set these
+            kSafePosition(
+                    3), kStartingPosition, kMovingUp, kMovingDown, /* kThreshold(4), */ kNotMoving(), kManualOverride;
+
+            private int value;
+
+            private NewArmState(int value)
+            {
+                this.value = value;
+            }
+
+            private NewArmState()
+            {
+
+            }
+    }
     private WPI_TalonSRX armMotor = new WPI_TalonSRX(Constants.ARM_MOTOR_ID);
     private double speedFactor = 1.0;
     private boolean isArmMoving = false;
     private boolean enableArmSoftLimit = true;
-    private Constants.NewArmPosition currentArmState = Constants.NewArmPosition.kStartingPosition;
-    private Constants.NewArmPosition targetArmState = Constants.NewArmPosition.kStartingPosition;
+    private NewArmState currentArmState = NewArmState.kStartingPosition;
+    private NewArmState targetArmState = NewArmState.kStartingPosition;
 
     /**
      * Returns the pot value of the given position
@@ -139,6 +150,20 @@ public class NewArm
     {
         armMotor.set(speedFactor * -Math.abs(speed));
         setIsArmMoving(true);
+    }
+
+    public void manualOverride(double speed)
+    {
+        if (speed > 0.0)
+        {
+            moveArmUp(speed);
+        }
+        else
+        {
+            moveArmDown(speed);
+        }
+
+        currentArmState = NewArmState.kManualOverride;
     }
 
     /**
@@ -268,13 +293,18 @@ public class NewArm
                 armMotor.getOutputCurrent(), armMotor.getTemperature() * (9.0 / 5.0) + 32.0);
     }
 
-    public void setState(Constants.NewArmPosition position)
+    public void setState(NewArmState position)
     {
         targetArmState = position;
     }
 
+    public NewArmState getState()
+    {
+        return currentArmState;
+    }
+
     /**
-     * state machine for control of the arm. 
+     * state machine for control of the arm.
      */
     public void newArmControl()
     {
@@ -285,39 +315,42 @@ public class NewArm
             switch (targetArmState)
             {
             case kFloorArmPosition:
-                currentArmState = NewArmPosition.kFloorArmPosition;
+                currentArmState = NewArmState.kFloorArmPosition;
                 break;
             case kHorizontalArmPosition:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kMiddleArmPosition:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kTopArmPosition:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kSafePosition:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kStartingPosition:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kMovingDown:
                 holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                currentArmState = NewArmState.kNotMoving;
                 break;
             case kMovingUp:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kNotMoving:
                 holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                currentArmState = NewArmState.kNotMoving;
+            case kManualOverride:
+                currentArmState = NewArmState.kManualOverride;
+                break;
             }
             break;
         case kHorizontalArmPosition:
@@ -325,38 +358,41 @@ public class NewArm
             {
             case kFloorArmPosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kHorizontalArmPosition:
-                currentArmState = NewArmPosition.kHorizontalArmPosition;
+                currentArmState = NewArmState.kHorizontalArmPosition;
                 break;
             case kMiddleArmPosition:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kTopArmPosition:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kSafePosition:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kStartingPosition:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kMovingDown:
                 holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                currentArmState = NewArmState.kNotMoving;
                 break;
             case kMovingUp:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kNotMoving:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
+            case kManualOverride:
+                currentArmState = NewArmState.kManualOverride;
+                break;
             }
             break;
         case kMiddleArmPosition:
@@ -364,38 +400,41 @@ public class NewArm
             {
             case kFloorArmPosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kHorizontalArmPosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kMiddleArmPosition:
-                currentArmState = NewArmPosition.kMiddleArmPosition;
+                currentArmState = NewArmState.kMiddleArmPosition;
                 break;
             case kTopArmPosition:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kSafePosition:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kStartingPosition:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kMovingDown:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kMovingUp:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kNotMoving:
                 holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                currentArmState = NewArmState.kNotMoving;
+            case kManualOverride:
+                currentArmState = NewArmState.kManualOverride;
+                break;
             }
             break;
         case kTopArmPosition:
@@ -403,38 +442,42 @@ public class NewArm
             {
             case kFloorArmPosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kHorizontalArmPosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kMiddleArmPosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kTopArmPosition:
-                currentArmState = NewArmPosition.kTopArmPosition;
+                currentArmState = NewArmState.kTopArmPosition;
                 break;
             case kSafePosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kStartingPosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kMovingDown:
                 holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                currentArmState = NewArmState.kNotMoving;
                 break;
             case kMovingUp:
                 holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                currentArmState = NewArmState.kNotMoving;
                 break;
             case kNotMoving:
                 holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                currentArmState = NewArmState.kNotMoving;
+                break;
+            case kManualOverride:
+                currentArmState = NewArmState.kManualOverride;
+                break;
             }
             break;
         case kSafePosition:
@@ -442,38 +485,42 @@ public class NewArm
             {
             case kFloorArmPosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kHorizontalArmPosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kMiddleArmPosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kTopArmPosition:
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kSafePosition:
-                currentArmState = NewArmPosition.kSafePosition;
+                currentArmState = NewArmState.kSafePosition;
                 break;
             case kStartingPosition:
                 moveArmUp();
-                currentArmState = NewArmPosition.kStartingPosition;
+                currentArmState = NewArmState.kStartingPosition;
                 break;
             case kMovingDown:
                 holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                currentArmState = NewArmState.kNotMoving;
                 break;
             case kMovingUp:
                 holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                currentArmState = NewArmState.kNotMoving;
                 break;
             case kNotMoving:
                 holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                currentArmState = NewArmState.kNotMoving;
+                break;
+            case kManualOverride:
+                currentArmState = NewArmState.kManualOverride;
+                break;
             }
             break;
         case kStartingPosition:
@@ -481,52 +528,56 @@ public class NewArm
             {
             case kFloorArmPosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kHorizontalArmPosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kMiddleArmPosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kTopArmPosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kSafePosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kStartingPosition:
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kMovingDown:
                 holdArm();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kMovingUp:
                 holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                currentArmState = NewArmState.kNotMoving;
                 break;
             case kNotMoving:
                 holdArm();
-                currentArmState = NewArmPosition.kNotMoving;
+                currentArmState = NewArmState.kNotMoving;
+                break;
+            case kManualOverride:
+                currentArmState = NewArmState.kManualOverride;
+                break;
             }
             break;
 
         case kMovingDown:
-            if (currentPotValue > (targetArmState.value + NewArmPosition.kThreshold.value))
+            if (currentPotValue > (armPositionPotValues[targetArmState.value] + Constants.ARM_THRESHOLD))
             {
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
             }
-            else if (currentPotValue < (targetArmState.value - NewArmPosition.kThreshold.value))
+            else if (currentPotValue < (armPositionPotValues[targetArmState.value] - Constants.ARM_THRESHOLD))
             {
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
             }
             else
             {
@@ -536,15 +587,15 @@ public class NewArm
             break;
 
         case kMovingUp:
-            if (currentPotValue > (targetArmState.value + NewArmPosition.kThreshold.value))
+            if (currentPotValue > (armPositionPotValues[targetArmState.value] + Constants.ARM_THRESHOLD))
             {
                 moveArmUp();
-                currentArmState = NewArmPosition.kMovingUp;
+                currentArmState = NewArmState.kMovingUp;
             }
-            else if (currentPotValue < (targetArmState.value - NewArmPosition.kThreshold.value))
+            else if (currentPotValue < (armPositionPotValues[targetArmState.value] - Constants.ARM_THRESHOLD))
             {
                 moveArmDown();
-                currentArmState = NewArmPosition.kMovingDown;
+                currentArmState = NewArmState.kMovingDown;
             }
             else
             {
@@ -554,7 +605,15 @@ public class NewArm
             break;
         case kNotMoving:
             holdArm();
-            currentArmState = NewArmPosition.kNotMoving;
+            currentArmState = NewArmState.kNotMoving;
+            break;
+        case kManualOverride:
+            if(targetArmState != NewArmState.kManualOverride)
+            {
+                holdArm();
+                targetArmState = NewArmState.kManualOverride;
+            }
+            currentArmState = NewArmState.kManualOverride;
             break;
         }
     }
