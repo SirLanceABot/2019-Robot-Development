@@ -206,13 +206,27 @@ public class ElevatorSystem
 
     public void executeStateMachines()
     {
-        if(newArm.getState() == NewArmState.kTopArmPosition)
+        /**
+         * if the arm is at the high positions then it will have to move first.
+         * once the arm has moved out of the top position then it will be able
+         * to move the carriage
+         */
+        if(newArm.getState() == NewArmState.kTopArmPosition) //this is the top arm position
         {
             newArm.newArmControl();
         }
-        else if(newArm.getState() == NewArmState.kFloorArmPosition);
+        else if(newArm.getState() == NewArmState.kFloorArmPosition && carriage.getState() == Carriage.CarriageState.kFloor)
         {
+            carriage.carriageControl();
+        }
+        else
+        {
+            carriage.carriageControl();
             newArm.newArmControl();
+            grabber.grabberControl();
+            intake.intakeControl();
+            wrist.wristControl();
+            
         }
     }
 

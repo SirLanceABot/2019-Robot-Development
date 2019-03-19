@@ -1117,7 +1117,6 @@ public class Teleop
         if(armButton || carriageButton)
         {
             elevatorSystem.overrideElevatorSystem();
-
             if (armButton)
             {
                 if (buttonBoardYAxis == 1)
