@@ -5,6 +5,7 @@ import frc.components.Carriage;
 import frc.components.Grabber;
 import frc.components.Intake;
 import frc.components.Wrist;
+import frc.components.Wrist.WristState;
 import frc.components.Carriage.CarriageState;
 import frc.components.Grabber.GrabberState;
 import frc.components.Intake.IntakeState;
@@ -102,6 +103,28 @@ public class ElevatorSystem
         return targetWristPosition;
     }
 
+    public void overrideElevatorSystem()
+    {
+        newArm.setState(NewArmState.kManualOverride);
+        carriage.setState(CarriageState.kManualOverride);
+        wrist.setState(WristState.kWristDown);
+    }    
+    public void overrideArm(double speed)
+    {
+        newArm.manualOverride(speed);
+    }
+
+    
+    public void overrideCarriage(double speed)
+    {
+        carriage.overrideCarriage(speed);
+    }
+
+    public void overrideWrist()
+    {
+        wrist.toggleWrist();
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////
     public void setElevatorSystemState(ElevatorSystemState targetElevatorState, IntakeSystemState targetIntakeState, GrabberSystemState targetGrabberState)
     {
@@ -111,47 +134,47 @@ public class ElevatorSystem
         case kBottomCargo:
             carriage.setState(CarriageState.kBottomCargo);
             newArm.setState(NewArmState.kHorizontalArmPosition);
-            wrist.setState(WristPosition.kWristDown);
+            wrist.setState(WristState.kWristDown);
             break;
         case kMiddleCargo:
             carriage.setState(CarriageState.kCenterCargo);
             newArm.setState(NewArmState.kHorizontalArmPosition);
-            wrist.setState(WristPosition.kWristDown);
+            wrist.setState(WristState.kWristDown);
             break;
         case kTopCargo:
             carriage.setState(CarriageState.kTopCargo);
             newArm.setState(NewArmState.kMiddleArmPosition);
-            wrist.setState(WristPosition.kWristDown);
+            wrist.setState(WristState.kWristDown);
             break;
         case kBottomHatch:
             carriage.setState(CarriageState.kBottomHatch);
             newArm.setState(NewArmState.kHorizontalArmPosition);
-            wrist.setState(WristPosition.kWristUp);
+            wrist.setState(WristState.kWristUp);
             break;
         case kMiddleHatch:
             carriage.setState(CarriageState.kBottomCargo);
             newArm.setState(NewArmState.kHorizontalArmPosition);
-            wrist.setState(WristPosition.kWristUp);
+            wrist.setState(WristState.kWristUp);
             break;
         case kTopHatch:
             carriage.setState(CarriageState.kTopHatch);
             newArm.setState(NewArmState.kMiddleArmPosition);
-            wrist.setState(WristPosition.kWristUp);
+            wrist.setState(WristState.kWristUp);
             break;
         case kFloorPickup:
             carriage.setState(CarriageState.kFloor);
             newArm.setState(NewArmState.kFloorArmPosition);
-            wrist.setState(WristPosition.kWristDown);
+            wrist.setState(WristState.kWristDown);
             break;
         case kCargoShipCargo:
             carriage.setState(CarriageState.kCargoShipCargo);
             newArm.setState(NewArmState.kHorizontalArmPosition);
-            wrist.setState(WristPosition.kWristDown);
+            wrist.setState(WristState.kWristDown);
             break;
         case kSafePosition:
             carriage.setState(CarriageState.kFloor);
             newArm.setState(NewArmState.kSafePosition);
-            wrist.setState(WristPosition.kWristDown);
+            wrist.setState(WristState.kWristDown);
         case kManualOverride:
             carriage.setState(CarriageState.kManualOverride);
             newArm.setState(NewArmState.kManualOverride);
