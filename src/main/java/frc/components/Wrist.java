@@ -30,13 +30,18 @@ public class Wrist
         private static final int LIMIT_SWITCH_DOWN = 2;
     }
 
+    public enum WristState
+    {
+        kWristDown, kWristUp;
+    }
+
     private DoubleSolenoid wristSolenoid = new DoubleSolenoid(Constants.WRIST_SOLENOID_EXTEND, Constants.WRIST_SOLENOID_RETRACT); // On the blue solenoid holder
     private DigitalInput limitSwitchUp = new DigitalInput(Constants.LIMIT_SWITCH_UP);
     private DigitalInput limitSwitchDown = new DigitalInput(Constants.LIMIT_SWITCH_DOWN);
 
     private boolean isWristMoving = false;
-    private Constants.WristPosition currentWristState = Constants.WristPosition.kWristUp;
-    private Constants.WristPosition targetWristState = Constants.WristPosition.kWristUp;
+    private WristState currentWristState = WristState.kWristUp;
+    private WristState targetWristState = WristState.kWristUp;
 
     private static Wrist instance = new Wrist();
 
@@ -130,35 +135,35 @@ public class Wrist
     // return position;
     // }
 
-    public void setState(Constants.WristPosition position)
+    public void setState(WristState position)
     {
         targetWristState = position;
     }
 
-    public Constants.WristPosition wristControl()
+    public WristState wristControl()
     {
         switch (currentWristState)
         {
         case kWristDown:
-            if (targetWristState == Constants.WristPosition.kWristUp)
+            if (targetWristState == WristState.kWristUp)
             {
                 moveWristUp();
-                currentWristState = Constants.WristPosition.kWristUp;
+                currentWristState = WristState.kWristUp;
             }
-            else if (targetWristState == Constants.WristPosition.kWristDown)
+            else if (targetWristState == WristState.kWristDown)
             {
-                currentWristState = Constants.WristPosition.kWristDown;
+                currentWristState = WristState.kWristDown;
             }
             break;
         case kWristUp:
-            if (targetWristState == Constants.WristPosition.kWristUp)
+            if (targetWristState == WristState.kWristUp)
             {
-                currentWristState = Constants.WristPosition.kWristUp;
+                currentWristState = WristState.kWristUp;
             }
-            else if (targetWristState == Constants.WristPosition.kWristDown)
+            else if (targetWristState == WristState.kWristDown)
             {
                 moveWristDown();
-                currentWristState = Constants.WristPosition.kWristDown;
+                currentWristState = WristState.kWristDown;
             }
             break;
         }

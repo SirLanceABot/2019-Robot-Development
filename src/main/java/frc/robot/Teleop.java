@@ -10,6 +10,9 @@ import frc.components.ElevatorSystem;
 import frc.components.Lights;
 import frc.components.Intake;
 import frc.components.Wrist;
+import frc.components.ElevatorSystem.ElevatorSystemState;
+import frc.components.ElevatorSystem.GrabberSystemState;
+import frc.components.ElevatorSystem.IntakeSystemState;
 import frc.components.NewArm;
 import frc.components.Carriage;
 import frc.components.Grabber;
@@ -65,8 +68,8 @@ public class Teleop
 
     private boolean armButton;
     private boolean armButtonReleased;
-    private boolean elevatorButton;
-    private boolean elevatorButtonReleased;
+    private boolean carriageButton;
+    private boolean carriageButtonReleased;
     private double buttonBoardYAxis;
     private double buttonBoardXAxis;
 
@@ -107,6 +110,10 @@ public class Teleop
             Xbox.Constants.PolynomialDrive.kCubicDrive);
     private double leftXAxis = leftAxes[0];
     private double leftYAxis = leftAxes[1];
+
+    ElevatorSystemState targetElevatorState;
+    IntakeSystemState targetIntakeState;
+    GrabberSystemState targetGrabberState;
 
     enum IntakeState
     {
@@ -698,13 +705,13 @@ public class Teleop
 
     public void carriageControl()
     {
-        if (armButton || elevatorButton)
+        if (armButton || carriageButton)
         {
             elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kNotMoving);
             elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
             elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristNone);
 
-            if(elevatorButton)
+            if(carriageButton)
             {
                 if (buttonBoardYAxis == 1)
                 {
@@ -768,7 +775,7 @@ public class Teleop
             }
         }
 
-        if (elevatorButtonReleased)
+        if (carriageButtonReleased)
         {
             elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kNotMoving);
             elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
@@ -780,7 +787,7 @@ public class Teleop
 
     public void armControl()
     {
-        if (armButton || elevatorButton)
+        if (armButton || carriageButton)
         {
             elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kNotMoving);
             elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
@@ -862,7 +869,7 @@ public class Teleop
 
     public void wristControl()
     {
-        if (!(armButton || elevatorButton))
+        if (!(armButton || carriageButton))
         {
             if (floorButton)
             {
@@ -1080,8 +1087,8 @@ public class Teleop
     {
         armButton = buttonBoard.getRawButton(ButtonBoard.Constants.ARM_BUTTON);
         armButtonReleased = buttonBoard.getRawButtonReleased(ButtonBoard.Constants.ARM_BUTTON);
-        elevatorButton = buttonBoard.getRawButton(ButtonBoard.Constants.ELEVATOR_BUTTON);
-        elevatorButtonReleased = buttonBoard.getRawButtonReleased(ButtonBoard.Constants.ELEVATOR_BUTTON);
+        carriageButton = buttonBoard.getRawButton(ButtonBoard.Constants.CARRIAGE_BUTTON);
+        carriageButtonReleased = buttonBoard.getRawButtonReleased(ButtonBoard.Constants.CARRIAGE_BUTTON);
         buttonBoardYAxis = buttonBoard.getRawAxis(ButtonBoard.Constants.Y_AXIS);
         buttonBoardXAxis = buttonBoard.getRawAxis(ButtonBoard.Constants.X_AXIS);
 
@@ -1098,6 +1105,107 @@ public class Teleop
 
         wristButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.WRIST_BUTTON);
         safePositionButton = buttonBoard.getRawButtonPressed(ButtonBoard.Constants.SAFE_POSITION_BUTTON);
+    }
+
+    public void elevatorSystemControl()
+    {
+        if(wristButton)
+        {
+            elevatorSystem.overrideWrist();
+        }
+
+        if(armButton || carriageButton)
+        {
+            elevatorSystem.overrideElevatorSystem();
+
+            if (armButton)
+            {
+                if (buttonBoardYAxis == 1)
+                {
+                    elevatorSystem.overrideArm(0.35);
+                }
+                else if (buttonBoardYAxis == -1)
+                {
+                    elevatorSystem.overrideArm(-0.35);
+                }
+                else if (buttonBoardXAxis == 1)
+                {
+                    elevatorSystem.overrideArm(0.8);
+                }
+                else if (buttonBoardXAxis == -1)
+                {
+                    elevatorSystem.overrideArm(-0.8);
+                }
+                else
+                {
+                    elevatorSystem.overrideArm(-0.05);
+                }
+            }
+            if (carriageButton)
+            {
+                if (buttonBoardYAxis == 1)
+                {
+                    elevatorSystem.overrideCarriage(0.35);
+                }
+                else if (buttonBoardYAxis == -1)
+                {
+                    elevatorSystem.overrideCarriage(-0.35);
+                }
+                else if (buttonBoardXAxis == 1)
+                {
+                    elevatorSystem.overrideCarriage(0.8);
+                }
+                else if (buttonBoardXAxis == -1)
+                {
+                    elevatorSystem.overrideCarriage(-0.8);
+                }
+                else
+                {
+                    elevatorSystem.overrideCarriage(0.05);
+                }
+            }
+        }
+        else
+        {
+            if(safePositionButton)
+            {
+                targetElevatorState = ElevatorSystemState.kSafePosition;
+            }
+            else if(floorButton)
+            {
+                targetElevatorState = ElevatorSystemState.kFloorPickup;
+            }
+            else if(cargoShipCargoButton)
+            {
+                targetElevatorState = ElevatorSystemState.kCargoShipCargo;
+            }
+            else if(bottomHatchButton)
+            {
+                targetElevatorState = ElevatorSystemState.kBottomHatch;
+            }
+            else if(centerHatchButton)
+            {
+                targetElevatorState = ElevatorSystemState.kMiddleHatch;
+            }
+            else if(topHatchButton)
+            {
+                targetElevatorState = ElevatorSystemState.kTopHatch;
+            }
+            else if(bottomCargoButton)
+            {
+                targetElevatorState = ElevatorSystemState.kBottomHatch;
+            }
+            else if(centerCargoButton)
+            {
+                targetElevatorState = ElevatorSystemState.kMiddleHatch;
+            }
+            else if(topHatchButton)
+            {
+                targetElevatorState = ElevatorSystemState.kTopHatch;
+            }
+
+            elevatorSystem.setElevatorSystemState(targetElevatorState, targetIntakeState, targetGrabberState);
+        }
     }
 
     public void driverXboxControl()

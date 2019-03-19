@@ -57,7 +57,7 @@ public class ButtonBoard extends Joystick
         public static final int WRIST_BUTTON = 6;
         public static final int SAFE_POSITION_BUTTON = 7;
         
-        public static final int ELEVATOR_BUTTON = 11;
+        public static final int CARRIAGE_BUTTON = 11;
         public static final int ARM_BUTTON = 12;
 
         public static final int X_AXIS = 0;

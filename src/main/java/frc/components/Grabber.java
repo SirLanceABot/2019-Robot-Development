@@ -28,6 +28,7 @@ public class Grabber
     private boolean isGrabberMoving = false;
     private GrabberState currentGrabberState = GrabberState.kRetracted;
     private GrabberState targetGrabberState = GrabberState.kRetracted;
+    private boolean firstTimeExtended = true;
 
     private static Grabber instance = new Grabber();
 
@@ -109,8 +110,6 @@ public class Grabber
             if (targetGrabberState == GrabberState.kExtendedNoRumble)
             {
                 extendGrabber();
-                grabberTimer.reset();
-                grabberTimer.start();
                 currentGrabberState = GrabberState.kExtendedNoRumble;
             }
             else if (targetGrabberState == GrabberState.kRetracted)
@@ -119,7 +118,14 @@ public class Grabber
             }
             break;
         case kExtendedNoRumble:
-            if (targetGrabberState == GrabberState.kExtendedNoRumble && grabberTimer.get() <= 5.0)
+            if(firstTimeExtended)
+            {
+                grabberTimer.reset();
+                grabberTimer.start();
+                firstTimeExtended = false;
+                currentGrabberState = GrabberState.kExtendedNoRumble;
+            }
+            else if (targetGrabberState == GrabberState.kExtendedNoRumble && grabberTimer.get() <= 5.0)
             {
                 currentGrabberState = GrabberState.kExtendedNoRumble;
             }
@@ -127,28 +133,30 @@ public class Grabber
             {
                 currentGrabberState = GrabberState.kExtendedRumble;
                 targetGrabberState = GrabberState.kExtendedRumble;
+                grabberTimer.stop();
+                grabberTimer.reset();
+                firstTimeExtended = true;
             }
             else if (targetGrabberState == GrabberState.kRetracted)
             {
                 retractGrabber();
                 grabberTimer.stop();
                 grabberTimer.reset();
+                firstTimeExtended = true;
                 currentGrabberState = GrabberState.kRetracted;
             }
             break;
         case kExtendedRumble:
             if(targetGrabberState == GrabberState.kExtendedNoRumble)
             {
-                currentGrabberState = GrabberState.kExtendedNoRumble;
+                currentGrabberState = GrabberState.kExtendedRumble;
             }
             else if(targetGrabberState == GrabberState.kExtendedRumble)
             {
                 currentGrabberState = GrabberState.kExtendedRumble;
             }
             else if(targetGrabberState == GrabberState.kRetracted)
-            {
-                grabberTimer.stop();
-                grabberTimer.reset();
+            {              
                 currentGrabberState = GrabberState.kRetracted;
             }
         }

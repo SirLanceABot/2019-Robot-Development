@@ -17,20 +17,21 @@ public class Intake
         public static final double RUN_TIME = 0.5;
     }
 
-    enum IntakeState
+    public enum IntakeState
     {
         // kOff turns either way off, kIntake is intake at 100%, kHold is intake at 10%,
         // kEject is eject at 100%
         kOff, kIntaking, kHold, kEject;
     }
 
-    private static Intake instance = new Intake();
     private IntakeState stateOfIntake;
-    private Timer startupTimer = new Timer();
+    private Timer intakeTimer = new Timer();
     private WPI_TalonSRX intakeRoller = new WPI_TalonSRX(Constants.INTAKE_PORT);
     private boolean firstTimeOverAmpLimit = true;
     private IntakeState currentState = IntakeState.kOff;
     private IntakeState targetState = IntakeState.kOff;
+
+    private static Intake instance = new Intake();
 
     private Intake()
     {
@@ -46,12 +47,12 @@ public class Intake
 
     public void intakeCargo()
     {
-        intakeRoller.set(Math.abs(.75));
+        intakeRoller.set(0.75);
     }
 
     public void ejectCargo()
     {
-        intakeRoller.set(-Math.abs(.75));
+        intakeRoller.set(-0.75);
     }
 
     public void stopCargo()
@@ -81,7 +82,7 @@ public class Intake
         this.targetState = targetState;
     }
 
-    public void cargoControl()
+    public IntakeState intakeControl()
     {
         double motorCurrent = getIntakeAmperage();
         switch (currentState)
@@ -110,26 +111,30 @@ public class Intake
             break;
 
         case kIntaking:
-            if (motorCurrent > Constants.CURRENT_LIMIT && firstTimeOverAmpLimit == true)
+            if (motorCurrent > Constants.CURRENT_LIMIT)
             {
-                startupTimer.reset();
-                startupTimer.start();
-                intakeCargo();
-                firstTimeOverAmpLimit = false;
-                currentState = IntakeState.kIntaking;
-                firstTimeOverAmpLimit = false;
-            }
-            else if(motorCurrent > Constants.CURRENT_LIMIT && startupTimer.get() > Constants.RUN_TIME)
-            {
-                currentState = IntakeState.kHold;
-            }
+                if(firstTimeOverAmpLimit)
+                {
+                    intakeTimer.reset();
+                    intakeTimer.start();
+                    intakeCargo();
+                    currentState = IntakeState.kIntaking;
+                    firstTimeOverAmpLimit = false;
+                }
+                else if(intakeTimer.get() > Constants.RUN_TIME)
+                {
+                    holdCargo();
+                    currentState = IntakeState.kHold;
+                    intakeTimer.stop();
+                    intakeTimer.reset();
+                }
+            }           
             else
             {
                 switch (targetState)
                 {
                 case kEject:
                     ejectCargo();
-                    firstTimeOverAmpLimit = true;
                     currentState = IntakeState.kEject;
                     break;
                 case kIntaking:
@@ -191,9 +196,9 @@ public class Intake
                 break;
             }
             break;
-
         }
 
+        return currentState;
     }
 
     //@deprecated
@@ -235,12 +240,12 @@ public class Intake
             {
                 if (inButtonHeld && firstTimeOverAmpLimit)
                 {
-                    startupTimer.reset();
-                    startupTimer.start();
+                    intakeTimer.reset();
+                    intakeTimer.start();
                     firstTimeOverAmpLimit = false;
                     stateOfIntake = IntakeState.kIntaking;
                 }
-                else if (inButtonHeld && startupTimer.get() > Constants.RUN_TIME)
+                else if (inButtonHeld && intakeTimer.get() > Constants.RUN_TIME)
                 {
                     firstTimeOverAmpLimit = true;
                     stateOfIntake = IntakeState.kHold;
