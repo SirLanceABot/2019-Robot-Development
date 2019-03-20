@@ -206,7 +206,14 @@ public class Carriage
     public void overrideCarriage(double speed)
     {
         currentState = CarriageState.kManualOverride;
-        raiseCarriage(speed);
+        if (speed > 0.0)
+        {
+            raiseCarriage(speed);
+        }
+        else
+        {
+            lowerCarriage(speed);
+        }
     }
 
     /**
@@ -822,15 +829,52 @@ public class Carriage
             currentState = CarriageState.kNotMoving;
             break;
         case kManualOverride:
-            if (targetState != CarriageState.kManualOverride)
+            switch (targetState)
             {
+            case kFloor:
+                currentState = CarriageState.kMovingUp;
+                break;
+            case kCargoShipCargo:
+                currentState = CarriageState.kMovingUp;
+                break;
+            case kBottomHatch:
+                currentState = CarriageState.kMovingUp;
+                break;
+            case kCenterHatch:
+                currentState = CarriageState.kMovingUp;
+                break;
+            case kTopHatch:
+                currentState = CarriageState.kMovingUp;
+                break;
+            case kBottomCargo:
+                currentState = CarriageState.kMovingUp;
+                break;
+            case kCenterCargo:
+                currentState = CarriageState.kMovingUp;
+                break;
+            case kTopCargo:
+                currentState = CarriageState.kMovingUp;
+                break;
+            case kMovingDown:
+                currentState = CarriageState.kNotMoving;
+                break;
+            case kMovingUp:
+                currentState = CarriageState.kNotMoving;
+                break;
+            case kNotMoving:
                 holdCarriage();
-                targetState = CarriageState.kManualOverride;
+                currentState = CarriageState.kNotMoving;
+                break;
+            case kNone:
+                holdCarriage();
+                currentState = CarriageState.kNone;
+                break;
+            case kManualOverride:
+                currentState = CarriageState.kManualOverride;
+                break;
             }
-            currentState = CarriageState.kManualOverride;
             break;
         }
-
     }
 
     public String getMasterLegCarriageMotorData()

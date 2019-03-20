@@ -111,9 +111,9 @@ public class Teleop
     private double leftXAxis = leftAxes[0];
     private double leftYAxis = leftAxes[1];
 
-    ElevatorSystemState targetElevatorState;
-    IntakeSystemState targetIntakeState;
-    GrabberSystemState targetGrabberState;
+    ElevatorSystemState targetElevatorState = ElevatorSystemState.kManualOverride;
+    IntakeSystemState targetIntakeState = IntakeSystemState.kOff;
+    GrabberSystemState targetGrabberState = GrabberSystemState.kRetracted;
 
     enum IntakeState
     {
@@ -516,14 +516,15 @@ public class Teleop
         buttonBoardControl();
         driverXboxControl();
         drivetrainControl();
-        carriageControl();
-        armControl();
-        wristControl();
-        elevatorSystem.moveTo();
+        //carriageControl();
+        //armControl();
+        //wristControl();
+        //elevatorSystem.moveTo();
         //elevatorAndArmControl();
-        intakeControl();
+        //intakeControl();
         //intake.cargoControl(inButtonHeld, outButton, inButtonPressed);
-        grabberControl();
+        //grabberControl();
+        elevatorSystemControl();
         climberControl();
         overrideArmLimits();
     }
@@ -1116,7 +1117,8 @@ public class Teleop
 
         if(armButton || carriageButton)
         {
-            elevatorSystem.overrideElevatorSystem();
+            targetElevatorState = ElevatorSystemState.kManualOverride;
+
             if (armButton)
             {
                 if (buttonBoardYAxis == 1)
@@ -1137,7 +1139,7 @@ public class Teleop
                 }
                 else
                 {
-                    elevatorSystem.overrideArm(-0.05);
+                    elevatorSystem.overrideArm(0.1);
                 }
             }
             if (carriageButton)
@@ -1192,19 +1194,62 @@ public class Teleop
             }
             else if(bottomCargoButton)
             {
-                targetElevatorState = ElevatorSystemState.kBottomHatch;
+                targetElevatorState = ElevatorSystemState.kBottomCargo;
             }
             else if(centerCargoButton)
             {
-                targetElevatorState = ElevatorSystemState.kMiddleHatch;
+                targetElevatorState = ElevatorSystemState.kMiddleCargo;
             }
             else if(topHatchButton)
             {
-                targetElevatorState = ElevatorSystemState.kTopHatch;
+                targetElevatorState = ElevatorSystemState.kTopCargo;
             }
-
-            elevatorSystem.setElevatorSystemState(targetElevatorState, targetIntakeState, targetGrabberState);
         }
+
+        if(armButtonReleased || carriageButtonReleased)
+        {
+            elevatorSystem.overrideCarriage(0.05);
+            elevatorSystem.overrideArm(-0.05);
+        }
+
+        if(inButtonHeld)
+        {
+            targetIntakeState = IntakeSystemState.kIntaking;
+        }
+        else if(outButton)
+        {
+            targetIntakeState = IntakeSystemState.kEjecting;
+        }
+        else
+        {
+            targetIntakeState = IntakeSystemState.kOff;
+        }
+
+        if (rightTrigger > 0.3)
+        {
+            if (!rightTriggerPressed)
+            {
+                rightTriggerPressed = true;
+                
+                if(targetGrabberState == GrabberSystemState.kRetracted)
+                {
+                    targetGrabberState = GrabberSystemState.kExtended;
+                }
+                else
+                {
+                    targetGrabberState = GrabberSystemState.kRetracted;
+                }
+            }
+        }
+        else
+        {
+            rightTriggerPressed = false;
+        }
+
+        System.out.println(targetElevatorState + "    " + targetIntakeState + "   " + targetGrabberState);
+
+        elevatorSystem.setElevatorSystemState(targetElevatorState, targetIntakeState, targetGrabberState);
+        elevatorSystem.executeStateMachines();
     }
 
     public void driverXboxControl()

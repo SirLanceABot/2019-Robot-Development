@@ -197,7 +197,7 @@ public class NewArm
 
     public void holdArm()
     {
-        armMotor.set(-0.05);
+        moveArmUp(0.1);
     }
 
     public double getArmCurrent()
@@ -608,12 +608,41 @@ public class NewArm
             currentArmState = NewArmState.kNotMoving;
             break;
         case kManualOverride:
-            if(targetArmState != NewArmState.kManualOverride)
+            switch (targetArmState)
             {
+            case kFloorArmPosition:
+                currentArmState = NewArmState.kMovingDown;
+                break;
+            case kHorizontalArmPosition:
+                currentArmState = NewArmState.kMovingDown;
+                break;
+            case kMiddleArmPosition:
+                currentArmState = NewArmState.kMovingDown;
+                break;
+            case kTopArmPosition:
+                currentArmState = NewArmState.kMovingDown;
+                break;
+            case kSafePosition:
+                currentArmState = NewArmState.kMovingDown;
+                break;
+            case kStartingPosition:
+                currentArmState = NewArmState.kMovingDown;
+                break;
+            case kMovingDown:
+                currentArmState = NewArmState.kMovingDown;
+                break;
+            case kMovingUp:
                 holdArm();
-                targetArmState = NewArmState.kManualOverride;
+                currentArmState = NewArmState.kNotMoving;
+                break;
+            case kNotMoving:
+                holdArm();
+                currentArmState = NewArmState.kNotMoving;
+                break;
+            case kManualOverride:
+                currentArmState = NewArmState.kManualOverride;
+                break;
             }
-            currentArmState = NewArmState.kManualOverride;
             break;
         }
     }

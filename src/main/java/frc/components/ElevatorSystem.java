@@ -102,18 +102,11 @@ public class ElevatorSystem
     {
         return targetWristPosition;
     }
-
-    public void overrideElevatorSystem()
-    {
-        newArm.setState(NewArmState.kManualOverride);
-        carriage.setState(CarriageState.kManualOverride);
-        wrist.setState(WristState.kWristDown);
-    }    
+    
     public void overrideArm(double speed)
     {
         newArm.manualOverride(speed);
     }
-
     
     public void overrideCarriage(double speed)
     {
