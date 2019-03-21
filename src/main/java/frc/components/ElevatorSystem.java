@@ -5,6 +5,7 @@ import frc.components.Carriage;
 import frc.components.Grabber;
 import frc.components.Intake;
 import frc.components.Wrist;
+import frc.components.Arm.Constants.ArmPosition;
 import frc.components.Wrist.WristState;
 import frc.components.Carriage.CarriageState;
 import frc.components.Grabber.GrabberState;
@@ -116,6 +117,7 @@ public class ElevatorSystem
     public void overrideWrist()
     {
         wrist.toggleWrist();
+        wrist.setState(WristState.kWristManualOverride);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -142,17 +144,17 @@ public class ElevatorSystem
         case kBottomHatch:
             carriage.setState(CarriageState.kBottomHatch);
             newArm.setState(NewArmState.kHorizontalArmPosition);
-            wrist.setState(WristState.kWristUp);
+            wrist.setState(WristState.kWristDown);
             break;
         case kMiddleHatch:
-            carriage.setState(CarriageState.kBottomCargo);
+            carriage.setState(CarriageState.kCenterHatch);
             newArm.setState(NewArmState.kHorizontalArmPosition);
-            wrist.setState(WristState.kWristUp);
+            wrist.setState(WristState.kWristDown);
             break;
         case kTopHatch:
             carriage.setState(CarriageState.kTopHatch);
             newArm.setState(NewArmState.kMiddleArmPosition);
-            wrist.setState(WristState.kWristUp);
+            wrist.setState(WristState.kWristDown);
             break;
         case kFloorPickup:
             carriage.setState(CarriageState.kFloor);
@@ -168,9 +170,11 @@ public class ElevatorSystem
             carriage.setState(CarriageState.kFloor);
             newArm.setState(NewArmState.kSafePosition);
             wrist.setState(WristState.kWristDown);
+            break;
         case kManualOverride:
             carriage.setState(CarriageState.kManualOverride);
             newArm.setState(NewArmState.kManualOverride);
+            break;
         }
 
         switch(targetIntakeState)
@@ -199,18 +203,9 @@ public class ElevatorSystem
 
     public void executeStateMachines()
     {
-        /**
-         * if the arm is at the high positions then it will have to move first.
-         * once the arm has moved out of the top position then it will be able
-         * to move the carriage
-         */
-        if(newArm.getState() == NewArmState.kTopArmPosition) //this is the top arm position
+        if(newArm.getPotValue() < newArm.getArmPositionPotValue(2) && carriage.getPotValue() <  carriage.getCarriagePositionPotValues(4))//carriage.getState() == CarriageState.kFloor) //this is the top arm position
         {
             newArm.newArmControl();
-        }
-        else if(newArm.getState() == NewArmState.kFloorArmPosition && carriage.getState() == Carriage.CarriageState.kFloor)
-        {
-            carriage.carriageControl();
         }
         else
         {
@@ -223,6 +218,10 @@ public class ElevatorSystem
         }
     }
 
+    // public String elevatorInfo()
+    // {
+    //     return "Current Position: " + carriage.
+    // }
     //////////////////////////////////////////////////////////////////////////////////////
     public void moveTo()
     {

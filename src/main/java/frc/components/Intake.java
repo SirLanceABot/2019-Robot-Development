@@ -169,8 +169,16 @@ public class Intake
                 currentState = IntakeState.kHold;
                 break;
             case kOff:
-                stopCargo();
-                currentState = IntakeState.kOff;
+                if(motorCurrent > 0.5)
+                {
+                    holdCargo();
+                    currentState = IntakeState.kHold;
+                }
+                else
+                {
+                    stopCargo();
+                    currentState = IntakeState.kOff;
+                }
                 break;
             }
             break;

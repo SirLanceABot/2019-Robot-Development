@@ -258,6 +258,7 @@ public class Carriage
     /**
      * Returns the value of the potentiometer
      * 
+     * 
      * @return Value of Potentiometer
      */
     public int getPotValue()
@@ -265,6 +266,11 @@ public class Carriage
         return masterCarriageMotor.getSelectedSensorPosition();
     }
 
+    public CarriageState getCurrentPosision()
+    {
+        return currentState;
+    }
+    
     /**
      * Returns a boolean that says whether or not the carriage is moving
      * 
@@ -342,6 +348,11 @@ public class Carriage
     public int getCarriagePositionPotValues(Constants.CarriagePosition position)
     {
         return carriagePositionPotValues[position.value];
+    }
+
+    public int getCarriagePositionPotValues(int value)
+    {
+        return carriagePositionPotValues[value];
     }
 
     public void setState(CarriageState position)
@@ -769,7 +780,6 @@ public class Carriage
                 currentState = CarriageState.kMovingDown;
                 break;
             case kTopCargo:
-                lowerCarriage();
                 currentState = CarriageState.kTopCargo;
                 break;
             case kMovingDown:
@@ -793,15 +803,15 @@ public class Carriage
             }
             break;
         case kMovingDown:
-            if (currentPotValue > (targetState.value + Constants.CARRIAGE_THRESHOLD))
+            if (currentPotValue > (carriagePositionPotValues[targetState.value] + Constants.CARRIAGE_THRESHOLD))
             {
                 lowerCarriage();
-                targetState = CarriageState.kMovingUp;
+                targetState = CarriageState.kMovingDown;
             }
-            else if (currentPotValue < (targetState.value - Constants.CARRIAGE_THRESHOLD))
+            else if (currentPotValue < (carriagePositionPotValues[targetState.value] - Constants.CARRIAGE_THRESHOLD))
             {
                 raiseCarriage();
-                targetState = CarriageState.kMovingDown;
+                targetState = CarriageState.kMovingUp;
             }
             else
             {
@@ -810,13 +820,15 @@ public class Carriage
             }
             break;
         case kMovingUp:
-            if (currentPotValue > (targetState.value + Constants.CARRIAGE_THRESHOLD))
+            if (currentPotValue > (carriagePositionPotValues[targetState.value] + Constants.CARRIAGE_THRESHOLD))
             {
-                targetState = CarriageState.kMovingUp;
+                lowerCarriage();
+                currentState = CarriageState.kMovingDown;
             }
-            else if (currentPotValue < (targetState.value - Constants.CARRIAGE_THRESHOLD))
+            else if (currentPotValue < (carriagePositionPotValues[targetState.value] - Constants.CARRIAGE_THRESHOLD))
             {
-                targetState = CarriageState.kMovingDown;
+                raiseCarriage();
+                currentState = CarriageState.kMovingUp;
             }
             else
             {

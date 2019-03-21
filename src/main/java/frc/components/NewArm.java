@@ -37,6 +37,11 @@ public class NewArm
             {
 
             }
+
+            public int getValue()
+            {
+                return this.value;
+            }
         }
 
         public static final int ARM_MOTOR_ID = 9;
@@ -50,15 +55,15 @@ public class NewArm
         // Comp Bot: starting position is 101
         // 0 1 2 3 4 5
         public static final int[] COMPETITION_ARM_POSITION_POT_VALUES = { 635, 567, 438, 202, 5, -1 };
-        public static final int[] PRACTICE_ARM_POSITION_POT_VALUES = { 628, 572, 480, 230, 5, -1 };
+        public static final int[] PRACTICE_ARM_POSITION_POT_VALUES = { 623, 566, 439, 210, 5, -1 };
+
     }
 
     public static enum NewArmState
     {
             kFloorArmPosition(0), kHorizontalArmPosition(1), kMiddleArmPosition(2), kTopArmPosition(3),
             // need to set these
-            kSafePosition(
-                    3), kStartingPosition, kMovingUp, kMovingDown, /* kThreshold(4), */ kNotMoving(), kManualOverride;
+            kSafePosition(3), kStartingPosition, kMovingUp, kMovingDown, /* kThreshold(4), */ kNotMoving(), kManualOverride;
 
             private int value;
 
@@ -154,7 +159,7 @@ public class NewArm
 
     public void manualOverride(double speed)
     {
-        if (speed > 0.0)
+        if (speed < 0.0)
         {
             moveArmUp(speed);
         }
@@ -197,8 +202,9 @@ public class NewArm
 
     public void holdArm()
     {
-        moveArmUp(0.1);
+        moveArmUp(-0.15);
     }
+
 
     public double getArmCurrent()
     {
@@ -269,6 +275,11 @@ public class NewArm
     public int getArmPositionPotValue(Constants.NewArmPosition position)
     {
         return armPositionPotValues[position.value];
+    }
+
+    public int getArmPositionPotValue(int value)
+    {
+        return armPositionPotValues[value];
     }
 
     /**
@@ -632,8 +643,7 @@ public class NewArm
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kMovingUp:
-                holdArm();
-                currentArmState = NewArmState.kNotMoving;
+                currentArmState = NewArmState.kMovingUp;
                 break;
             case kNotMoving:
                 holdArm();

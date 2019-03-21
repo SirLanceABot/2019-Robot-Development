@@ -32,7 +32,7 @@ public class Wrist
 
     public enum WristState
     {
-        kWristDown, kWristUp;
+        kWristDown, kWristUp, kWristManualOverride;
     }
 
     private DoubleSolenoid wristSolenoid = new DoubleSolenoid(Constants.WRIST_SOLENOID_EXTEND, Constants.WRIST_SOLENOID_RETRACT); // On the blue solenoid holder
@@ -40,9 +40,9 @@ public class Wrist
     private DigitalInput limitSwitchDown = new DigitalInput(Constants.LIMIT_SWITCH_DOWN);
 
     private boolean isWristMoving = false;
-    private WristState currentWristState = WristState.kWristUp;
-    private WristState targetWristState = WristState.kWristUp;
-
+    private WristState currentWristState = WristState.kWristDown;
+    private WristState targetWristState = WristState.kWristDown;
+    private boolean wristUp = false;
     private static Wrist instance = new Wrist();
 
     private Wrist()
@@ -73,13 +73,19 @@ public class Wrist
 
     public void toggleWrist()
     {
-        if(isWristUp())
+        if(wristUp)
         {
             moveWristDown();
+            currentWristState = WristState.kWristDown;
+            targetWristState = WristState.kWristDown;
+            wristUp = false;
         }
         else
         {
             moveWristUp();
+            currentWristState = WristState.kWristUp;
+            targetWristState = WristState.kWristUp;
+            wristUp = true;
         }
     }
 
@@ -166,6 +172,20 @@ public class Wrist
                 currentWristState = WristState.kWristDown;
             }
             break;
+        case kWristManualOverride:
+        if (targetWristState == WristState.kWristUp)
+            {
+                currentWristState = WristState.kWristUp;
+            }
+            else if (targetWristState == WristState.kWristDown)
+            {
+                moveWristDown();
+                currentWristState = WristState.kWristDown;
+            }
+            else
+            {
+                currentWristState = WristState.kWristManualOverride;
+            }       
         }
         
         return currentWristState;

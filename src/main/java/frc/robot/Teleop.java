@@ -1123,23 +1123,23 @@ public class Teleop
             {
                 if (buttonBoardYAxis == 1)
                 {
-                    elevatorSystem.overrideArm(0.35);
+                    elevatorSystem.overrideArm(-0.35);
                 }
                 else if (buttonBoardYAxis == -1)
                 {
-                    elevatorSystem.overrideArm(-0.35);
+                    elevatorSystem.overrideArm(0.35);
                 }
                 else if (buttonBoardXAxis == 1)
                 {
-                    elevatorSystem.overrideArm(0.8);
+                    elevatorSystem.overrideArm(-0.8);
                 }
                 else if (buttonBoardXAxis == -1)
                 {
-                    elevatorSystem.overrideArm(-0.8);
+                    elevatorSystem.overrideArm(0.8);
                 }
                 else
                 {
-                    elevatorSystem.overrideArm(0.1);
+                    elevatorSystem.overrideArm(-0.15);
                 }
             }
             if (carriageButton)
@@ -1200,7 +1200,7 @@ public class Teleop
             {
                 targetElevatorState = ElevatorSystemState.kMiddleCargo;
             }
-            else if(topHatchButton)
+            else if(topCargoButton)
             {
                 targetElevatorState = ElevatorSystemState.kTopCargo;
             }
