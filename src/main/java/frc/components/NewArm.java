@@ -143,7 +143,7 @@ public class NewArm
     public void moveArmUp()
     {
         // armMotor.set(speedFactor * -0.5);
-        moveArmUp(-0.5);
+        moveArmUp(-0.65);
     }
 
     /**
@@ -177,7 +177,7 @@ public class NewArm
     public void moveArmDown()
     {
         // armMotor.set(speedFactor * 0.25);
-        moveArmDown(0.25);
+        moveArmDown(0.50);
     }
 
     /**
@@ -512,6 +512,8 @@ public class NewArm
                 break;
             case kSafePosition:
                 currentArmState = NewArmState.kSafePosition;
+                stopArm();
+                
                 break;
             case kStartingPosition:
                 moveArmUp();

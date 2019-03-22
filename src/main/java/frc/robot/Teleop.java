@@ -39,7 +39,7 @@ public class Teleop
     {
         private static final double ROTATION_SPEED = 0.5;
         private static final double STRAFE_SPEED = 0.5;
-        private static final double CLIMBER_DRIVE_SPEED = 0.4;
+        private static final double CLIMBER_LIFT_SPEED = 0.75;
         private static final double BALL_STALL_CURRENT = 0.5;
         private static final double CURRENT_LIMIT = 15.0;
         private static final double RUN_TIME = 0.5;
@@ -942,9 +942,11 @@ public class Teleop
     {
         if (leftTrigger > 0.7)
         {
+            targetElevatorState = ElevatorSystemState.kManualOverride;
+
             if (bButton)
             {
-                climber.extendLegs(1.0);
+                climber.extendLegs(Constants.CLIMBER_LIFT_SPEED);
             }
             else if (yButton)
             {
@@ -961,7 +963,7 @@ public class Teleop
 
             if(aButton)
             {
-                climber.driveForward(Constants.CLIMBER_DRIVE_SPEED);
+                climber.driveForward(0.4);
             }
             else
             {
@@ -1164,6 +1166,14 @@ public class Teleop
                 {
                     elevatorSystem.overrideCarriage(0.05);
                 }
+            }
+        }
+        else if(leftTrigger > 0.7)
+        {
+            targetElevatorState = ElevatorSystemState.kManualOverride;
+            if(bButton)
+            {
+                carriage.lowerCarriage(Constants.CLIMBER_LIFT_SPEED * 0.6);
             }
         }
         else

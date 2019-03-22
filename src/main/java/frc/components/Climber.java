@@ -56,6 +56,8 @@ public class Climber
         masterLegMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
         masterLegMotor.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.QuadEncoder, 0, 0);
 
+        forwardClimbDrive.setInverted(true);
+
         masterLegMotor.configClearPositionOnLimitR(true, 0);
 
         slaveLegMotor.follow(masterLegMotor);

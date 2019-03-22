@@ -144,17 +144,17 @@ public class ElevatorSystem
         case kBottomHatch:
             carriage.setState(CarriageState.kBottomHatch);
             newArm.setState(NewArmState.kHorizontalArmPosition);
-            wrist.setState(WristState.kWristDown);
+            wrist.setState(WristState.kWristUp);
             break;
         case kMiddleHatch:
             carriage.setState(CarriageState.kCenterHatch);
             newArm.setState(NewArmState.kHorizontalArmPosition);
-            wrist.setState(WristState.kWristDown);
+            wrist.setState(WristState.kWristUp);
             break;
         case kTopHatch:
             carriage.setState(CarriageState.kTopHatch);
             newArm.setState(NewArmState.kMiddleArmPosition);
-            wrist.setState(WristState.kWristDown);
+            wrist.setState(WristState.kWristUp);
             break;
         case kFloorPickup:
             carriage.setState(CarriageState.kFloor);
@@ -206,6 +206,9 @@ public class ElevatorSystem
         if(newArm.getPotValue() < newArm.getArmPositionPotValue(2) && carriage.getPotValue() <  carriage.getCarriagePositionPotValues(4))//carriage.getState() == CarriageState.kFloor) //this is the top arm position
         {
             newArm.newArmControl();
+            grabber.grabberControl();
+            intake.intakeControl();
+            wrist.wristControl();
         }
         else
         {
