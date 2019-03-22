@@ -35,7 +35,7 @@ public class ElevatorSystem
     private int carriagePotValue;
     private int armPotValue;
     private Carriage.Constants.CarriagePosition targetCarriagePosition = Carriage.Constants.CarriagePosition.kNone;
-    private NewArm.Constants.NewArmPosition targetArmPosition = NewArm.Constants.NewArmPosition.kNotMoving;
+    private NewArmState targetArmPosition = NewArmState.kNotMoving;
     private Wrist.Constants.WristPosition targetWristPosition = Wrist.Constants.WristPosition.kWristNone;
     private static int floorElevatorPosition = 100;
     private static int horizontalArmPosition = 100;
@@ -79,7 +79,7 @@ public class ElevatorSystem
         return targetCarriagePosition;
     }
 
-    public void setArmTargetPosition(NewArm.Constants.NewArmPosition targetPosition)
+    public void setArmTargetPosition(NewArmState targetPosition)
     {
         targetArmPosition = targetPosition;
     }
@@ -89,7 +89,7 @@ public class ElevatorSystem
      * 
      * @return the target position the carriage is attempting to move to
      */
-    public NewArm.Constants.NewArmPosition getTargetArmPosition()
+    public NewArmState getTargetArmPosition()
     {
         return targetArmPosition;
     }
@@ -232,7 +232,7 @@ public class ElevatorSystem
         // System.out.println(carriage + "Target Carriage: " + targetElevatorPosition);
         // System.out.println(arm + "Arm: " + targetArmPosition);
         armPotValue = newArm.getPotValue();
-        horizontalArmPosition = newArm.getArmPositionPotValue(NewArm.Constants.NewArmPosition.kHorizontalArmPosition);
+        horizontalArmPosition = newArm.getArmPositionPotValue(NewArmState.kHorizontalArmPosition);
         floorElevatorPosition = carriage.getCarriagePositionPotValues(Carriage.Constants.CarriagePosition.kFloor);
 
         if (targetCarriagePosition != Carriage.Constants.CarriagePosition.kNone)
@@ -285,7 +285,7 @@ public class ElevatorSystem
             setCarriageStartingPosition = true;
         }
 
-        if (targetArmPosition != NewArm.Constants.NewArmPosition.kNotMoving)
+        if (targetArmPosition != NewArmState.kNotMoving)
         {
             if (targetWristPosition == Wrist.Constants.WristPosition.kWristDown)
             {
@@ -321,14 +321,14 @@ public class ElevatorSystem
                 // }
             }
 
-            if (armPotValue > newArm.getArmPositionPotValue(targetArmPosition) + 10)// &&
+            if (armPotValue > newArm.getArmPositionPotValue((targetArmPosition.getValue()) + 10))// &&
                                                                                     // targetArmPosition.getArmPosition()
                                                                                     // !=
                                                                                     // NewArm.Constants.NewArmPosition.kArmNone)
             {
                 newArm.moveArmUp(scaleArmMovement());
             }
-            else if (armPotValue < newArm.getArmPositionPotValue(targetArmPosition) - 10)// &&
+            else if (armPotValue < newArm.getArmPositionPotValue(targetArmPosition.getValue()) - 10)// &&
                                                                                          // targetArmPosition.getArmPosition()
                                                                                          // !=
                                                                                          // NewArm.Constants.NewArmPosition.kArmNone)
@@ -362,7 +362,7 @@ public class ElevatorSystem
 
             if (wrist.isWristMoving() == false && newArm.isArmMoving() == false)
             {
-                targetArmPosition = NewArm.Constants.NewArmPosition.kNotMoving;
+                targetArmPosition = NewArmState.kNotMoving;
                 targetWristPosition = Wrist.Constants.WristPosition.kWristNone;
             }
         }

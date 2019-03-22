@@ -152,7 +152,7 @@ public class Teleop
         drivetrain.setMotorSpeedFactor(pregame.motorSpeed);
         System.out.println(pregame.robotType);
 
-        elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kNotMoving);
+        elevatorSystem.setArmTargetPosition(NewArm.NewArmState.kNotMoving);
         elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
         elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristNone);
     }
@@ -708,7 +708,7 @@ public class Teleop
     {
         if (armButton || carriageButton)
         {
-            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kNotMoving);
+            elevatorSystem.setArmTargetPosition(NewArm.NewArmState.kNotMoving);
             elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
             elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristNone);
 
@@ -778,7 +778,7 @@ public class Teleop
 
         if (carriageButtonReleased)
         {
-            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kNotMoving);
+            elevatorSystem.setArmTargetPosition(NewArm.NewArmState.kNotMoving);
             elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
             carriage.holdCarriage();
             newArm.stopArm();
@@ -790,7 +790,7 @@ public class Teleop
     {
         if (armButton || carriageButton)
         {
-            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kNotMoving);
+            elevatorSystem.setArmTargetPosition(NewArm.NewArmState.kNotMoving);
             elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
             elevatorSystem.setWristTargetPosition(Wrist.Constants.WristPosition.kWristNone);
 
@@ -822,45 +822,45 @@ public class Teleop
         {
             if (floorButton)
             {
-                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kFloorArmPosition);
+                elevatorSystem.setArmTargetPosition(NewArm.NewArmState.kFloorArmPosition);
             }
             else if (cargoShipCargoButton)
             {
-                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kHorizontalArmPosition);
+                elevatorSystem.setArmTargetPosition(NewArm.NewArmState.kHorizontalArmPosition);
             }
             else if (bottomHatchButton)
             {
-                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kFloorArmPosition);
+                elevatorSystem.setArmTargetPosition(NewArm.NewArmState.kFloorArmPosition);
             }
             else if (centerHatchButton)
             {
-                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kHorizontalArmPosition);
+                elevatorSystem.setArmTargetPosition(NewArm.NewArmState.kHorizontalArmPosition);
             }
             else if (topHatchButton)
             {
-                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kMiddleArmPosition);
+                elevatorSystem.setArmTargetPosition(NewArm.NewArmState.kMiddleArmPosition);
             }
             else if (bottomCargoButton)
             {
-                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kHorizontalArmPosition);
+                elevatorSystem.setArmTargetPosition(NewArm.NewArmState.kHorizontalArmPosition);
             }
             else if (centerCargoButton)
             {
-                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kHorizontalArmPosition);
+                elevatorSystem.setArmTargetPosition(NewArm.NewArmState.kHorizontalArmPosition);
             }
             else if (topCargoButton)
             {
-                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kMiddleArmPosition);
+                elevatorSystem.setArmTargetPosition(NewArm.NewArmState.kMiddleArmPosition);
             }
             else if(safePositionButton)
             {
-                elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kSafePosition);
+                elevatorSystem.setArmTargetPosition(NewArm.NewArmState.kSafePosition);
             }
         }
 
         if (armButtonReleased)
         {
-            elevatorSystem.setArmTargetPosition(NewArm.Constants.NewArmPosition.kNotMoving);
+            elevatorSystem.setArmTargetPosition(NewArm.NewArmState.kNotMoving);
             elevatorSystem.setCarriageTargetPosition(Carriage.Constants.CarriagePosition.kNone);
             carriage.holdCarriage();
             newArm.stopArm();

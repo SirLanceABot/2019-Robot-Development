@@ -44,6 +44,14 @@ public class NewArm
             }
         }
 
+        public final static double ARM_MAX_SPEED = 1.0;
+        public final static double ARM_STARTING_SPEED = 0.3;
+        public final static double ARM_DOWN_SCALE_FACTOR = 0.85;
+
+        public final static double CARRIAGE_MAX_SPEED = 1.0;
+        public final static double CARRIAGE_STARTING_SPEED = 0.3;
+        public final static double CARRIAGE_DOWN_SCALE_FACTOR = 0.85;
+
         public static final int ARM_MOTOR_ID = 9;
         public static final int ARM_THRESHOLD = 5;
 
@@ -76,6 +84,10 @@ public class NewArm
             {
 
             }
+            public int getValue()
+            {
+                return this.value;
+            }
     }
     private WPI_TalonSRX armMotor = new WPI_TalonSRX(Constants.ARM_MOTOR_ID);
     private double speedFactor = 1.0;
@@ -83,6 +95,8 @@ public class NewArm
     private boolean enableArmSoftLimit = true;
     private NewArmState currentArmState = NewArmState.kStartingPosition;
     private NewArmState targetArmState = NewArmState.kStartingPosition;
+    private boolean setArmStartingPosition = true;
+    private double startingArmPosition;
 
     /**
      * Returns the pot value of the given position
@@ -119,8 +133,8 @@ public class NewArm
 
         armMotor.configSelectedFeedbackSensor(FeedbackDevice.Analog);
         armMotor.setSensorPhase(false);
-        armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(Constants.NewArmPosition.kTopArmPosition));
-        armMotor.configForwardSoftLimitThreshold(getArmPositionPotValue(Constants.NewArmPosition.kFloorArmPosition));
+        armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(NewArmState.kTopArmPosition));
+        armMotor.configForwardSoftLimitThreshold(getArmPositionPotValue(NewArmState.kFloorArmPosition));
         armMotor.configForwardSoftLimitEnable(true);
         armMotor.configReverseSoftLimitEnable(true);
 
@@ -191,6 +205,39 @@ public class NewArm
         setIsArmMoving(true);
     }
 
+    public double scaleArmMovement()
+    {
+
+        double currentPotValue = getPotValue();
+        if (setArmStartingPosition)
+        {
+            startingArmPosition = currentPotValue;
+            setArmStartingPosition = false;
+        }
+
+        double endingPosition = getArmPositionPotValue(targetArmState);
+        double distanceToTravel = Math.abs(endingPosition - startingArmPosition);
+        double startingDistance = distanceToTravel / 10.0;
+        double stoppingDistance = distanceToTravel - startingDistance;
+        double distanceTraveled = Math.abs(startingArmPosition - currentPotValue);
+
+        if (distanceTraveled < startingDistance)
+        {
+            return ((Constants.ARM_MAX_SPEED - Constants.ARM_STARTING_SPEED) / startingDistance) * distanceTraveled
+                    + Constants.ARM_STARTING_SPEED;
+        }
+        else if (distanceTraveled >= startingDistance && distanceTraveled <= stoppingDistance)
+        {
+            return Constants.ARM_MAX_SPEED;
+        }
+        else if (distanceTraveled > stoppingDistance)
+        {
+            return ((Constants.ARM_MAX_SPEED - Constants.ARM_STARTING_SPEED) / (distanceToTravel - stoppingDistance))
+                    * (distanceToTravel - distanceTraveled) + Constants.ARM_STARTING_SPEED;
+        }
+        else
+            return 0.0;
+    }
     /**
      * this function will stop the movement of the arm
      */
@@ -247,8 +294,8 @@ public class NewArm
 
         System.out.println(
                 this.getClass().getName() + ": armPositionPotValues = " + Arrays.toString(armPositionPotValues));
-        armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(Constants.NewArmPosition.kTopArmPosition));
-        armMotor.configForwardSoftLimitThreshold(getArmPositionPotValue(Constants.NewArmPosition.kFloorArmPosition));
+        armMotor.configReverseSoftLimitThreshold(getArmPositionPotValue(NewArmState.kTopArmPosition));
+        armMotor.configForwardSoftLimitThreshold(getArmPositionPotValue(NewArmState.kFloorArmPosition));
     }
 
     public void setMotorSpeedFactor(SlabShuffleboard.MotorSpeed speedFactor)
@@ -272,7 +319,7 @@ public class NewArm
      * 
      * @return pot value of the selected position
      */
-    public int getArmPositionPotValue(Constants.NewArmPosition position)
+    public int getArmPositionPotValue(NewArmState position)
     {
         return armPositionPotValues[position.value];
     }
@@ -329,23 +376,23 @@ public class NewArm
                 currentArmState = NewArmState.kFloorArmPosition;
                 break;
             case kHorizontalArmPosition:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kMiddleArmPosition:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kTopArmPosition:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kSafePosition:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kStartingPosition:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kMovingDown:
@@ -353,7 +400,7 @@ public class NewArm
                 currentArmState = NewArmState.kNotMoving;
                 break;
             case kMovingUp:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kNotMoving:
@@ -368,26 +415,26 @@ public class NewArm
             switch (targetArmState)
             {
             case kFloorArmPosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kHorizontalArmPosition:
                 currentArmState = NewArmState.kHorizontalArmPosition;
                 break;
             case kMiddleArmPosition:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kTopArmPosition:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kSafePosition:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kStartingPosition:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kMovingDown:
@@ -395,11 +442,11 @@ public class NewArm
                 currentArmState = NewArmState.kNotMoving;
                 break;
             case kMovingUp:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kNotMoving:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
             case kManualOverride:
                 currentArmState = NewArmState.kManualOverride;
@@ -410,34 +457,34 @@ public class NewArm
             switch (targetArmState)
             {
             case kFloorArmPosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kHorizontalArmPosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kMiddleArmPosition:
                 currentArmState = NewArmState.kMiddleArmPosition;
                 break;
             case kTopArmPosition:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kSafePosition:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kStartingPosition:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kMovingDown:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kMovingUp:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kNotMoving:
@@ -452,26 +499,26 @@ public class NewArm
             switch (targetArmState)
             {
             case kFloorArmPosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kHorizontalArmPosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kMiddleArmPosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kTopArmPosition:
                 currentArmState = NewArmState.kTopArmPosition;
                 break;
             case kSafePosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kStartingPosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kMovingDown:
@@ -495,19 +542,19 @@ public class NewArm
             switch (targetArmState)
             {
             case kFloorArmPosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kHorizontalArmPosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kMiddleArmPosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kTopArmPosition:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kSafePosition:
@@ -516,7 +563,7 @@ public class NewArm
                 
                 break;
             case kStartingPosition:
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kStartingPosition;
                 break;
             case kMovingDown:
@@ -540,27 +587,27 @@ public class NewArm
             switch (targetArmState)
             {
             case kFloorArmPosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kHorizontalArmPosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kMiddleArmPosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kTopArmPosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kSafePosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kStartingPosition:
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kMovingDown:
@@ -584,16 +631,17 @@ public class NewArm
         case kMovingDown:
             if (currentPotValue > (armPositionPotValues[targetArmState.value] + Constants.ARM_THRESHOLD))
             {
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
             }
             else if (currentPotValue < (armPositionPotValues[targetArmState.value] - Constants.ARM_THRESHOLD))
             {
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
             }
             else
             {
+                setArmStartingPosition = true;
                 holdArm();
                 currentArmState = targetArmState;
             }
@@ -602,16 +650,17 @@ public class NewArm
         case kMovingUp:
             if (currentPotValue > (armPositionPotValues[targetArmState.value] + Constants.ARM_THRESHOLD))
             {
-                moveArmUp();
+                moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
             }
             else if (currentPotValue < (armPositionPotValues[targetArmState.value] - Constants.ARM_THRESHOLD))
             {
-                moveArmDown();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
             }
             else
             {
+                setArmStartingPosition = true;
                 holdArm();
                 currentArmState = targetArmState;
             }

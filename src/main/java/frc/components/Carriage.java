@@ -82,6 +82,10 @@ public class Carriage
         public static final int INITIAL_HEIGHT_TO_CENTER_CARGO = 636; // inchesToTicks(20);
         public static final int INITIAL_HEIGHT_TO_TOP_CARGO = 876; // inchesToTicks(30);
 
+        public final static double CARRIAGE_MAX_SPEED = 1.0;
+        public final static double CARRIAGE_STARTING_SPEED = 0.3;
+        public final static double CARRIAGE_DOWN_SCALE_FACTOR = 0.85;
+
         public static final int MASTER_CARRIAGE_MOTOR_PORT = 10;
         public static final int SLAVE_CARRIAGE_MOTOR_PORT = 11;
 
@@ -125,6 +129,8 @@ public class Carriage
 
     private CarriageState currentState = CarriageState.kFloor;
     private CarriageState targetState = CarriageState.kFloor;
+    private boolean setCarriageStartingPosition = true;
+    private double startingCarriagePosition;
 
     /**
      * Returns the pot value of the given position
@@ -350,9 +356,49 @@ public class Carriage
         return carriagePositionPotValues[position.value];
     }
 
+    public int getCarriagePositionPotValues(CarriageState position)
+    {
+        return carriagePositionPotValues[position.value];
+    }
+
     public int getCarriagePositionPotValues(int value)
     {
         return carriagePositionPotValues[value];
+    }
+
+    public double scaleCarriageMovement()
+    {
+
+        double currentPotValue = getPotValue();
+        if (setCarriageStartingPosition)
+        {
+            startingCarriagePosition = currentPotValue;
+            setCarriageStartingPosition = false;
+        }
+
+        double endingPosition = getCarriagePositionPotValues(targetState);
+        double distanceToTravel = Math.abs(endingPosition - startingCarriagePosition);
+        double startingDistance = distanceToTravel / 10.0;
+        double stoppingDistance = distanceToTravel - startingDistance;
+        double distanceTraveled = Math.abs(startingCarriagePosition - currentPotValue);
+
+        if (distanceTraveled < startingDistance)
+        {
+            return ((Constants.CARRIAGE_MAX_SPEED - Constants.CARRIAGE_STARTING_SPEED) / startingDistance)
+                    * distanceTraveled + Constants.CARRIAGE_STARTING_SPEED;
+        }
+        else if (distanceTraveled >= startingDistance && distanceTraveled <= stoppingDistance)
+        {
+            return Constants.CARRIAGE_MAX_SPEED;
+        }
+        else if (distanceTraveled > stoppingDistance)
+        {
+            return ((Constants.CARRIAGE_MAX_SPEED - Constants.CARRIAGE_STARTING_SPEED)
+                    / (distanceToTravel - stoppingDistance)) * (distanceToTravel - distanceTraveled)
+                    + Constants.CARRIAGE_STARTING_SPEED;
+        }
+        else
+            return 0.0;
     }
 
     public void setState(CarriageState position)
@@ -381,27 +427,27 @@ public class Carriage
                 currentState = CarriageState.kMovingUp;
                 break;
             case kBottomHatch:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kCenterHatch:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kTopHatch:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kBottomCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kCenterCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kTopCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kMovingDown:
@@ -428,34 +474,34 @@ public class Carriage
             switch (targetState)
             {
             case kFloor:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCargoShipCargo:
                 currentState = CarriageState.kCargoShipCargo;
                 break;
             case kBottomHatch:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCenterHatch:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kTopHatch:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kBottomCargo:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCenterCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kTopCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kMovingDown:
@@ -482,34 +528,34 @@ public class Carriage
             switch (targetState)
             {
             case kFloor:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCargoShipCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kBottomHatch:
                 currentState = CarriageState.kBottomHatch;
                 break;
             case kCenterHatch:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kTopHatch:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kBottomCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kCenterCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kTopCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kMovingDown:
@@ -536,34 +582,34 @@ public class Carriage
             switch (targetState)
             {
             case kFloor:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCargoShipCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kBottomHatch:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCenterHatch:
                 currentState = CarriageState.kCenterHatch;
                 break;
             case kTopHatch:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kBottomCargo:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCenterCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kTopCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kMovingDown:
@@ -590,34 +636,34 @@ public class Carriage
             switch (targetState)
             {
             case kFloor:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCargoShipCargo:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kBottomHatch:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCenterHatch:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kTopHatch:
                 currentState = CarriageState.kTopHatch;
                 break;
             case kBottomCargo:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCenterCargo:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kTopCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kMovingDown:
@@ -644,34 +690,34 @@ public class Carriage
             switch (targetState)
             {
             case kFloor:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCargoShipCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kBottomHatch:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCenterHatch:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kTopHatch:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kBottomCargo:
                 currentState = CarriageState.kBottomCargo;
                 break;
             case kCenterCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kTopCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kMovingDown:
@@ -698,34 +744,34 @@ public class Carriage
             switch (targetState)
             {
             case kFloor:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCargoShipCargo:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kBottomHatch:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCenterHatch:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kTopHatch:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kBottomCargo:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCenterCargo:
                 currentState = CarriageState.kCenterCargo;
                 break;
             case kTopCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kMovingDown:
@@ -752,31 +798,31 @@ public class Carriage
             switch (targetState)
             {
             case kFloor:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCargoShipCargo:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kBottomHatch:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCenterHatch:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kTopHatch:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kBottomCargo:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCenterCargo:
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
                 break;
             case kTopCargo:
@@ -805,16 +851,17 @@ public class Carriage
         case kMovingDown:
             if (currentPotValue > (carriagePositionPotValues[targetState.value] + Constants.CARRIAGE_THRESHOLD))
             {
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 targetState = CarriageState.kMovingDown;
             }
             else if (currentPotValue < (carriagePositionPotValues[targetState.value] - Constants.CARRIAGE_THRESHOLD))
             {
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 targetState = CarriageState.kMovingUp;
             }
             else
             {
+                setCarriageStartingPosition = true;
                 holdCarriage();
                 currentState = targetState;
             }
@@ -822,16 +869,17 @@ public class Carriage
         case kMovingUp:
             if (currentPotValue > (carriagePositionPotValues[targetState.value] + Constants.CARRIAGE_THRESHOLD))
             {
-                lowerCarriage();
+                lowerCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingDown;
             }
             else if (currentPotValue < (carriagePositionPotValues[targetState.value] - Constants.CARRIAGE_THRESHOLD))
             {
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
             }
             else
             {
+                setCarriageStartingPosition = true;
                 holdCarriage();
                 currentState = targetState;
             }
