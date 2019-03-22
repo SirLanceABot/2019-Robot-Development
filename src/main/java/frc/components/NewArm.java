@@ -406,6 +406,7 @@ public class NewArm
             case kNotMoving:
                 holdArm();
                 currentArmState = NewArmState.kNotMoving;
+                break;
             case kManualOverride:
                 currentArmState = NewArmState.kManualOverride;
                 break;
@@ -448,6 +449,7 @@ public class NewArm
             case kNotMoving:
                 moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
+                break;
             case kManualOverride:
                 currentArmState = NewArmState.kManualOverride;
                 break;
@@ -490,6 +492,7 @@ public class NewArm
             case kNotMoving:
                 holdArm();
                 currentArmState = NewArmState.kNotMoving;
+                break;
             case kManualOverride:
                 currentArmState = NewArmState.kManualOverride;
                 break;
@@ -554,13 +557,11 @@ public class NewArm
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kTopArmPosition:
-                moveArmUp(scaleArmMovement());
-                currentArmState = NewArmState.kMovingUp;
+                currentArmState = NewArmState.kTopArmPosition;
                 break;
             case kSafePosition:
                 currentArmState = NewArmState.kSafePosition;
-                stopArm();
-                
+                stopArm();               
                 break;
             case kStartingPosition:
                 moveArmUp(scaleArmMovement());
@@ -629,40 +630,56 @@ public class NewArm
             break;
 
         case kMovingDown:
-            if (currentPotValue > (armPositionPotValues[targetArmState.value] + Constants.ARM_THRESHOLD))
+            if(targetArmState != NewArmState.kManualOverride)
             {
-                moveArmUp(scaleArmMovement());
-                currentArmState = NewArmState.kMovingUp;
-            }
-            else if (currentPotValue < (armPositionPotValues[targetArmState.value] - Constants.ARM_THRESHOLD))
-            {
-                moveArmDown(scaleArmMovement());
-                currentArmState = NewArmState.kMovingDown;
+                if (currentPotValue > (armPositionPotValues[targetArmState.value] + Constants.ARM_THRESHOLD))
+                {
+                    moveArmUp(scaleArmMovement());
+                    currentArmState = NewArmState.kMovingUp;
+                }
+                else if (currentPotValue < (armPositionPotValues[targetArmState.value] - Constants.ARM_THRESHOLD))
+                {
+                    moveArmDown(scaleArmMovement());
+                    currentArmState = NewArmState.kMovingDown;
+                }
+                else
+                {
+                    setArmStartingPosition = true;
+                    holdArm();
+                    currentArmState = targetArmState;
+                }
             }
             else
             {
-                setArmStartingPosition = true;
                 holdArm();
-                currentArmState = targetArmState;
+                targetArmState = NewArmState.kManualOverride;
             }
             break;
 
         case kMovingUp:
-            if (currentPotValue > (armPositionPotValues[targetArmState.value] + Constants.ARM_THRESHOLD))
+            if(targetArmState != NewArmState.kManualOverride)
             {
-                moveArmUp(scaleArmMovement());
-                currentArmState = NewArmState.kMovingUp;
-            }
-            else if (currentPotValue < (armPositionPotValues[targetArmState.value] - Constants.ARM_THRESHOLD))
-            {
-                moveArmDown(scaleArmMovement());
-                currentArmState = NewArmState.kMovingDown;
+                if (currentPotValue > (armPositionPotValues[targetArmState.value] + Constants.ARM_THRESHOLD))
+                {
+                    moveArmUp(scaleArmMovement());
+                    currentArmState = NewArmState.kMovingUp;
+                }
+                else if (currentPotValue < (armPositionPotValues[targetArmState.value] - Constants.ARM_THRESHOLD))
+                {
+                    moveArmDown(scaleArmMovement());
+                    currentArmState = NewArmState.kMovingDown;      
+                }
+                else
+                {
+                    setArmStartingPosition = true;
+                    holdArm();
+                    currentArmState = targetArmState;
+                }
             }
             else
             {
-                setArmStartingPosition = true;
                 holdArm();
-                currentArmState = targetArmState;
+                currentArmState = NewArmState.kManualOverride;
             }
             break;
         case kNotMoving:

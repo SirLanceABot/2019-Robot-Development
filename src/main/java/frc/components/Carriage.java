@@ -849,39 +849,55 @@ public class Carriage
             }
             break;
         case kMovingDown:
-            if (currentPotValue > (carriagePositionPotValues[targetState.value] + Constants.CARRIAGE_THRESHOLD))
+            if(targetState != CarriageState.kManualOverride)
             {
-                lowerCarriage(scaleCarriageMovement());
-                targetState = CarriageState.kMovingDown;
-            }
-            else if (currentPotValue < (carriagePositionPotValues[targetState.value] - Constants.CARRIAGE_THRESHOLD))
-            {
-                raiseCarriage(scaleCarriageMovement());
-                targetState = CarriageState.kMovingUp;
+                if (currentPotValue > (carriagePositionPotValues[targetState.value] + Constants.CARRIAGE_THRESHOLD))
+                {
+                    lowerCarriage(scaleCarriageMovement());
+                    targetState = CarriageState.kMovingDown;
+                }
+                else if (currentPotValue < (carriagePositionPotValues[targetState.value] - Constants.CARRIAGE_THRESHOLD))
+                {
+                    raiseCarriage(scaleCarriageMovement());
+                    targetState = CarriageState.kMovingUp;
+                }
+                else
+                {
+                    setCarriageStartingPosition = true;
+                    holdCarriage();
+                    currentState = targetState;
+                }
+                break;
             }
             else
             {
-                setCarriageStartingPosition = true;
                 holdCarriage();
-                currentState = targetState;
+                currentState = CarriageState.kManualOverride;
             }
-            break;
         case kMovingUp:
-            if (currentPotValue > (carriagePositionPotValues[targetState.value] + Constants.CARRIAGE_THRESHOLD))
+            if(targetState != CarriageState.kManualOverride)
             {
-                lowerCarriage(scaleCarriageMovement());
-                currentState = CarriageState.kMovingDown;
-            }
-            else if (currentPotValue < (carriagePositionPotValues[targetState.value] - Constants.CARRIAGE_THRESHOLD))
-            {
-                raiseCarriage(scaleCarriageMovement());
-                currentState = CarriageState.kMovingUp;
+                if (currentPotValue > (carriagePositionPotValues[targetState.value] + Constants.CARRIAGE_THRESHOLD))
+                {
+                    lowerCarriage(scaleCarriageMovement());
+                    currentState = CarriageState.kMovingDown;
+                }
+                else if (currentPotValue < (carriagePositionPotValues[targetState.value] - Constants.CARRIAGE_THRESHOLD))
+                {
+                    raiseCarriage(scaleCarriageMovement());
+                    currentState = CarriageState.kMovingUp;
+                }
+                else
+                {
+                    setCarriageStartingPosition = true;
+                    holdCarriage();
+                    currentState = targetState;
+                }
             }
             else
             {
-                setCarriageStartingPosition = true;
                 holdCarriage();
-                currentState = targetState;
+                currentState = CarriageState.kManualOverride;
             }
             break;
         case kNotMoving:

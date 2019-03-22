@@ -144,17 +144,17 @@ public class ElevatorSystem
         case kBottomHatch:
             carriage.setState(CarriageState.kBottomHatch);
             newArm.setState(NewArmState.kHorizontalArmPosition);
-            wrist.setState(WristState.kWristUp);
+            wrist.setState(WristState.kWristDown);
             break;
         case kMiddleHatch:
             carriage.setState(CarriageState.kCenterHatch);
             newArm.setState(NewArmState.kHorizontalArmPosition);
-            wrist.setState(WristState.kWristUp);
+            wrist.setState(WristState.kWristDown);
             break;
         case kTopHatch:
             carriage.setState(CarriageState.kTopHatch);
             newArm.setState(NewArmState.kMiddleArmPosition);
-            wrist.setState(WristState.kWristUp);
+            wrist.setState(WristState.kWristDown);
             break;
         case kFloorPickup:
             carriage.setState(CarriageState.kFloor);
@@ -203,9 +203,18 @@ public class ElevatorSystem
 
     public void executeStateMachines()
     {
-        if(newArm.getPotValue() < newArm.getArmPositionPotValue(2) && carriage.getPotValue() <  carriage.getCarriagePositionPotValues(4))//carriage.getState() == CarriageState.kFloor) //this is the top arm position
+        if(newArm.getPotValue() < newArm.getArmPositionPotValue(2)) //&& (carriage.getPotValue() < carriage.getCarriagePositionPotValues(4) || carriage.getPotValue() > carriage.getCarriagePositionPotValues(4))//carriage.getState() == CarriageState.kFloor) //this is the top arm position
         {
+            // If the arm is in safe position, don't move the carriage, move arm first
             newArm.newArmControl();
+            grabber.grabberControl();
+            intake.intakeControl();
+            wrist.wristControl();
+        }
+        else if(newArm.getPotValue() > newArm.getArmPositionPotValue(2) && carriage.getPotValue() > carriage.getCarriagePositionPotValues(4))//carriage.getState() == CarriageState.kFloor) //this is the top arm position
+        {
+            //If the elevator is up, don't move the arm to safe position, move the carriage first
+            carriage.carriageControl();
             grabber.grabberControl();
             intake.intakeControl();
             wrist.wristControl();

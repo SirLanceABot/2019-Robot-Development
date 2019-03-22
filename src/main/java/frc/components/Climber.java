@@ -7,6 +7,7 @@ import frc.util.MotorConstants;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 
@@ -52,9 +53,9 @@ public class Climber
         masterLegMotor.configOpenloopRamp(MotorConstants.Constants.OPEN_LOOP_RAMP);
         masterLegMotor.enableCurrentLimit(true);
 
-        masterLegMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyOpen);
-        masterLegMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
-        masterLegMotor.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.QuadEncoder, 0, 0);
+        masterLegMotor.configReverseSoftLimitThreshold(490);
+        masterLegMotor.configForwardSoftLimitThreshold(960);
+        masterLegMotor.configSelectedFeedbackSensor(FeedbackDevice.Analog);
 
         forwardClimbDrive.setInverted(true);
 

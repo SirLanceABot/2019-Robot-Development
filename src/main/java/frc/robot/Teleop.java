@@ -39,7 +39,7 @@ public class Teleop
     {
         private static final double ROTATION_SPEED = 0.5;
         private static final double STRAFE_SPEED = 0.5;
-        private static final double CLIMBER_LIFT_SPEED = 0.75;
+        private static final double CLIMBER_LIFT_SPEED = 0.5;
         private static final double BALL_STALL_CURRENT = 0.5;
         private static final double CURRENT_LIMIT = 15.0;
         private static final double RUN_TIME = 0.5;
@@ -1119,61 +1119,70 @@ public class Teleop
 
         if(armButton || carriageButton)
         {
-            targetElevatorState = ElevatorSystemState.kManualOverride;
-
-            if (armButton)
+            if(targetElevatorState == ElevatorSystemState.kManualOverride)
             {
-                if (buttonBoardYAxis == 1)
+                if (armButton)
                 {
-                    elevatorSystem.overrideArm(-0.35);
+                    if (buttonBoardYAxis == 1)
+                    {
+                        elevatorSystem.overrideArm(-0.35);
+                    }
+                    else if (buttonBoardYAxis == -1)
+                    {
+                        elevatorSystem.overrideArm(0.35);
+                    }
+                    else if (buttonBoardXAxis == 1)
+                    {
+                        elevatorSystem.overrideArm(-0.8);
+                    }
+                    else if (buttonBoardXAxis == -1)
+                    {
+                        elevatorSystem.overrideArm(0.8);
+                    }
+                    else
+                    {
+                        elevatorSystem.overrideArm(-0.15);
+                    }
                 }
-                else if (buttonBoardYAxis == -1)
+                if (carriageButton)
                 {
-                    elevatorSystem.overrideArm(0.35);
-                }
-                else if (buttonBoardXAxis == 1)
-                {
-                    elevatorSystem.overrideArm(-0.8);
-                }
-                else if (buttonBoardXAxis == -1)
-                {
-                    elevatorSystem.overrideArm(0.8);
-                }
-                else
-                {
-                    elevatorSystem.overrideArm(-0.15);
+                    if (buttonBoardYAxis == 1)
+                    {
+                        elevatorSystem.overrideCarriage(0.35);
+                    }
+                    else if (buttonBoardYAxis == -1)
+                    {
+                        elevatorSystem.overrideCarriage(-0.35);
+                    }
+                    else if (buttonBoardXAxis == 1)
+                    {
+                        elevatorSystem.overrideCarriage(0.8);
+                    }
+                    else if (buttonBoardXAxis == -1)
+                    {
+                        elevatorSystem.overrideCarriage(-0.8);
+                    }
+                    else
+                    {
+                        elevatorSystem.overrideCarriage(0.05);
+                    }
                 }
             }
-            if (carriageButton)
+            else
             {
-                if (buttonBoardYAxis == 1)
-                {
-                    elevatorSystem.overrideCarriage(0.35);
-                }
-                else if (buttonBoardYAxis == -1)
-                {
-                    elevatorSystem.overrideCarriage(-0.35);
-                }
-                else if (buttonBoardXAxis == 1)
-                {
-                    elevatorSystem.overrideCarriage(0.8);
-                }
-                else if (buttonBoardXAxis == -1)
-                {
-                    elevatorSystem.overrideCarriage(-0.8);
-                }
-                else
-                {
-                    elevatorSystem.overrideCarriage(0.05);
-                }
-            }
+                targetElevatorState = ElevatorSystemState.kManualOverride;
+            } 
         }
         else if(leftTrigger > 0.7)
         {
             targetElevatorState = ElevatorSystemState.kManualOverride;
             if(bButton)
             {
-                carriage.lowerCarriage(Constants.CLIMBER_LIFT_SPEED * 0.6);
+                elevatorSystem.overrideCarriage(-Constants.CLIMBER_LIFT_SPEED * 0.6);
+            }
+            else
+            {
+                elevatorSystem.overrideCarriage(0.05);
             }
         }
         else
@@ -1219,7 +1228,7 @@ public class Teleop
         if(armButtonReleased || carriageButtonReleased)
         {
             elevatorSystem.overrideCarriage(0.05);
-            elevatorSystem.overrideArm(-0.05);
+            elevatorSystem.overrideArm(-0.15);
         }
 
         if(inButtonHeld)
