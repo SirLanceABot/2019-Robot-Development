@@ -62,7 +62,7 @@ public class NewArm
         // 4: Threshold
         // Comp Bot: starting position is 101
         // 0 1 2 3 4 5
-        public static final int[] COMPETITION_ARM_POSITION_POT_VALUES = { 635, 567, 438, 202, 5, -1 };
+        public static final int[] COMPETITION_ARM_POSITION_POT_VALUES = { 619, 556, 416, 168, 5, -1 };
         public static final int[] PRACTICE_ARM_POSITION_POT_VALUES = { 623, 566, 439, 210, 5, -1 };
 
     }
@@ -208,35 +208,36 @@ public class NewArm
     public double scaleArmMovement()
     {
 
-        double currentPotValue = getPotValue();
-        if (setArmStartingPosition)
-        {
-            startingArmPosition = currentPotValue;
-            setArmStartingPosition = false;
-        }
+        // double currentPotValue = getPotValue();
+        // if (setArmStartingPosition)
+        // {
+        //     startingArmPosition = currentPotValue;
+        //     setArmStartingPosition = false;
+        // }
 
-        double endingPosition = getArmPositionPotValue(targetArmState);
-        double distanceToTravel = Math.abs(endingPosition - startingArmPosition);
-        double startingDistance = distanceToTravel / 10.0;
-        double stoppingDistance = distanceToTravel - startingDistance;
-        double distanceTraveled = Math.abs(startingArmPosition - currentPotValue);
+        // double endingPosition = getArmPositionPotValue(targetArmState);
+        // double distanceToTravel = Math.abs(endingPosition - startingArmPosition);
+        // double startingDistance = distanceToTravel / 10.0;
+        // double stoppingDistance = distanceToTravel - startingDistance;
+        // double distanceTraveled = Math.abs(startingArmPosition - currentPotValue);
 
-        if (distanceTraveled < startingDistance)
-        {
-            return ((Constants.ARM_MAX_SPEED - Constants.ARM_STARTING_SPEED) / startingDistance) * distanceTraveled
-                    + Constants.ARM_STARTING_SPEED;
-        }
-        else if (distanceTraveled >= startingDistance && distanceTraveled <= stoppingDistance)
-        {
-            return Constants.ARM_MAX_SPEED;
-        }
-        else if (distanceTraveled > stoppingDistance)
-        {
-            return ((Constants.ARM_MAX_SPEED - Constants.ARM_STARTING_SPEED) / (distanceToTravel - stoppingDistance))
-                    * (distanceToTravel - distanceTraveled) + Constants.ARM_STARTING_SPEED;
-        }
-        else
-            return 0.0;
+        // if (distanceTraveled < startingDistance)
+        // {
+        //     return ((Constants.ARM_MAX_SPEED - Constants.ARM_STARTING_SPEED) / startingDistance) * distanceTraveled
+        //             + Constants.ARM_STARTING_SPEED;
+        // }
+        // else if (distanceTraveled >= startingDistance && distanceTraveled <= stoppingDistance)
+        // {
+        //     return Constants.ARM_MAX_SPEED;
+        // }
+        // else if (distanceTraveled > stoppingDistance)
+        // {
+        //     return ((Constants.ARM_MAX_SPEED - Constants.ARM_STARTING_SPEED) / (distanceToTravel - stoppingDistance))
+        //             * (distanceToTravel - distanceTraveled) + Constants.ARM_STARTING_SPEED;
+        // }
+        // else
+        //     return 0.0;
+        return 0.5;
     }
     /**
      * this function will stop the movement of the arm
@@ -249,7 +250,24 @@ public class NewArm
 
     public void holdArm()
     {
-        moveArmUp(-0.15);
+        int currentPot = getPotValue();
+        if(currentPot >= armPositionPotValues[NewArmState.kHorizontalArmPosition.value])
+        {
+            moveArmUp(0.1);
+        }
+        else if(currentPot >= armPositionPotValues[NewArmState.kMiddleArmPosition.value])
+        {
+            moveArmUp(0.05);
+        }
+        else if(currentPot >= armPositionPotValues[NewArmState.kTopArmPosition.value])
+        {
+            moveArmUp(0.0);
+        }
+        else
+        {
+            moveArmUp(0.0);
+        }
+            
     }
 
 

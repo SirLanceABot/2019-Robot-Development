@@ -1265,8 +1265,6 @@ public class Teleop
             rightTriggerPressed = false;
         }
 
-        System.out.println(targetElevatorState + "    " + targetIntakeState + "   " + targetGrabberState);
-
         elevatorSystem.setElevatorSystemState(targetElevatorState, targetIntakeState, targetGrabberState);
         elevatorSystem.executeStateMachines();
     }

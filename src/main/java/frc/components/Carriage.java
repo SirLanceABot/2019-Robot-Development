@@ -369,36 +369,37 @@ public class Carriage
     public double scaleCarriageMovement()
     {
 
-        double currentPotValue = getPotValue();
-        if (setCarriageStartingPosition)
-        {
-            startingCarriagePosition = currentPotValue;
-            setCarriageStartingPosition = false;
-        }
+        // double currentPotValue = getPotValue();
+        // if (setCarriageStartingPosition)
+        // {
+        //     startingCarriagePosition = currentPotValue;
+        //     setCarriageStartingPosition = false;
+        // }
 
-        double endingPosition = getCarriagePositionPotValues(targetState);
-        double distanceToTravel = Math.abs(endingPosition - startingCarriagePosition);
-        double startingDistance = distanceToTravel / 10.0;
-        double stoppingDistance = distanceToTravel - startingDistance;
-        double distanceTraveled = Math.abs(startingCarriagePosition - currentPotValue);
+        // double endingPosition = getCarriagePositionPotValues(targetState);
+        // double distanceToTravel = Math.abs(endingPosition - startingCarriagePosition);
+        // double startingDistance = distanceToTravel / 10.0;
+        // double stoppingDistance = distanceToTravel - startingDistance;
+        // double distanceTraveled = Math.abs(startingCarriagePosition - currentPotValue);
 
-        if (distanceTraveled < startingDistance)
-        {
-            return ((Constants.CARRIAGE_MAX_SPEED - Constants.CARRIAGE_STARTING_SPEED) / startingDistance)
-                    * distanceTraveled + Constants.CARRIAGE_STARTING_SPEED;
-        }
-        else if (distanceTraveled >= startingDistance && distanceTraveled <= stoppingDistance)
-        {
-            return Constants.CARRIAGE_MAX_SPEED;
-        }
-        else if (distanceTraveled > stoppingDistance)
-        {
-            return ((Constants.CARRIAGE_MAX_SPEED - Constants.CARRIAGE_STARTING_SPEED)
-                    / (distanceToTravel - stoppingDistance)) * (distanceToTravel - distanceTraveled)
-                    + Constants.CARRIAGE_STARTING_SPEED;
-        }
-        else
-            return 0.0;
+        // if (distanceTraveled < startingDistance)
+        // {
+        //     return ((Constants.CARRIAGE_MAX_SPEED - Constants.CARRIAGE_STARTING_SPEED) / startingDistance)
+        //             * distanceTraveled + Constants.CARRIAGE_STARTING_SPEED;
+        // }
+        // else if (distanceTraveled >= startingDistance && distanceTraveled <= stoppingDistance)
+        // {
+        //     return Constants.CARRIAGE_MAX_SPEED;
+        // }
+        // else if (distanceTraveled > stoppingDistance)
+        // {
+        //     return ((Constants.CARRIAGE_MAX_SPEED - Constants.CARRIAGE_STARTING_SPEED)
+        //             / (distanceToTravel - stoppingDistance)) * (distanceToTravel - distanceTraveled)
+        //             + Constants.CARRIAGE_STARTING_SPEED;
+        // }
+        // else
+        //     return 0.0;
+        return 0.5;
     }
 
     public void setState(CarriageState position)

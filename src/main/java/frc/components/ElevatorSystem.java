@@ -210,15 +210,18 @@ public class ElevatorSystem
             grabber.grabberControl();
             intake.intakeControl();
             wrist.wristControl();
+            System.out.println("First if");
         }
-        else if(newArm.getPotValue() > newArm.getArmPositionPotValue(2) && carriage.getPotValue() > carriage.getCarriagePositionPotValues(4))//carriage.getState() == CarriageState.kFloor) //this is the top arm position
-        {
-            //If the elevator is up, don't move the arm to safe position, move the carriage first
-            carriage.carriageControl();
-            grabber.grabberControl();
-            intake.intakeControl();
-            wrist.wristControl();
-        }
+        // else if(newArm.getPotValue() > newArm.getArmPositionPotValue(2) && 
+        //     carriage.getPotValue() > carriage.getCarriagePositionPotValues(4))//carriage.getState() == CarriageState.kFloor) //this is the top arm position
+        // {
+        //     //If the elevator is up, don't move the arm to safe position, move the carriage first
+        //     carriage.carriageControl();
+        //     grabber.grabberControl();
+        //     intake.intakeControl();
+        //     wrist.wristControl();
+        //     System.out.println("Second if");
+        // }
         else
         {
             carriage.carriageControl();
@@ -226,7 +229,7 @@ public class ElevatorSystem
             grabber.grabberControl();
             intake.intakeControl();
             wrist.wristControl();
-            
+            System.out.println("Third if");
         }
     }
 
