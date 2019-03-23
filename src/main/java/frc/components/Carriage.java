@@ -421,10 +421,11 @@ public class Carriage
             switch (targetState)
             {
             case kFloor:
+                holdCarriage();
                 currentState = CarriageState.kFloor;
                 break;
             case kCargoShipCargo:
-                raiseCarriage();
+                raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kBottomHatch:
@@ -453,11 +454,11 @@ public class Carriage
                 break;
             case kMovingDown:
                 holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                currentState = CarriageState.kFloor;
                 break;
             case kMovingUp:
-                holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                raiseCarriage(scaleCarriageMovement());
+                currentState = CarriageState.kMovingUp;
                 break;
             case kNotMoving:
                 holdCarriage();
@@ -467,6 +468,7 @@ public class Carriage
                 currentState = CarriageState.kManualOverride;
                 break;
             case kNone:
+                holdCarriage();
                 currentState = CarriageState.kNone;
                 break;
             }
@@ -479,6 +481,7 @@ public class Carriage
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCargoShipCargo:
+                holdCarriage();
                 currentState = CarriageState.kCargoShipCargo;
                 break;
             case kBottomHatch:
@@ -506,18 +509,19 @@ public class Carriage
                 currentState = CarriageState.kMovingUp;
                 break;
             case kMovingDown:
-                holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                lowerCarriage(scaleCarriageMovement());
+                currentState = CarriageState.kMovingDown;
                 break;
             case kMovingUp:
-                holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                raiseCarriage(scaleCarriageMovement());
+                currentState = CarriageState.kMovingUp;
                 break;
             case kNotMoving:
                 holdCarriage();
                 currentState = CarriageState.kNotMoving;
                 break;
             case kNone:
+                holdCarriage();
                 currentState = CarriageState.kNone;
                 break;
             case kManualOverride:
@@ -537,6 +541,7 @@ public class Carriage
                 currentState = CarriageState.kMovingUp;
                 break;
             case kBottomHatch:
+                holdCarriage();
                 currentState = CarriageState.kBottomHatch;
                 break;
             case kCenterHatch:
@@ -560,18 +565,19 @@ public class Carriage
                 currentState = CarriageState.kMovingUp;
                 break;
             case kMovingDown:
-                holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                lowerCarriage(scaleCarriageMovement());
+                currentState = CarriageState.kMovingDown;
                 break;
             case kMovingUp:
-                holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                raiseCarriage(scaleCarriageMovement());
+                currentState = CarriageState.kMovingUp;
                 break;
             case kNotMoving:
                 holdCarriage();
                 currentState = CarriageState.kNotMoving;
                 break;
             case kNone:
+                holdCarriage();
                 currentState = CarriageState.kNone;
                 break;
             case kManualOverride:
@@ -595,6 +601,7 @@ public class Carriage
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCenterHatch:
+                holdCarriage();
                 currentState = CarriageState.kCenterHatch;
                 break;
             case kTopHatch:
@@ -606,26 +613,27 @@ public class Carriage
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCenterCargo:
-                raiseCarriage(scaleCarriageMovement());
-                currentState = CarriageState.kMovingUp;
+                lowerCarriage(scaleCarriageMovement());
+                currentState = CarriageState.kMovingDown;
                 break;
             case kTopCargo:
                 raiseCarriage(scaleCarriageMovement());
                 currentState = CarriageState.kMovingUp;
                 break;
             case kMovingDown:
-                holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                lowerCarriage(scaleCarriageMovement());
+                currentState = CarriageState.kMovingDown;
                 break;
             case kMovingUp:
-                holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                raiseCarriage(scaleCarriageMovement());
+                currentState = CarriageState.kMovingUp;
                 break;
             case kNotMoving:
                 holdCarriage();
                 currentState = CarriageState.kNotMoving;
                 break;
             case kNone:
+                holdCarriage();
                 currentState = CarriageState.kNone;
                 break;
             case kManualOverride:
@@ -653,6 +661,7 @@ public class Carriage
                 currentState = CarriageState.kMovingDown;
                 break;
             case kTopHatch:
+                holdCarriage();
                 currentState = CarriageState.kTopHatch;
                 break;
             case kBottomCargo:
@@ -668,18 +677,19 @@ public class Carriage
                 currentState = CarriageState.kMovingUp;
                 break;
             case kMovingDown:
-                holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                lowerCarriage(scaleCarriageMovement());
+                currentState = CarriageState.kMovingDown;
                 break;
             case kMovingUp:
-                holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                raiseCarriage(scaleCarriageMovement());
+                currentState = CarriageState.kMovingUp;
                 break;
             case kNotMoving:
                 holdCarriage();
                 currentState = CarriageState.kNotMoving;
                 break;
             case kNone:
+                holdCarriage();
                 currentState = CarriageState.kNone;
                 break;
             case kManualOverride:
@@ -711,6 +721,7 @@ public class Carriage
                 currentState = CarriageState.kMovingUp;
                 break;
             case kBottomCargo:
+                holdCarriage();
                 currentState = CarriageState.kBottomCargo;
                 break;
             case kCenterCargo:
@@ -722,18 +733,19 @@ public class Carriage
                 currentState = CarriageState.kMovingUp;
                 break;
             case kMovingDown:
-                holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                lowerCarriage(scaleCarriageMovement());
+                currentState = CarriageState.kMovingDown;
                 break;
             case kMovingUp:
-                holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                raiseCarriage(scaleCarriageMovement());
+                currentState = CarriageState.kMovingUp;
                 break;
             case kNotMoving:
                 holdCarriage();
                 currentState = CarriageState.kNotMoving;
                 break;
             case kNone:
+                holdCarriage();
                 currentState = CarriageState.kNone;
                 break;
             case kManualOverride:
@@ -769,6 +781,7 @@ public class Carriage
                 currentState = CarriageState.kMovingDown;
                 break;
             case kCenterCargo:
+                holdCarriage();
                 currentState = CarriageState.kCenterCargo;
                 break;
             case kTopCargo:
@@ -776,18 +789,19 @@ public class Carriage
                 currentState = CarriageState.kMovingUp;
                 break;
             case kMovingDown:
-                holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                lowerCarriage(scaleCarriageMovement());
+                currentState = CarriageState.kMovingDown;
                 break;
             case kMovingUp:
-                holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                raiseCarriage(scaleCarriageMovement());
+                currentState = CarriageState.kMovingUp;
                 break;
             case kNotMoving:
                 holdCarriage();
                 currentState = CarriageState.kNotMoving;
                 break;
             case kNone:
+                holdCarriage();
                 currentState = CarriageState.kNone;
                 break;
             case kManualOverride:
@@ -827,21 +841,23 @@ public class Carriage
                 currentState = CarriageState.kMovingDown;
                 break;
             case kTopCargo:
+                holdCarriage();
                 currentState = CarriageState.kTopCargo;
                 break;
             case kMovingDown:
-                holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                lowerCarriage(scaleCarriageMovement());
+                currentState = CarriageState.kMovingDown;
                 break;
             case kMovingUp:
                 holdCarriage();
-                currentState = CarriageState.kNotMoving;
+                currentState = CarriageState.kTopCargo;
                 break;
             case kNotMoving:
                 holdCarriage();
                 currentState = CarriageState.kNotMoving;
                 break;
             case kNone:
+                holdCarriage();
                 currentState = CarriageState.kNone;
                 break;
             case kManualOverride:
@@ -855,12 +871,12 @@ public class Carriage
                 if (currentPotValue > (carriagePositionPotValues[targetState.value] + Constants.CARRIAGE_THRESHOLD))
                 {
                     lowerCarriage(scaleCarriageMovement());
-                    targetState = CarriageState.kMovingDown;
+                    currentState = CarriageState.kMovingDown;
                 }
                 else if (currentPotValue < (carriagePositionPotValues[targetState.value] - Constants.CARRIAGE_THRESHOLD))
                 {
                     raiseCarriage(scaleCarriageMovement());
-                    targetState = CarriageState.kMovingUp;
+                    currentState = CarriageState.kMovingUp;
                 }
                 else
                 {
