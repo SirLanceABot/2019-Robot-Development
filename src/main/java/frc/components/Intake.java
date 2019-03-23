@@ -28,8 +28,8 @@ public class Intake
     private Timer intakeTimer = new Timer();
     private WPI_TalonSRX intakeRoller = new WPI_TalonSRX(Constants.INTAKE_PORT);
     private boolean firstTimeOverAmpLimit = true;
-    private IntakeState currentState = IntakeState.kOff;
-    private IntakeState targetState = IntakeState.kOff;
+    private IntakeState currentState = IntakeState.kHold;
+    private IntakeState targetState = IntakeState.kHold;
 
     private static Intake instance = new Intake();
 

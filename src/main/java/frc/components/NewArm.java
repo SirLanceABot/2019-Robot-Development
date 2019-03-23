@@ -181,7 +181,6 @@ public class NewArm
         {
             moveArmDown(speed);
         }
-
         currentArmState = NewArmState.kManualOverride;
     }
 
@@ -415,7 +414,7 @@ public class NewArm
                 break;
             case kMovingDown:
                 holdArm();
-                currentArmState = NewArmState.kNotMoving;
+                currentArmState = NewArmState.kFloorArmPosition;
                 break;
             case kMovingUp:
                 moveArmUp(scaleArmMovement());
@@ -438,6 +437,7 @@ public class NewArm
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kHorizontalArmPosition:
+                holdArm();
                 currentArmState = NewArmState.kHorizontalArmPosition;
                 break;
             case kMiddleArmPosition:
@@ -457,16 +457,16 @@ public class NewArm
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kMovingDown:
-                holdArm();
-                currentArmState = NewArmState.kNotMoving;
+                moveArmDown(scaleArmMovement());
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kMovingUp:
                 moveArmUp(scaleArmMovement());
                 currentArmState = NewArmState.kMovingUp;
                 break;
             case kNotMoving:
-                moveArmDown(scaleArmMovement());
-                currentArmState = NewArmState.kMovingDown;
+                holdArm();
+                currentArmState = NewArmState.kNotMoving;
                 break;
             case kManualOverride:
                 currentArmState = NewArmState.kManualOverride;
@@ -485,6 +485,7 @@ public class NewArm
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kMiddleArmPosition:
+                holdArm();
                 currentArmState = NewArmState.kMiddleArmPosition;
                 break;
             case kTopArmPosition:
@@ -532,27 +533,28 @@ public class NewArm
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kTopArmPosition:
+                holdArm();
                 currentArmState = NewArmState.kTopArmPosition;
                 break;
             case kSafePosition:
-                moveArmDown(scaleArmMovement());
-                currentArmState = NewArmState.kMovingDown;
+                holdArm();
+                currentArmState = NewArmState.kSafePosition;
                 break;
             case kStartingPosition:
-                moveArmDown(scaleArmMovement());
-                currentArmState = NewArmState.kMovingDown;
+                holdArm();
+                currentArmState = NewArmState.kTopArmPosition;
                 break;
             case kMovingDown:
-                holdArm();
-                currentArmState = NewArmState.kNotMoving;
+                moveArmDown(scaleArmMovement());
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kMovingUp:
                 holdArm();
-                currentArmState = NewArmState.kNotMoving;
+                currentArmState = NewArmState.kTopArmPosition;
                 break;
             case kNotMoving:
                 holdArm();
-                currentArmState = NewArmState.kNotMoving;
+                currentArmState = NewArmState.kTopArmPosition;
                 break;
             case kManualOverride:
                 currentArmState = NewArmState.kManualOverride;
@@ -575,19 +577,20 @@ public class NewArm
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kTopArmPosition:
+                holdArm();
                 currentArmState = NewArmState.kTopArmPosition;
                 break;
             case kSafePosition:
-                currentArmState = NewArmState.kSafePosition;
-                stopArm();               
+                holdArm();  
+                currentArmState = NewArmState.kSafePosition;            
                 break;
             case kStartingPosition:
-                moveArmUp(scaleArmMovement());
-                currentArmState = NewArmState.kStartingPosition;
+                holdArm();
+                currentArmState = NewArmState.kSafePosition;
                 break;
             case kMovingDown:
-                holdArm();
-                currentArmState = NewArmState.kNotMoving;
+                moveArmDown(scaleArmMovement());
+                currentArmState = NewArmState.kMovingDown;
                 break;
             case kMovingUp:
                 holdArm();
@@ -595,7 +598,7 @@ public class NewArm
                 break;
             case kNotMoving:
                 holdArm();
-                currentArmState = NewArmState.kNotMoving;
+                currentArmState = NewArmState.kSafePosition;
                 break;
             case kManualOverride:
                 currentArmState = NewArmState.kManualOverride;
@@ -626,20 +629,20 @@ public class NewArm
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kStartingPosition:
-                moveArmDown(scaleArmMovement());
-                currentArmState = NewArmState.kMovingDown;
+                holdArm();
+                currentArmState = NewArmState.kStartingPosition;
                 break;
             case kMovingDown:
-                holdArm();
+                moveArmDown(scaleArmMovement());
                 currentArmState = NewArmState.kMovingDown;
                 break;
             case kMovingUp:
                 holdArm();
-                currentArmState = NewArmState.kNotMoving;
+                currentArmState = NewArmState.kStartingPosition;
                 break;
             case kNotMoving:
                 holdArm();
-                currentArmState = NewArmState.kNotMoving;
+                currentArmState = NewArmState.kStartingPosition;
                 break;
             case kManualOverride:
                 currentArmState = NewArmState.kManualOverride;
@@ -673,7 +676,6 @@ public class NewArm
                 targetArmState = NewArmState.kManualOverride;
             }
             break;
-
         case kMovingUp:
             if(targetArmState != NewArmState.kManualOverride)
             {

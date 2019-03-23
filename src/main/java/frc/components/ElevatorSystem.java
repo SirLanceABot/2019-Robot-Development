@@ -108,6 +108,11 @@ public class ElevatorSystem
     {
         newArm.manualOverride(speed);
     }
+
+    public void overrideArmHold()
+    {
+        newArm.holdArm();
+    }
     
     public void overrideCarriage(double speed)
     {
@@ -233,6 +238,48 @@ public class ElevatorSystem
         }
     }
 
+    public void executeStateMachines2()
+    {
+        if(targetArmPosition != NewArmState.kSafePosition)
+        {
+            if(newArm.getPotValue() < newArm.getArmPositionPotValue(2)) //&& (carriage.getPotValue() < carriage.getCarriagePositionPotValues(4) || carriage.getPotValue() > carriage.getCarriagePositionPotValues(4))//carriage.getState() == CarriageState.kFloor) //this is the top arm position
+            {
+                // If the arm is in safe position, don't move the carriage, move arm first
+                newArm.newArmControl();
+                grabber.grabberControl();
+                intake.intakeControl();
+                wrist.wristControl();
+            }
+            else
+            {
+                carriage.carriageControl();
+                newArm.newArmControl();
+                grabber.grabberControl();
+                intake.intakeControl();
+                wrist.wristControl();
+            }
+        }
+        else
+        {
+            if(carriage.getPotValue() > carriage.getCarriagePositionPotValues(4))//carriage.getState() == CarriageState.kFloor) //this is the top arm position
+            {
+                //If the elevator is up, don't move the arm to safe position, move the carriage first
+                carriage.carriageControl();
+                grabber.grabberControl();
+                intake.intakeControl();
+                wrist.wristControl();
+            }
+            else
+            {
+                carriage.carriageControl();
+                newArm.newArmControl();
+                grabber.grabberControl();
+                intake.intakeControl();
+                wrist.wristControl();
+            }
+        }
+
+    }
     // public String elevatorInfo()
     // {
     //     return "Current Position: " + carriage.

@@ -1141,7 +1141,7 @@ public class Teleop
                     }
                     else
                     {
-                        elevatorSystem.overrideArm(-0.15);
+                        elevatorSystem.overrideArmHold();
                     }
                 }
                 if (carriageButton)
@@ -1173,18 +1173,18 @@ public class Teleop
                 targetElevatorState = ElevatorSystemState.kManualOverride;
             } 
         }
-        else if(leftTrigger > 0.7)
-        {
-            targetElevatorState = ElevatorSystemState.kManualOverride;
-            if(bButton)
-            {
-                elevatorSystem.overrideCarriage(-Constants.CLIMBER_LIFT_SPEED * 0.6);
-            }
-            else
-            {
-                elevatorSystem.overrideCarriage(0.05);
-            }
-        }
+        // else if(leftTrigger > 0.7)
+        // {
+        //     targetElevatorState = ElevatorSystemState.kManualOverride;
+        //     if(bButton)
+        //     {
+        //         elevatorSystem.overrideCarriage(-Constants.CLIMBER_LIFT_SPEED * 0.6);
+        //     }
+        //     else
+        //     {
+        //         elevatorSystem.overrideCarriage(0.05);
+        //     }
+        // }
         else
         {
             if(safePositionButton)
@@ -1266,7 +1266,7 @@ public class Teleop
         }
 
         elevatorSystem.setElevatorSystemState(targetElevatorState, targetIntakeState, targetGrabberState);
-        elevatorSystem.executeStateMachines();
+        elevatorSystem.executeStateMachines2();
     }
 
     public void driverXboxControl()
